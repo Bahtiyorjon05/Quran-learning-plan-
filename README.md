@@ -594,7 +594,9 @@ What is actually built, as of the latest commit. Updated every time something la
 | ✅ | Neon Postgres + Drizzle schema | 12 tables, 26 check constraints, PostgreSQL 18 in Frankfurt. `uuidv7()` primary keys for index locality |
 | ✅ | **The covenant, enforced in the database** | 8 triggers. The deadline cannot be extended by any path — ORM, raw SQL or psql. The amendment log writes itself and is append-only. **24 integration tests against the live database, all passing** |
 | ✅ | **Auth, end to end** | Email + password with both entered twice, **six-digit OTP verification**, Argon2id, DB-backed sessions, per-account lockout, per-IP/per-email rate limiting, password reset that revokes every session. **23 integration tests** |
-| ✅ | Email transport | SMTP → Resend → console, chosen from the environment. Branded trilingual HTML + plain-text templates. Adding SMTP is an env change, not a code change |
+| ✅ | Email transport | **Live on Gmail SMTP** (587 + STARTTLS), verified by sending a real code end to end. SMTP → Resend → console, chosen from the environment; branded trilingual HTML + plain-text templates |
+| ✅ | Three working themes | Dark, light and sepia. The girih lattice is a mask so it takes a token colour, gold flips pale-on-ink to deep-on-parchment, and the mosaic strength ramp reverses so "stronger" always reads as "more present" |
+| ✅ | One-click language switching | Three always-visible buttons, not a dropdown. Uzbek is the unconditional default — `localeDetection` is off, so an English browser still lands in Uzbek |
 | ⬜ | Qur'an data pipeline (604-page index) | |
 | ✅ | Translation parity tests | 11 tests: no missing or stray keys, every ICU placeholder preserved, nothing silently left in English |
 | ✅ | **Deployed to production** | https://ahd-quran.vercel.app — functions pinned to `fra1`, paired with Neon in Frankfurt. 5 ms warm database round trip |
