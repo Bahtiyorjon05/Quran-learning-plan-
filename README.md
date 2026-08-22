@@ -479,7 +479,37 @@ Mutashabihat engine and drills, tajweed colouring, tafsir, Ramadan mode, vocabul
 
 - Vercel CLI is already installed: `vercel link` then `vercel --prod`
 - `main` branch to production, PRs get preview deploys
-- Neon or Supabase Postgres, env vars in Vercel, custom domain later
+- Runs on the free `*.vercel.app` domain for now; a custom domain comes later
+
+#### Region pairing — the single most important infrastructure decision
+
+Our users are in **Uzbekistan**. Neon has no Central Asian or Middle Eastern
+region, and **a Neon project's region cannot be changed after it is created**.
+
+| Neon region | Round trip from Tashkent | |
+|---|---|---|
+| **AWS Europe (Frankfurt) `aws-eu-central-1`** | **~70–110 ms** | ✅ chosen — Uzbek international transit routes west through Kazakhstan and Russia into Frankfurt, the main peering hub for Central Asia |
+| AWS Europe (London) `aws-eu-west-2` | ~90–130 ms | acceptable fallback |
+| AWS Asia Pacific (Singapore) `aws-ap-southeast-1` | ~140–190 ms | closer on a map, but traffic from UZ still routes westward first |
+| AWS US East `aws-us-east-1` | ~160–200 ms | no |
+
+Vercel defaults functions to **`iad1` (Washington DC)**. Paired with a Frankfurt
+database that sends every query across the Atlantic and back — and because the
+Neon serverless driver makes each query its own HTTP round trip, a page issuing
+five queries pays that penalty five times over. So `vercel.json` pins functions
+to **`fra1` (Frankfurt)**, in the same city as the database:
+
+```json
+{ "regions": ["fra1"] }
+```
+
+Static pages are served from Vercel's global CDN regardless, so first paint in
+Tashkent stays fast either way — region pairing only governs dynamic work.
+
+**Neon scale-to-zero:** on the free plan a database that has been idle suspends,
+and the next query pays roughly half a second to wake it. Fine in development.
+Before real users arrive we either move to a paid plan or keep it warm with a
+cheap cron ping.
 
 ### Android (Phase 4) — recommendation: **Capacitor, not TWA**
 
@@ -554,6 +584,7 @@ What is actually built, as of the latest commit. Updated every time something la
 | ✅ | Trilingual i18n | `uz` (default, no URL prefix) · `en` · `ru`, with `dir` plumbing already in place for Arabic in Phase 2 |
 | ✅ | Public marketing site | Landing page: hero with a live product preview, the hadith band, the problem, **the interactive covenant demo**, the three tracks, the 604-tile mushaf mosaic, six practice modes, the feature grid, final CTA |
 | ✅ | Header / footer / language switcher / theme toggle | Responsive down to 320px, full mobile sheet, skip link, focus rings |
+| ✅ | Region decision + `vercel.json` | Neon **Frankfurt** (`aws-eu-central-1`) paired with Vercel functions pinned to **`fra1`** |
 | ⬜ | Neon Postgres + Drizzle schema | Next |
 | ⬜ | Auth: email + password, double entry, verification | Next |
 | ⬜ | Qur'an data pipeline (604-page index) | |
