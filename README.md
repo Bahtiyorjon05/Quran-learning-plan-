@@ -11,7 +11,9 @@
 
 **Plan your hifz. Commit to it. Practice it. Never lose it.**
 
-`Status: 🏗 Phase 0 in progress — see §14 Build log. This document is the contract we build against.`
+**🌐 Live: https://ahd-quran.vercel.app**
+
+`Status: 🏗 Phase 0 complete and deployed — see §14 Build log.`
 
 </div>
 
@@ -475,11 +477,15 @@ Mutashabihat engine and drills, tajweed colouring, tafsir, Ramadan mode, vocabul
 
 ## 11. Deployment: Vercel then Play Store
 
-### Web (Phase 1 onward)
+### Web — **live**
 
-- Vercel CLI is already installed: `vercel link` then `vercel --prod`
-- `main` branch to production, PRs get preview deploys
-- Runs on the free `*.vercel.app` domain for now; a custom domain comes later
+**Production: https://ahd-quran.vercel.app** · region `fra1` · Neon `aws-eu-central-1`
+
+- `main` pushes deploy automatically; PRs get preview deploys
+- Measured warm round trip from the function to Postgres: **5 ms**. The first
+  request after an idle period costs ~1 s while Neon wakes from scale-to-zero.
+- `/api/health` reports region, database latency and the deployed commit
+- Running on the free `*.vercel.app` domain; a custom domain comes next
 
 #### Region pairing — the single most important infrastructure decision
 
@@ -591,6 +597,8 @@ What is actually built, as of the latest commit. Updated every time something la
 | ✅ | Email transport | SMTP → Resend → console, chosen from the environment. Branded trilingual HTML + plain-text templates. Adding SMTP is an env change, not a code change |
 | ⬜ | Qur'an data pipeline (604-page index) | |
 | ✅ | Translation parity tests | 11 tests: no missing or stray keys, every ICU placeholder preserved, nothing silently left in English |
+| ✅ | **Deployed to production** | https://ahd-quran.vercel.app — functions pinned to `fra1`, paired with Neon in Frankfurt. 5 ms warm database round trip |
+| ✅ | Brand assets | The seal cropped, circle-masked and emitted at every size used, from a 6.3 MB master. Favicon, home-screen icon and social card generated with it |
 | ⬜ | CI: typecheck, lint, test, verified-text check | |
 
 **The covenant demo on the landing page is real, not a mockup.** Pulling the deadline earlier recalculates the daily line count and appends a row to a visible `plan_amendments` log. Pushing it later is refused, with the card physically recoiling. That is the product's thesis, playable before you sign up.
@@ -622,6 +630,7 @@ npm run dev                    # http://localhost:3000
 | `npm run db:status` | Print tables, constraints, triggers and row counts |
 | `npm run db:reset` / `db:clean` | Rebuild the dev schema / remove integration-test rows |
 | `npm run quran:build` | Regenerate the Qur'an page/line index |
+| `npm run brand:build` | Regenerate every logo asset from `brand/ahd-source.png` |
 
 ---
 
