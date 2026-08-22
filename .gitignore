@@ -1,0 +1,40 @@
+# dependencies
+node_modules/
+.pnp.*
+.yarn/*
+
+# builds
+.next/
+out/
+build/
+dist/
+
+# env
+.env
+.env*.local
+.env.production
+
+# vercel / turbo
+.vercel
+.turbo
+
+# testing
+coverage/
+playwright-report/
+test-results/
+
+# os / editor
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# generated quran assets (fetched by scripts/)
+data/fonts/
+data/audio/
+
+# mobile
+apps/mobile/android/
+apps/mobile/ios/
