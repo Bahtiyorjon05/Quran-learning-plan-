@@ -36,6 +36,7 @@ const {
   requestPasswordReset,
   resendVerification,
   resetPassword,
+  setPassword,
   signup,
   verifyEmail,
 } = await import("./service");
@@ -80,11 +81,20 @@ function lastCode() {
   return match[1] + match[2];
 }
 
-async function register(tag: string, password = PASSWORD) {
+/** Step one only: an account exists and a code is out, nothing more. */
+async function register(tag: string) {
   const email = uniqueEmail(tag);
-  const result = await signup({ email, password, locale: "uz", ctx });
+  const result = await signup({ email, locale: "uz", ctx });
   created.push(result.userId);
   return { ...result, email };
+}
+
+/** All three steps: signed up, code entered, password chosen. A usable login. */
+async function activate(tag: string, password = PASSWORD) {
+  const { userId, email } = await register(tag);
+  await verifyEmail({ code: lastCode(), ctx });
+  await setPassword({ userId, email, displayName: "Tester", password, ctx });
+  return { userId, email };
 }
 
 beforeEach(() => {
@@ -165,7 +175,8 @@ describe("signing up", () => {
     const [user] = await db.select().from(users).where(eq(users.id, userId));
     expect(user.email).toBe(email);
     expect(user.emailVerifiedAt).toBeNull();
-    expect(user.passwordHash).not.toContain(PASSWORD);
+    // No password yet: it is chosen after the code comes back.
+    expect(user.passwordHash).toBeNull();
 
     const [profile] = await db.select().from(profiles).where(eq(profiles.userId, userId));
     expect(profile.locale).toBe("uz");
@@ -176,22 +187,38 @@ describe("signing up", () => {
   });
 
   it("lowercases the address so one inbox cannot become two accounts", async () => {
-    const email = uniqueEmail("case").toUpperCase();
-    const { userId } = await signup({ email, password: PASSWORD, locale: "en", ctx });
+    const mixedCase = uniqueEmail("case").toUpperCase();
+    const { userId } = await signup({ email: mixedCase, locale: "en", ctx });
     created.push(userId);
 
     const [user] = await db.select().from(users).where(eq(users.id, userId));
-    expect(user.email).toBe(email.toLowerCase());
+    expect(user.email).toBe(mixedCase.toLowerCase());
+
+    // Finish the account, then the same address really is taken.
+    await verifyEmail({ code: lastCode(), ctx });
+    await setPassword({
+      userId,
+      email: user.email,
+      displayName: "Tester",
+      password: PASSWORD,
+      ctx,
+    });
 
     await expect(
-      signup({ email: email.toLowerCase(), password: PASSWORD, locale: "en", ctx }),
+      signup({ email: mixedCase.toLowerCase(), locale: "en", ctx }),
     ).rejects.toMatchObject({ code: "emailTaken" });
   });
 
-  it("refuses a weak password before touching the database", async () => {
-    await expect(
-      signup({ email: uniqueEmail("weak"), password: "12345678", locale: "en", ctx }),
-    ).rejects.toMatchObject({ code: "weakPassword" });
+  it("resumes an abandoned sign-up instead of calling the address taken", async () => {
+    const { email, userId } = await register("abandoned");
+    outbox.length = 0;
+
+    /* They never entered the code. Refusing them now would strand a real person
+       on an account they could never finish. */
+    const again = await signup({ email, locale: "uz", ctx });
+    expect(again.userId).toBe(userId);
+    expect(again.resumed).toBe(true);
+    expect(outbox).toHaveLength(1);
   });
 
   it("never stores the code itself", async () => {
@@ -217,7 +244,6 @@ describe("rate limiting", () => {
       try {
         const result = await signup({
           email: uniqueEmail(`burst${i}`),
-          password: PASSWORD,
           locale: "uz",
           ctx: attacker,
         });
@@ -229,6 +255,37 @@ describe("rate limiting", () => {
     }
 
     expect(refused).toMatchObject({ code: "rateLimited" });
+  });
+});
+
+describe("choosing a password", () => {
+  it("refuses a weak one", async () => {
+    const { userId, email } = await register("weak");
+    await verifyEmail({ code: lastCode(), ctx });
+
+    await expect(
+      setPassword({ userId, email, displayName: "Tester", password: "12345678", ctx }),
+    ).rejects.toMatchObject({ code: "weakPassword" });
+  });
+
+  it("stores a hash, never the password", async () => {
+    const { userId } = await activate("hashed");
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+
+    expect(user.passwordHash).toMatch(/^\$argon2id\$/);
+    expect(user.passwordHash).not.toContain(PASSWORD);
+    expect(user.displayName).toBe("Tester");
+  });
+
+  it("leaves an account without one unable to log in", async () => {
+    const { email } = await register("nopassword");
+    await verifyEmail({ code: lastCode(), ctx });
+
+    /* Indistinguishable from a wrong password on purpose — otherwise this
+       becomes a way to discover which addresses have half-finished accounts. */
+    await expect(
+      login({ email, password: PASSWORD, locale: "uz", ctx }),
+    ).rejects.toMatchObject({ code: "invalidCredentials" });
   });
 });
 
@@ -285,19 +342,23 @@ describe("verifying an email", () => {
 });
 
 describe("logging in", () => {
-  it("refuses an unverified account and issues a fresh code", async () => {
-    const { email } = await register("unverified");
-    outbox.length = 0;
+  it("never lets a password exist before the address is proven", async () => {
+    /* The ordering is the point of the new flow: the password is only ever set
+       on the far side of the code, so an unverified account has nothing to log
+       in with and is refused exactly like a wrong password. */
+    const { userId, email } = await register("ordering");
 
-    await expect(login({ email, password: PASSWORD, locale: "uz", ctx })).rejects.toMatchObject({
-      code: "emailNotVerified",
-    });
-    expect(outbox).toHaveLength(1);
+    const [row] = await db.select().from(users).where(eq(users.id, userId));
+    expect(row.emailVerifiedAt).toBeNull();
+    expect(row.passwordHash).toBeNull();
+
+    await expect(
+      login({ email, password: PASSWORD, locale: "uz", ctx }),
+    ).rejects.toMatchObject({ code: "invalidCredentials" });
   });
 
   it("works once verified, and rejects a wrong password identically to a missing account", async () => {
-    const { email } = await register("login");
-    await verifyEmail({ code: lastCode(), ctx });
+    const { email } = await activate("login");
     jar.clear();
 
     await expect(
@@ -313,8 +374,7 @@ describe("logging in", () => {
   });
 
   it("locks the account after repeated failures", async () => {
-    const { email, userId } = await register("lockout");
-    await verifyEmail({ code: lastCode(), ctx });
+    const { email, userId } = await activate("lockout");
 
     let lastError: unknown;
     for (let i = 0; i < LOCKOUT_THRESHOLD; i++) {
@@ -343,8 +403,7 @@ describe("resetting a password", () => {
   });
 
   it("changes the password and signs every other device out", async () => {
-    const { email, userId } = await register("reset");
-    await verifyEmail({ code: lastCode(), ctx });
+    const { email, userId } = await activate("reset");
 
     // Two devices signed in.
     await login({ email, password: PASSWORD, locale: "uz", ctx });
@@ -370,8 +429,7 @@ describe("resetting a password", () => {
   });
 
   it("rejects a wrong reset code", async () => {
-    const { email } = await register("resetwrong");
-    await verifyEmail({ code: lastCode(), ctx });
+    const { email } = await activate("resetwrong");
 
     outbox.length = 0;
     await requestPasswordReset({ email, locale: "uz", ctx });

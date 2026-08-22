@@ -54,7 +54,12 @@ export const users = pgTable(
     id: id(),
     email: text().notNull(),
     emailVerifiedAt: timestamp({ withTimezone: true }),
-    passwordHash: text().notNull(),
+
+    /* Nullable on purpose. An account is created the moment someone asks for a
+       code, before they have proved the address and long before they choose a
+       password — so between sign-up and the set-password step this is null.
+       Anyone in that state can authenticate only by receiving a fresh code. */
+    passwordHash: text(),
     role: userRole().notNull().default("user"),
     displayName: text(),
 

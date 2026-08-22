@@ -15,6 +15,13 @@
       "when": 1787405454341,
       "tag": "0001_covenant_triggers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787414493464,
+      "tag": "0002_password_set_later",
+      "breakpoints": true
     }
   ]
 }

@@ -86,16 +86,10 @@ const signupSchema = z
   .object({
     email: emailField,
     emailConfirm: z.string().trim().toLowerCase(),
-    password: passwordField,
-    passwordConfirm: z.string(),
   })
   .refine((d) => d.email === d.emailConfirm, {
     path: ["emailConfirm"],
     message: "emailMismatch",
-  })
-  .refine((d) => d.password === d.passwordConfirm, {
-    path: ["passwordConfirm"],
-    message: "passwordMismatch",
   });
 
 export async function signupAction(
@@ -112,7 +106,6 @@ export async function signupAction(
   try {
     await signup({
       email: parsed.data.email,
-      password: parsed.data.password,
       locale,
       ctx: await requestContext(),
     });
@@ -146,9 +139,9 @@ export async function verifyAction(
     return failure(error);
   }
 
-  /* Straight into onboarding. The guard on /app would bounce them here anyway;
-     sending them directly avoids a visible extra redirect. */
-  return redirectTo("/onboarding", locale);
+  /* The address is proven and a session exists, but the account still has no
+     password. That is the next screen. */
+  return redirectTo("/set-password", locale);
 }
 
 export async function resendAction(): Promise<FormState> {

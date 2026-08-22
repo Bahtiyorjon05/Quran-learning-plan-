@@ -40,24 +40,38 @@ export function AuthShell({
           <div className="girih absolute inset-0 opacity-[0.04]" />
         </div>
 
-        <div className="relative flex h-full flex-col justify-between p-12 xl:p-16">
-          <Link href="/" aria-label="Ahd" className="w-fit">
+        <div className="relative flex h-full flex-col p-10 xl:p-14">
+          <Link href="/" aria-label="Ahd" className="w-fit shrink-0">
             <Wordmark size={36} />
           </Link>
 
-          <div className="max-w-md">
-            <blockquote>
-              <p className="font-[family-name:var(--font-display)] text-[1.875rem] leading-[1.35] font-light text-[var(--text-strong)] italic xl:text-[2.125rem]">
+          {/* The du'a used to be pinned to the bottom of a justify-between
+              column inside an overflow-hidden panel, so on a laptop-height
+              viewport it was simply clipped away. It now sits at the head of
+              one centred block with everything else, which cannot be pushed
+              out of view, and the block scrolls rather than clipping if a
+              screen is shorter still. */}
+          <div className="flex min-h-0 flex-1 flex-col justify-center gap-7 overflow-y-auto py-8">
+            <p
+              lang="ar"
+              dir="rtl"
+              className="font-arabic shrink-0 text-2xl leading-[1.9] text-gold-ink xl:text-[1.75rem]"
+            >
+              رَبِّ زِدْنِي عِلْمًا
+            </p>
+
+            <blockquote className="max-w-md shrink-0">
+              <p className="font-[family-name:var(--font-display)] text-[1.5rem] leading-[1.4] font-light text-[var(--text-strong)] italic xl:text-[1.875rem]">
                 “{t("quote")}”
               </p>
-              <footer className="mt-5 text-xs tracking-[0.14em] text-[var(--text-faint)] uppercase">
+              <footer className="mt-4 text-xs tracking-[0.14em] text-[var(--text-faint)] uppercase">
                 {t("quoteSource")}
               </footer>
             </blockquote>
 
-            <div className="rule-fade my-10 max-w-xs" />
+            <div className="rule-fade max-w-xs shrink-0" />
 
-            <ul className="space-y-4">
+            <ul className="max-w-md shrink-0 space-y-3.5">
               {points.map((point) => (
                 <li key={point} className="flex items-start gap-3">
                   <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
@@ -70,10 +84,6 @@ export function AuthShell({
               ))}
             </ul>
           </div>
-
-          <p lang="ar" dir="rtl" className="font-arabic text-lg text-gold-ink/50" aria-hidden>
-            رَبِّ زِدْنِي عِلْمًا
-          </p>
         </div>
       </aside>
 

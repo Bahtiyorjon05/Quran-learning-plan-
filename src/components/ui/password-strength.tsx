@@ -32,7 +32,7 @@ export function PasswordStrength({
   password: string;
   className?: string;
 }) {
-  const t = useTranslations("auth.signup");
+  const t = useTranslations("auth.password");
   const score = scorePassword(password);
   const shown = password.length > 0;
 

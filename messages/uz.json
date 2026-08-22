@@ -264,27 +264,18 @@
     },
     "signup": {
       "title": "Ahdingizni boshlang",
-      "subtitle": "Taxminan ikki daqiqa vaqt oladi.",
+      "subtitle": "Pochtangizni kiriting, biz olti xonali kod yuboramiz.",
       "email": "Elektron pochta",
       "emailConfirm": "Pochtani tasdiqlang",
       "emailPlaceholder": "siz@example.com",
-      "password": "Parol",
-      "passwordConfirm": "Parolni tasdiqlang",
-      "passwordHint": "Kamida 8 belgi. Belgilardan koʻra uzunlik ancha muhimroq.",
-      "submit": "Hisob yaratish",
-      "submitting": "Hisobingiz yaratilmoqda…",
+      "submit": "Kod yuborish",
+      "submitting": "Yuborilmoqda…",
       "haveAccount": "Hisobingiz bormi?",
       "login": "Kirish",
       "termsPrefix": "Hisob yaratish orqali siz",
       "terms": "Shartlar",
       "termsAnd": "va",
-      "privacy": "Maxfiylik siyosati",
-      "strengthLabel": "Kuchi",
-      "strength0": "Juda zaif",
-      "strength1": "Zaif",
-      "strength2": "Oʻrtacha",
-      "strength3": "Yaxshi",
-      "strength4": "Mustahkam"
+      "privacy": "Maxfiylik siyosati"
     },
     "verify": {
       "title": "Pochtangizni tekshiring",
@@ -357,6 +348,26 @@
       "codeLength": "Olti xonali kodni kiriting",
       "emailMismatch": "Ikki pochta manzili mos kelmadi",
       "passwordMismatch": "Ikki parol mos kelmadi"
+    },
+    "setPassword": {
+      "title": "Pochtangiz tasdiqlandi",
+      "subtitle": "Endi sizni qanday chaqirishimizni va hisobni himoyalaydigan parolni tanlang.",
+      "name": "Sizni qanday chaqiraylik?",
+      "namePlaceholder": "Ismingiz",
+      "nameHint": "Ilovani ochganingizda koʻrinadi. Boshqa hech kim koʻrmaydi.",
+      "password": "Parol",
+      "passwordConfirm": "Parolni tasdiqlang",
+      "passwordHint": "Kamida 8 belgi. Belgilardan koʻra uzunlik ancha muhimroq.",
+      "submit": "Hisobimni yaratish",
+      "submitting": "Saqlanmoqda…"
+    },
+    "password": {
+      "strengthLabel": "Kuchi",
+      "strength0": "Juda zaif",
+      "strength1": "Zaif",
+      "strength2": "Oʻrtacha",
+      "strength3": "Yaxshi",
+      "strength4": "Mustahkam"
     }
   },
   "email": {
@@ -403,11 +414,8 @@
     }
   },
   "onboarding": {
-    "title": "Oxirgi bitta narsa",
-    "subtitle": "Uchta qisqa javob — va Ahd sizniki.",
-    "name": "Sizni qanday chaqiraylik?",
-    "namePlaceholder": "Ismingiz",
-    "nameHint": "Ilovani ochganingizda koʻrinadi. Boshqa hech kim koʻrmaydi.",
+    "title": "Mashqingizni sozlang",
+    "subtitle": "Ikkita qisqa javob — va Ahd sizniki.",
     "studyTime": "Odatda qachon oʻqiysiz?",
     "studyTimeHint": "Kunlik eslatma shu vaqtda keladi.",
     "reciter": "Qaysi qorini tinglaysiz?",

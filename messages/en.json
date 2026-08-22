@@ -264,27 +264,18 @@
     },
     "signup": {
       "title": "Begin your covenant",
-      "subtitle": "It takes about two minutes.",
+      "subtitle": "Enter your email and we will send you a six-digit code.",
       "email": "Email",
       "emailConfirm": "Confirm email",
       "emailPlaceholder": "you@example.com",
-      "password": "Password",
-      "passwordConfirm": "Confirm password",
-      "passwordHint": "At least 8 characters. Length matters far more than symbols.",
-      "submit": "Create account",
-      "submitting": "Creating your account…",
+      "submit": "Send the code",
+      "submitting": "Sending…",
       "haveAccount": "Already have an account?",
       "login": "Log in",
       "termsPrefix": "By creating an account you agree to our",
       "terms": "Terms",
       "termsAnd": "and",
-      "privacy": "Privacy Policy",
-      "strengthLabel": "Strength",
-      "strength0": "Too weak",
-      "strength1": "Weak",
-      "strength2": "Fair",
-      "strength3": "Good",
-      "strength4": "Strong"
+      "privacy": "Privacy Policy"
     },
     "verify": {
       "title": "Check your email",
@@ -357,6 +348,26 @@
       "codeLength": "Enter the six-digit code",
       "emailMismatch": "The two email addresses do not match",
       "passwordMismatch": "The two passwords do not match"
+    },
+    "setPassword": {
+      "title": "Your email is confirmed",
+      "subtitle": "Now choose how we greet you, and a password to protect the account.",
+      "name": "What should we call you?",
+      "namePlaceholder": "Your name",
+      "nameHint": "Shown when you open the app. Nobody else sees it.",
+      "password": "Password",
+      "passwordConfirm": "Confirm password",
+      "passwordHint": "At least 8 characters. Length matters far more than symbols.",
+      "submit": "Create my account",
+      "submitting": "Saving…"
+    },
+    "password": {
+      "strengthLabel": "Strength",
+      "strength0": "Too weak",
+      "strength1": "Weak",
+      "strength2": "Fair",
+      "strength3": "Good",
+      "strength4": "Strong"
     }
   },
   "email": {
@@ -403,11 +414,8 @@
     }
   },
   "onboarding": {
-    "title": "One last thing",
-    "subtitle": "Three quick answers, and Ahd is yours.",
-    "name": "What should we call you?",
-    "namePlaceholder": "Your name",
-    "nameHint": "Shown when you open the app. Nobody else sees it.",
+    "title": "Set up your practice",
+    "subtitle": "Two quick answers, and Ahd is yours.",
     "studyTime": "When do you usually study?",
     "studyTimeHint": "Your daily reminder arrives at this time.",
     "reciter": "Which reciter do you listen to?",

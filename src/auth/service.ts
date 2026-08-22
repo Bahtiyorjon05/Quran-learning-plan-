@@ -92,42 +92,61 @@ async function issueResetCode(userId: string, email: string, locale: Locale) {
    SIGN UP
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * Step one: an address, and nothing else.
+ *
+ * No password is taken here. Asking someone to invent a strong password before
+ * they have even proved they own the inbox front-loads the hardest part of
+ * sign-up onto the least committed moment, and leaves a password sitting in the
+ * database for an address that may never be confirmed. The account exists, the
+ * code goes out, and the password is chosen after the code comes back.
+ */
 export async function signup(input: {
   email: string;
-  password: string;
   locale: Locale;
   ctx: RequestContext;
 }) {
   const email = normalizeEmail(input.email);
 
   await enforceRateLimit(BUCKETS.signup, input.ctx, email);
-  assertPasswordAcceptable(input.password, email);
 
   const [existing] = await db
-    .select({ id: users.id, verifiedAt: users.emailVerifiedAt })
+    .select({
+      id: users.id,
+      verifiedAt: users.emailVerifiedAt,
+      passwordHash: users.passwordHash,
+    })
     .from(users)
     .where(eq(users.email, email))
     .limit(1);
 
   if (existing) {
-    /* Sign-up deliberately reveals that an address is taken, while password
-       reset deliberately does not.
-       Hiding it here would send a real person who simply forgot they had an
-       account to a verification screen for a code that never arrives — a large
-       usability cost for a small disclosure, since anyone can learn the same
-       fact by trying to register. Reset is different: there, silence costs the
-       user nothing. */
-    throw new AuthError("emailTaken");
+    /* A finished account: say so plainly. Sign-up deliberately reveals that an
+       address is taken while password reset deliberately does not — hiding it
+       here would send someone who simply forgot they had an account to a code
+       screen for a code that never arrives, and anyone can learn the same fact
+       by trying to register anyway. */
+    if (existing.verifiedAt || existing.passwordHash) {
+      throw new AuthError("emailTaken");
+    }
+
+    /* An abandoned one: they asked for a code and never came back. Sending a
+       fresh code is the useful thing to do, not accusing them of already
+       having an account they were never able to finish. */
+    await issueVerificationCode(existing.id, email, input.locale);
+    await setPendingUser(existing.id);
+    await recordAuthEvent({
+      kind: "verification_resent",
+      userId: existing.id,
+      email,
+      ctx: input.ctx,
+      detail: "resumed unfinished signup",
+    });
+    return { userId: existing.id, email, resumed: true };
   }
 
-  const passwordHash = await hashPassword(input.password);
-
   const userId = await db.transaction(async (tx) => {
-    const [user] = await tx
-      .insert(users)
-      .values({ email, passwordHash })
-      .returning({ id: users.id });
-
+    const [user] = await tx.insert(users).values({ email }).returning({ id: users.id });
     await tx.insert(profiles).values({ userId: user.id, locale: input.locale });
     return user.id;
   });
@@ -136,7 +155,44 @@ export async function signup(input: {
   await issueVerificationCode(userId, email, input.locale);
   await setPendingUser(userId);
 
-  return { userId, email };
+  return { userId, email, resumed: false };
+}
+
+/**
+ * Step three: the name and the password, once the address is proven.
+ *
+ * Runs against the session the verification step just created, so there is no
+ * window in which an unauthenticated caller can set a password on someone
+ * else's half-finished account.
+ */
+export async function setPassword(input: {
+  userId: string;
+  email: string;
+  displayName: string;
+  password: string;
+  ctx: RequestContext;
+}) {
+  assertPasswordAcceptable(input.password, input.email);
+
+  const passwordHash = await hashPassword(input.password);
+
+  await db
+    .update(users)
+    .set({
+      passwordHash,
+      displayName: input.displayName.trim() || null,
+      failedLoginCount: 0,
+      lockedUntil: null,
+    })
+    .where(eq(users.id, input.userId));
+
+  await recordAuthEvent({
+    kind: "password_changed",
+    userId: input.userId,
+    email: input.email,
+    ctx: input.ctx,
+    detail: "initial password set",
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -281,6 +337,22 @@ export async function login(input: {
        "wrong password" are indistinguishable from the outside. */
     await burnPasswordTime();
     await recordAuthEvent({ kind: "login_failure", email, ctx: input.ctx });
+    throw new AuthError("invalidCredentials");
+  }
+
+  /* Signed up but never finished: there is no password to be right about. This
+     has to look identical to a wrong password, or it becomes a way to discover
+     which addresses have half-finished accounts. The way back in is "forgot
+     password", which issues a code and lets them set one. */
+  if (!user.passwordHash) {
+    await burnPasswordTime();
+    await recordAuthEvent({
+      kind: "login_failure",
+      userId: user.id,
+      email,
+      ctx: input.ctx,
+      detail: "no password set",
+    });
     throw new AuthError("invalidCredentials");
   }
 

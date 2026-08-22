@@ -6,8 +6,8 @@ import { eq } from "drizzle-orm";
 import { getLocale } from "next-intl/server";
 
 import { db } from "@/db/client";
-import { profiles, users } from "@/db/schema";
-import { requireUser } from "@/auth/guard";
+import { profiles } from "@/db/schema";
+import { requirePasswordUser } from "@/auth/guard";
 import { redirectTo } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { DEFAULT_RECITER, isReciterId } from "@/lib/reciters";
@@ -20,7 +20,6 @@ export type OnboardingState = {
 export const ONBOARDING_IDLE: OnboardingState = { status: "idle" };
 
 const schema = z.object({
-  displayName: z.string().trim().min(1, "required").max(60, "required"),
   studyTime: z
     .string()
     .trim()
@@ -38,7 +37,7 @@ export async function completeOnboarding(
   _prev: OnboardingState,
   formData: FormData,
 ): Promise<OnboardingState> {
-  const user = await requireUser();
+  const user = await requirePasswordUser();
   const locale = (await getLocale()) as Locale;
 
   const parsed = schema.safeParse(Object.fromEntries(formData));
@@ -50,14 +49,9 @@ export async function completeOnboarding(
     return { status: "error", fieldErrors };
   }
 
-  const { displayName, studyTime, reciter, timeZone } = parsed.data;
+  const { studyTime, reciter, timeZone } = parsed.data;
 
   await db.transaction(async (tx) => {
-    await tx
-      .update(users)
-      .set({ displayName })
-      .where(eq(users.id, user.id));
-
     await tx
       .update(profiles)
       .set({

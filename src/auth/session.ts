@@ -93,6 +93,7 @@ export type CurrentUser = {
   role: "user" | "teacher" | "admin";
   displayName: string | null;
   emailVerifiedAt: Date | null;
+  hasPassword: boolean;
   onboardedAt: Date | null;
   sessionId: string;
   locale: "uz" | "en" | "ru";
@@ -120,6 +121,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
       role: users.role,
       displayName: users.displayName,
       emailVerifiedAt: users.emailVerifiedAt,
+      passwordHash: users.passwordHash,
       onboardedAt: profiles.onboardedAt,
       locale: profiles.locale,
       timeZone: profiles.timeZone,
@@ -149,6 +151,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     role: row.role,
     displayName: row.displayName,
     emailVerifiedAt: row.emailVerifiedAt,
+    hasPassword: row.passwordHash !== null,
     onboardedAt: row.onboardedAt,
     sessionId: row.sessionId,
     locale: row.locale ?? "uz",

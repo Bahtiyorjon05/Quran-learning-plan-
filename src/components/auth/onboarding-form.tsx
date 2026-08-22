@@ -13,7 +13,7 @@ import {
 } from "@/app/[locale]/onboarding/actions";
 import { SubmitButton } from "./submit-button";
 
-export function OnboardingForm({ defaultName }: { defaultName: string }) {
+export function OnboardingForm() {
   const t = useTranslations("onboarding");
   const tv = useTranslations("auth.validation");
 
@@ -40,25 +40,6 @@ export function OnboardingForm({ defaultName }: { defaultName: string }) {
     <form action={action} className="space-y-7" noValidate>
       <input type="hidden" name="timeZone" value={timeZone} />
       <input type="hidden" name="reciter" value={reciter} />
-
-      <Field
-        label={t("name")}
-        htmlFor="displayName"
-        error={fieldError("displayName")}
-        hint={t("nameHint")}
-      >
-        <TextInput
-          id="displayName"
-          name="displayName"
-          autoComplete="name"
-          defaultValue={defaultName}
-          placeholder={t("namePlaceholder")}
-          autoFocus
-          required
-          maxLength={60}
-          invalid={!!fieldError("displayName")}
-        />
-      </Field>
 
       <Field
         label={t("studyTime")}

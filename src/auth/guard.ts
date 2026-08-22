@@ -27,6 +27,17 @@ export async function requireUser(): Promise<CurrentUser> {
 }
 
 /**
+ * Between verifying the address and choosing a password there is a real window
+ * in which someone is signed in but the account is not yet protected. They may
+ * only be on the set-password screen.
+ */
+export async function requirePasswordUser(): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!user.hasPassword) redirectTo("/set-password", user.locale);
+  return user;
+}
+
+/**
  * For everything inside the product proper.
  *
  * Kept separate from requireUser because the onboarding page itself has to be
@@ -34,7 +45,7 @@ export async function requireUser(): Promise<CurrentUser> {
  * bounce them to it forever.
  */
 export async function requireOnboardedUser(): Promise<CurrentUser> {
-  const user = await requireUser();
+  const user = await requirePasswordUser();
   if (!user.onboardedAt) redirectTo("/onboarding", user.locale);
   return user;
 }
