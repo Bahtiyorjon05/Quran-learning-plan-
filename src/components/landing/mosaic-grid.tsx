@@ -1,0 +1,152 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+
+export const TOTAL_PAGES = 604;
+
+/* A tiny seeded PRNG so the demo mosaic is byte-identical on the server and in
+   the browser. Math.random() here would hydrate-mismatch every single tile. */
+function mulberry32(seed: number) {
+  return function () {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * A plausible hifz in progress: juz 30 and juz 1 solid (how almost everyone
+ * starts), a strong middle, and a fraying edge where revision has not caught
+ * up yet. Strength is 0–100; 0 means the page has not been started.
+ */
+function demoStrengths(memorizedPages: number): number[] {
+  const rand = mulberry32(1445);
+  const out = new Array<number>(TOTAL_PAGES).fill(0);
+
+  const order: number[] = [];
+  for (let p = 582; p <= 604; p++) order.push(p); // juz 30 first
+  for (let p = 1; p <= 581; p++) order.push(p); // then from the beginning
+
+  for (let i = 0; i < memorizedPages && i < order.length; i++) {
+    const page = order[i];
+    // The further back in the queue, the more time has passed without revision.
+    const age = i / memorizedPages;
+    const base = 92 - age * 48;
+    const jitter = (rand() - 0.5) * 34;
+    out[page - 1] = Math.max(8, Math.min(100, Math.round(base + jitter)));
+  }
+  return out;
+}
+
+export type Band = "none" | "learning" | "weak" | "strong";
+
+export function bandOf(strength: number): Band {
+  if (strength <= 0) return "none";
+  if (strength < 42) return "learning";
+  if (strength < 76) return "weak";
+  return "strong";
+}
+
+const BAND_CLASS: Record<Band, string> = {
+  none: "bg-[color-mix(in_oklab,var(--text-strong)_5%,transparent)]",
+  learning: "bg-emerald-900",
+  weak: "bg-emerald-700",
+  strong: "bg-emerald-400 shadow-[0_0_10px_-2px_var(--halo)]",
+};
+
+export function MosaicLegend({
+  labels,
+  className,
+}: {
+  labels: Record<Band, string>;
+  className?: string;
+}) {
+  const order: Band[] = ["none", "learning", "weak", "strong"];
+  return (
+    <ul className={cn("flex flex-wrap items-center gap-x-6 gap-y-3", className)}>
+      {order.map((b) => (
+        <li key={b} className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+          <span className={cn("h-3 w-3 rounded-[3px]", BAND_CLASS[b])} aria-hidden />
+          {labels[b]}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function MosaicGrid({
+  memorizedPages = 214,
+  interactive = false,
+  className,
+  tileClassName,
+  onHoverPage,
+}: {
+  memorizedPages?: number;
+  interactive?: boolean;
+  className?: string;
+  tileClassName?: string;
+  onHoverPage?: (page: number | null) => void;
+}) {
+  const [revealed, setRevealed] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const strengths = demoStrengths(memorizedPages);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setRevealed(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setRevealed(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.12 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "grid gap-[2px] sm:gap-[3px]",
+        "grid-cols-[repeat(28,minmax(0,1fr))] sm:grid-cols-[repeat(38,minmax(0,1fr))]",
+        className,
+      )}
+      onMouseLeave={() => onHoverPage?.(null)}
+    >
+      {strengths.map((s, i) => {
+        const page = i + 1;
+        const band = bandOf(s);
+        return (
+          <div
+            key={page}
+            data-page={page}
+            title={interactive ? `${page}` : undefined}
+            onMouseEnter={interactive ? () => onHoverPage?.(page) : undefined}
+            style={{
+              transitionDelay: revealed ? `${(i % 160) * 5}ms` : "0ms",
+            }}
+            className={cn(
+              "aspect-square rounded-[2px] transition-[opacity,transform,background-color] duration-700 ease-[var(--ease-settle)]",
+              BAND_CLASS[band],
+              revealed ? "scale-100 opacity-100" : "scale-75 opacity-0",
+              interactive &&
+                "hover:!scale-[1.55] hover:!opacity-100 hover:ring-1 hover:ring-gold-300 hover:transition-none",
+              tileClassName,
+            )}
+          />
+        );
+      })}
+    </div>
+  );
+}

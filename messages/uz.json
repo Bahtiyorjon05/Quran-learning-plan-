@@ -1,0 +1,254 @@
+{
+  "meta": {
+    "title": "Ahd — Qurʼon bilan ahdingiz",
+    "titleTemplate": "{page} · Ahd",
+    "description": "Hifzingizni rejalashtiring, unga sodiq qoling, mashq qiling va hech qachon yoʻqotmang. Ahd bitta qarorni har kunlik rejaga aylantiradi: yangi yod, yaqindagi takror va eski takror — muddat esa faqat yaqinlashadi.",
+    "tagline": "Qurʼon bilan ahdingiz"
+  },
+  "nav": {
+    "features": "Imkoniyatlar",
+    "howItWorks": "Qanday ishlaydi",
+    "quran": "Qurʼon oʻqish",
+    "about": "Loyiha haqida",
+    "login": "Kirish",
+    "signup": "Boshlash",
+    "menu": "Menyu",
+    "close": "Menyuni yopish",
+    "language": "Til",
+    "theme": "Mavzu",
+    "themeDark": "Tungi",
+    "themeLight": "Kunduzgi",
+    "themeSepia": "Sepiya",
+    "skipToContent": "Asosiy qismga oʻtish"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Abadiy bepul · Reklamasiz",
+      "titleLine1": "Qurʼonni yod oling.",
+      "titleLine2": "Va uni hech qachon yoʻqotmang.",
+      "lead": "Ahd bitta qarorni — butun Qurʼonni ikki yilda, yoki uch, yoki besh yilda — har bir kun uchun rejaga aylantiradi. Yangi yod olish, yaqinda yodlanganini takrorlash va eskisini takrorlash siz uchun rejalashtiriladi. Muddat esa faqat yaqinlashishi mumkin.",
+      "ctaPrimary": "Ahdingizni boshlang",
+      "ctaSecondary": "Qurʼonni oʻqish",
+      "noAccount": "Oʻqish uchun roʻyxatdan oʻtish shart emas.",
+      "statPages": "sahifa",
+      "statLines": "qator",
+      "statJuz": "juz",
+      "statTracks": "kunlik yoʻnalish"
+    },
+    "hadith": {
+      "arabic": "تَعَاهَدُوا هَذَا الْقُرْآنَ، فَوَالَّذِي نَفْسُ مُحَمَّدٍ بِيَدِهِ لَهُوَ أَشَدُّ تَفَلُّتًا مِنَ الْإِبِلِ فِي عُقُلِهَا",
+      "translation": "Bu Qurʼonni doimo takrorlab turinglar. Muhammadning joni Uning qoʻlida boʻlgan Zot bilan qasamki, u tuyaning boʻynidagi arqondan boʻshab ketishidan ham tezroq unutiladi.",
+      "source": "Al-Buxoriy 5033 · Muslim 791",
+      "note": "«Ahd» — عَهْد — vaʼda, ahdnoma degani. Aynan shu hadis bu dastur yaratilishiga sabab boʻlgan."
+    },
+    "problem": {
+      "eyebrow": "Nega bu kerak",
+      "title": "Hifz kamdan-kam yod olishda barbod boʻladi. U saqlab qolishda barbod boʻladi.",
+      "items": {
+        "endless": {
+          "title": "Hech tugamaydigan reja",
+          "body": "Siz maqsad bilan boshlaysiz, lekin muddatsiz. Har bir oʻtkazib yuborilgan kun jimgina ertaga koʻchadi. Uch yildan keyin maqsad bir sahifa ham siljimagan boʻladi."
+        },
+        "forget": {
+          "title": "Koʻp yodlaysiz, undan ham koʻproq unutasiz",
+          "body": "Yangi sahifalar taraqqiyotdek tuyuladi. Ayni shu paytda olti oy avval yodlaganingiz erib bormoqda, va buni sizga hech narsa aytmaydi."
+        },
+        "blind": {
+          "title": "Qayeringiz zaifligini bilmaysiz",
+          "body": "Buni namozda, odamlar oldida turib bilib olasiz — qaysi sahifa endi sizda yoʻqligini."
+        },
+        "alone": {
+          "title": "Uchinchi haftaga borib yolgʻiz",
+          "body": "Ishtiyoq — bu reja emas. Ustoz, halqa yoki sizni ushlab turadigan biror narsa boʻlmasa, hifz jimgina toʻxtaydi."
+        }
+      }
+    },
+    "covenant": {
+      "eyebrow": "Ahd",
+      "title": "Faqat yaqinlashadigan muddat.",
+      "lead": "Reja tuzganingizda tugash sanasini tanlaysiz. Shu daqiqadan boshlab sana bir tomonlama boʻladi. Uni oldinga tortishingiz mumkin. Orqaga surishingiz esa — hech qachon, bir kunga ham.",
+      "planLabel": "Sizning rejangiz",
+      "planScope": "Butun Qurʼon · 30 juz",
+      "finishBy": "Tugatish sanasi",
+      "dailyDose": "Bugungi ulush",
+      "linesPerDay": "Kuniga {count} qator",
+      "pullEarlier": "Oldinga tortish",
+      "pushLater": "Orqaga surish",
+      "refusedTitle": "Rad etildi.",
+      "refusedBody": "Siljitib boʻladigan ahd — ahd emas. Orqada qolsangiz, yuk qolgan kunlarga qayta taqsimlanadi — vaqtning oʻzi esa hech qachon koʻpaymaydi.",
+      "acceptedTitle": "Qabul qilindi.",
+      "acceptedBody": "Ahdingiz yanada jasur boʻldi, bugungi ulush ham u bilan birga oshdi. Bu yoʻnalish siz uchun doim ochiq.",
+      "tryIt": "Ikkala tugmani ham bosib koʻring.",
+      "rules": {
+        "db": {
+          "title": "Maʼlumotlar bazasida qatʼiy",
+          "body": "Bu shunchaki oʻchirilgan tugma emas. Bu Postgres ichidagi check cheklovi va trigger. Dasturda muddatingizni uzaytiradigan birorta ham yoʻl yoʻq."
+        },
+        "log": {
+          "title": "Doimiy tarixga yoziladi",
+          "body": "Har bir oʻzgarish siz oʻqiy oladigan oʻzgarmas tarixga qoʻshiladi. Rejangizda hech narsa jimgina qayta yozilmaydi."
+        },
+        "rukhsah": {
+          "title": "Hayot uchun ruxsat kunlari",
+          "body": "Kasallik va safar boʻladi. Ruxsat kuni ketma-ketligingizni saqlaydi va bugungi majburiyatni olib tashlaydi — lekin sanani baribir siljitmaydi. Miqdorini boshida belgilaysiz va keyin hech qachon koʻpaytira olmaysiz."
+        }
+      }
+    },
+    "tracks": {
+      "eyebrow": "Kunlik tizim",
+      "title": "Uchta majburiyat. Har kuni.",
+      "lead": "Hifz asrlar davomida aynan shunday oʻrgatilgan. Ahd har tongda uchala yoʻnalishni ham rejangizdan va xotirangiz bugun qanday ekanidan kelib chiqib tuzadi.",
+      "roleNew": "Yangi",
+      "roleRecent": "Yaqin",
+      "roleOld": "Eski",
+      "sabaq": {
+        "name": "Sabaq",
+        "body": "Bugungi yangi ulush — rejangizning kunlik miqdori, noaniq sahifa emas, aniq qatorgacha oʻlchangan."
+      },
+      "sabqi": {
+        "name": "Sabqiy",
+        "body": "Soʻnggi yetti kunlik yangi yod — u hali yoʻqotib qoʻyish oson boʻlgan paytda har kuni qayta oʻqiladi."
+      },
+      "manzil": {
+        "name": "Manzil",
+        "body": "Qolgan barchasi aylanma tsiklda — eng zaif sahifalaringiz koʻr-koʻrona navbat oʻrniga avtomatik ravishda oldinga chiqariladi."
+      },
+      "footnote": "Uchalasi ham yashil boʻlsin, aks holda kun hisoblanmaydi."
+    },
+    "mosaic": {
+      "eyebrow": "Musʼhaf mozaikasi",
+      "title": "Sizdagi har bir sahifa. Va yoʻqotayotgan har bir sahifa.",
+      "body": "Musʼhafning barcha 604 sahifasi mustahkamlik darajasiga qarab ranglanadi. Toza oʻqiganingizda daraja koʻtariladi, oʻqimasangiz oʻzidan-oʻzi pasayadi — chunki qirq kun tegilmagan sahifa endi siz yodlagan sahifa emas. Bir qarashda hifzingizning butun holatini bilasiz.",
+      "legendNotStarted": "Boshlanmagan",
+      "legendLearning": "Oʻrganilmoqda",
+      "legendWeak": "Yodlangan · zaif",
+      "legendStrong": "Yodlangan · mustahkam",
+      "juzLabel": "{number}-juz",
+      "pagesMemorized": "604 sahifadan {count} tasi"
+    },
+    "practice": {
+      "eyebrow": "Mashq",
+      "title": "Oʻzingizni chinakam sinashning oltita yoʻli.",
+      "lead": "Sahifani qayta oʻqish — takror emas. Uni xotiradan chiqarish — takror. Har bir xatoyingiz soʻz darajasida yoziladi va sizni qidirib qaytib keladi.",
+      "modes": {
+        "hide": {
+          "title": "Bosqichma-bosqich yashirish",
+          "body": "Matn soʻzma-soʻz, keyin qatorma-qator soʻnadi — toki sahifa boʻshab, faqat siz qolguningizcha."
+        },
+        "firstWord": {
+          "title": "Birinchi soʻz ishorasi",
+          "body": "Har bir oyatning faqat birinchi soʻzi qoladi. Qolgani sizdan."
+        },
+        "next": {
+          "title": "Keyingisi nima?",
+          "body": "Oyatni eshiting yoki koʻring, soʻng undan keyingisini oʻqing. Mavjud eng foydali mashq."
+        },
+        "shuffle": {
+          "title": "Oyatlarni tartiblash",
+          "body": "Sahifa oyatlari aralashtirilgan holda keladi. Sahifani qayta tartibga soling."
+        },
+        "gap": {
+          "title": "Boʻshliqni toʻldirish",
+          "body": "Sahifadan tasodifiy soʻzlar olib tashlanadi. Ularni aynan tiklang."
+        },
+        "mutashabihat": {
+          "title": "Mutashobihot bahsi",
+          "body": "Yonma-yon turgan deyarli bir xil ikki parcha. Qaysi biri qaysi? Hifzning eng qiyin qismi, nihoyat toʻgʻridan-toʻgʻri mashq qilinadi."
+        }
+      }
+    },
+    "everything": {
+      "eyebrow": "Yana nimalar bor",
+      "title": "Siz haqiqatda qanday oʻqisangiz, shunga moslangan.",
+      "items": {
+        "offline": {
+          "title": "Internetsiz ham ishlaydi",
+          "body": "Avtobusda, masjidda, safarda oʻqing, mashq qiling va belgilab boring. Aloqaga qaytganingizda oʻzi sinxronlanadi."
+        },
+        "audio": {
+          "title": "Hifz uchun yaratilgan audio",
+          "body": "Takrorlash soni bilan A–B halqa, qiroatga moslangan soʻz darajasidagi yoritish va ovoz balandligi oʻzgarmasdan tezlikni sozlash.",
+          "reciters": "Mishari Alafasiy · Alijon qori · Badr at-Turkiy · Al-Husariy · Al-Minshoviy"
+        },
+        "record": {
+          "title": "Oʻzingizni yozib oling",
+          "body": "Telefoningizga oʻqing, qori bilan solishtirib eshiting va har bir yozuvni oʻsha sahifa tarixiga biriktirib qoʻying."
+        },
+        "halaqah": {
+          "title": "Halqa doiralari",
+          "body": "Taklif kodi bilan yopiq halqa. Doʻstlaringiz, ustozingiz, umumiy taxta — va uyaltirmaydigan, ruhlantiradigan masʼuliyat."
+        },
+        "teacher": {
+          "title": "Ustozingiz boʻlsa — haqiqiy ustoz",
+          "body": "Qiroatingizni yuboring. Ustoz «oʻtdi» yoki «qayta» deb baholaydi, qoqilgan aniq oyatlaringizni belgilaydi va ovozli javob qaytaradi."
+        },
+        "reminders": {
+          "title": "Jiddiy eslatmalar",
+          "body": "Oʻzingiz aytgan vaqtda bitta eslatma, agar kun kechgacha boʻsh qolsa — yana bittasi, sekinroq ohangda."
+        },
+        "languages": {
+          "title": "Oʻzbek, ingliz, rus",
+          "body": "Birinchi kundanoq uchala tilda toʻliq interfeys, arabcha yonida tarjimalar bilan. Oʻngdan chapga arabcha interfeys — keyingi qadam."
+        },
+        "yours": {
+          "title": "Maʼlumotlaringiz — sizniki",
+          "body": "Abadiy bepul, reklamasiz, pullik tarifsiz. Istagan payt hammasini JSON yoki CSV holida yuklab oling, hisobingizni esa haqiqatan oʻchiring."
+        }
+      }
+    },
+    "platforms": {
+      "web": "Moslashuvchan sayt — telefondan kompyutergacha",
+      "android": "Android ilova",
+      "ios": "iOS ilova",
+      "soon": "Tez orada"
+    },
+    "cta": {
+      "title": "Ahdingizni bugun tuzing.",
+      "body": "Butun Qurʼonni ikki yilda yoki bitta juzni uch oyda — oʻzingiz tanlang. Niyatingizni oʻz soʻzlaringiz bilan yozing. Soʻng reja sizni unga bogʻlab tursin.",
+      "button": "Ahdingizni boshlang",
+      "secondary": "Qanday ishlashini koʻring",
+      "note": "Abadiy bepul · Reklamasiz · Ikki daqiqa vaqt oladi"
+    },
+    "preview": {
+      "today": "Bugun",
+      "streak": "{count} kunlik ketma-ketlik",
+      "sabaqDetail": "78-sahifa · 1–8-qatorlar",
+      "sabqiDetail": "71–77-sahifalar",
+      "manzilDetail": "4-juz · 20 sahifa",
+      "pace": "Surʼat bosimi",
+      "onTrack": "Rejada",
+      "aheadBy": "2 kun zaxirada",
+      "mosaicCaption": "604 sahifadan 214 tasi qoʼlda"
+    }
+  },
+  "footer": {
+    "tagline": "Qurʼon bilan ahdingiz.",
+    "product": "Mahsulot",
+    "learn": "Oʻrganish",
+    "legal": "Huquqiy",
+    "features": "Imkoniyatlar",
+    "howItWorks": "Qanday ishlaydi",
+    "quran": "Qurʼon oʻqish",
+    "pricing": "Abadiy bepul",
+    "about": "Loyiha haqida",
+    "faq": "Savol-javob",
+    "blog": "Blog",
+    "contact": "Aloqa",
+    "privacy": "Maxfiylik",
+    "terms": "Shartlar",
+    "textNotice": "Qurʼon matni Malik Fahd majmuasi musʼhafiga solishtirib tekshiriladi. Har bir tarjimada tarjimon va litsenziya koʻrsatiladi.",
+    "rights": "Xizmat niyatida qilindi. Alloh qabul qilsin.",
+    "dua": "رَبِّ زِدْنِي عِلْمًا",
+    "duaTranslation": "Robbim, ilmimni ziyoda qilgin. — Toha 20:114"
+  },
+  "common": {
+    "loading": "Yuklanmoqda",
+    "error": "Nimadir notoʻgʻri ketdi",
+    "retry": "Qayta urinish",
+    "back": "Orqaga",
+    "next": "Keyingi",
+    "cancel": "Bekor qilish",
+    "save": "Saqlash",
+    "confirm": "Tasdiqlash"
+  }
+}

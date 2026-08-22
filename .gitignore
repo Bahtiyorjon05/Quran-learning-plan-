@@ -38,3 +38,10 @@ data/audio/
 # mobile
 apps/mobile/android/
 apps/mobile/ios/
+
+# next
+.next/
+next-env.d.ts
+
+# typescript
+*.tsbuildinfo

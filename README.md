@@ -1,14 +1,17 @@
 <div align="center">
 
-# ITQAN — إتقان
+# AHD — عهد
 ### The Qur'an Memorization & Revision Companion
 
-*"Itqan" (إتقان) — mastery, doing a thing with excellence.*
-*The Prophet ﷺ said: "Allah loves that when one of you does a work, he perfects it."*
+*"Ahd" (عهد) — a covenant, a binding promise.*
+
+*"Keep renewing your covenant with the Qur'an. By Him in whose hand is the soul*
+*of Muhammad, it slips away faster than camels from their tethers."*
+*— al-Bukhārī 5033 · Muslim 791*
 
 **Plan your hifz. Commit to it. Practice it. Never lose it.**
 
-`Status: 📋 Planning — no code written yet. This document is the contract we build against.`
+`Status: 🏗 Phase 0 in progress — see §14 Build log. This document is the contract we build against.`
 
 </div>
 
@@ -29,6 +32,8 @@
 11. [Deployment: Vercel → Play Store](#11-deployment-vercel--play-store)
 12. [Success metrics](#12-success-metrics)
 13. [Decisions locked & what is still open](#13-decisions-locked-and-what-is-still-open)
+14. [Build log](#14-build-log)
+15. [Running it locally](#15-running-it-locally)
 
 ---
 
@@ -52,7 +57,7 @@ Not another checkbox tracker. A system that models how hifz actually works and r
 
 ## 2. Why it exists (the problem)
 
-| Problem | What people do today | What Itqan does |
+| Problem | What people do today | What Ahd does |
 |---|---|---|
 | No structure — "I'll memorize when I can" | Random surahs, no end date | A dated plan down to the line, generated from one goal |
 | Plans quietly slip forever | Deadline moves every time it's missed | **Deadline is one-directional. It only moves closer.** |
@@ -137,7 +142,7 @@ When pressure is unsustainable, you may **not** buy time. You may:
 
 ## 4. The hifz engine
 
-Most apps track *what you memorized*. Itqan schedules *what you must do today*, using the system real hifz schools have used for centuries — three tracks, every single day.
+Most apps track *what you memorized*. Ahd schedules *what you must do today*, using the system real hifz schools have used for centuries — three tracks, every single day.
 
 ### 4.1 The three daily tracks
 
@@ -263,6 +268,15 @@ From this the app derives:
 
 `/admin` users, reported text errors, content versions, metrics
 
+### 🛡 Admin dashboard (`/admin`)
+- **Live metrics** — signups, DAU/WAU/MAU, D1/D7/D30 retention, plan adherence, revision ratio, mean page strength across the whole user base
+- **Users** — search, open any account, see its plan, amendment history, strength distribution and active sessions; suspend or delete with a full audit trail
+- **Plans** — distribution of chosen durations and scopes, how many are at risk, how many completed, how many abandoned and when they broke
+- **Content** — reported text-error queue, translation and audio versions, Qur'an checksum status per release
+- **Community** — halaqah oversight, abuse reports, teacher verification backlog
+- **Health** — email deliverability, background job status, error rates
+- Read-only by default. Every destructive action needs a second confirmation and is written to an admin audit log.
+
 ### ⚙️ Platform
 - **Responsive from 320px to ultrawide** — one design that is genuinely good on phone, tablet, laptop and desktop. Phone is the primary target; the mushaf reader gets a purpose-built full-bleed layout at every size, never a squeezed desktop page.
 - **Full offline mode** — read, drill and mark progress with no connection; syncs when you are back
@@ -305,10 +319,10 @@ From this the app derives:
 | Framework | **Next.js 15 (App Router) + TypeScript** | First-class Vercel deploy, RSC, one codebase for web + Capacitor shell |
 | Styling | **Tailwind CSS v4 + shadcn/ui** | Fast, consistent, fully themeable, no runtime cost |
 | Animation | **Framer Motion** | Restrained, physics-based transitions |
-| Database | **Postgres (Neon or Supabase)** | Relational fits the plan/review model; serverless-friendly |
+| Database | **Neon serverless Postgres** | Relational fits the plan/review model, scales to zero, branches per preview deploy |
 | ORM | **Drizzle** | Typed schema, SQL-first, easy migrations, edge-compatible |
-| Auth | **Auth.js v5** credentials provider + **Argon2id** + mandatory email verification (**Resend** for mail) | Owner-mandated email + password accounts; Google / Apple can be added later alongside, not instead |
-| Files | **Supabase Storage or Vercel Blob** | Recitation recordings |
+| Auth | **Custom sessions** — opaque token in an httpOnly cookie, backed by a `sessions` table, **Argon2id** hashing, mandatory email verification (**Resend** for mail) | Email + password is a hard requirement, and DB-backed sessions are what make the "sign out everywhere" list and instant revocation actually possible. Google / Apple can be added alongside later, never instead |
+| Files | **Vercel Blob** | Recitation recordings |
 | Server data | **Server Actions + TanStack Query** | Optimistic marking, offline queue replay |
 | Offline | **Serwist SW + Dexie (IndexedDB)** | Full offline read, drill and progress marking |
 | Charts | **Recharts / visx** | Strength curves, heatmaps |
@@ -320,22 +334,37 @@ From this the app derives:
 ### 7.2 Repository layout
 
 ```
-itqan/
-├─ apps/
-│  ├─ web/                    # Next.js app (the product)
-│  └─ mobile/                 # Capacitor shell (Phase 4)
-├─ packages/
-│  ├─ core/                   # pure TS domain logic, zero deps, 100% tested
-│  │   ├─ plan/               #   generation, redistribution, pace, one-way lock
-│  │   ├─ srs/                #   strength, decay, scheduling
-│  │   └─ quran/              #   page/line/juz/hizb maths, ayah keys
-│  ├─ db/                     # Drizzle schema + migrations + seeds
-│  └─ ui/                     # design system components
-├─ data/                      # generated Quran index (pages, lines, ayahs, words)
-└─ scripts/                   # content pipeline, seeding, font fetching
+ahd/
+├─ src/
+│  ├─ app/
+│  │  └─ [locale]/          # every route is locale-scoped (uz | en | ru)
+│  ├─ components/
+│  │  ├─ ui/                # design-system primitives
+│  │  ├─ brand/             # the mark and wordmark
+│  │  ├─ site/              # header, footer, language & theme switchers
+│  │  └─ landing/           # the public marketing page
+│  ├─ core/                 # ⭐ pure TS domain logic, zero framework deps
+│  │  ├─ plan/              #    generation, redistribution, pace, one-way lock
+│  │  ├─ srs/               #    strength, decay, scheduling
+│  │  └─ quran/             #    page/line/juz/hizb maths, ayah keys
+│  ├─ db/                   # Drizzle schema, migrations, queries
+│  ├─ auth/                 # sessions, hashing, verification, rate limits
+│  ├─ i18n/                 # routing, request config, navigation helpers
+│  └─ lib/                  # shared utilities
+├─ messages/                # uz.json · en.json · ru.json
+├─ data/                    # generated Qur'an index (pages, lines, ayahs, words)
+├─ scripts/                 # content pipeline, seeding, font fetching
+└─ mobile/                  # Capacitor shell (Phase 4)
 ```
 
-> `packages/core` is deliberately framework-free. The plan lock, redistribution maths and SRS are the heart of the product — they must be testable in isolation and reusable by any future client.
+> `src/core` is deliberately framework-free. The plan lock, redistribution maths
+> and SRS are the heart of the product — they must be testable in isolation and
+> reusable by any future client.
+>
+> A single Next.js app rather than a monorepo: it deploys to Vercel with zero
+> configuration, and module boundaries inside `src/` give the same separation
+> without the workspace tooling.
+
 
 ### 7.3 Offline and sync
 
@@ -489,7 +518,7 @@ We are not optimising for time-in-app. We are optimising for **hifz that survive
 
 | # | Decision | Ruling |
 |---|---|---|
-| 1 | Product name | **Itqan** |
+| 1 | Product name | **Ahd** |
 | 2 | Relief valve when badly behind | **Scope reduction allowed once**, permanently recorded in plan history. The deadline still never moves. |
 | 3 | Rukhsah budget | Default **12 days/year**, settable 0–24 at plan creation, fixed forever afterwards |
 | 4 | Manzil cycle | **Adaptive** — weakest pages first — with the classic 1-juz-per-day rotation available as a toggle |
@@ -497,14 +526,66 @@ We are not optimising for time-in-app. We are optimising for **hifz that survive
 | 6 | Accounts | **Required.** Email + password, email entered twice, password entered twice, verification link mandatory before the app unlocks |
 | 7 | Platforms | Responsive web first → **Android (Phase 4)** → **iOS (Phase 5)**, one Capacitor codebase |
 | 8 | Business model | **Free forever. No ads, no paid tier, no upsell hooks.** |
+| 9 | Public reader | `/quran` is readable and listenable **without an account**. An account is required only for anything that saves progress. |
+| 10 | Reciters | **Mishary Alafasy is the default**, with Alijon Qori (Uzbekistan), Badr al-Turki, Al-Husary and Al-Minshawi all available |
+| 11 | Teacher verification | **Yes, Phase 3** — students submit recordings, teachers mark pass/repeat with per-ayah pins |
+| 12 | Database | **Neon** serverless Postgres |
+| 13 | Admin | A **full admin dashboard** at `/admin` — users, analytics, plans, content, community, health |
 
 **Still open — tell me and I will fold it in:**
 
-1. **Teacher verification** (Phase 3) — genuinely needed, or is self-assessment enough for v1?
-2. **Domain name** — do you already have one, or should I suggest options?
-3. **Public mushaf reader** — should `/quran` be readable without an account as a way in? *(I recommend yes — an account is still required for anything that saves progress.)*
-4. **Support page** — a quiet "support this project" page, or nothing at all?
-5. **Reciters at launch** — which one is the default? (Alafasy, Husary, Minshawi, Sudais…)
+1. **Domain name** — do you already have one, or should I suggest options? (`ahd.uz`, `ahd.app`, `getahd.com`…)
+2. **Support page** — a quiet "support this project" page, or nothing at all?
+3. **Logo lockup** — the mark is currently the rub' al-hizb ۞, the eight-pointed star that marks divisions in the mushaf itself. Keep it, or explore alternatives?
+
+---
+
+## 14. Build log
+
+What is actually built, as of the latest commit. Updated every time something lands.
+
+### ✅ Phase 0 — Foundation *(in progress)*
+
+| | Item | Notes |
+|---|---|---|
+| ✅ | Next.js 16 + React 19 + TypeScript + Tailwind v4 | Single app, `src/` layout, Turbopack builds |
+| ✅ | Design system | Emerald / gold / ink / parchment token scales, three themes (dark, light, sepia) with no flash of the wrong one, girih texture, calm motion curves |
+| ✅ | Typography | Inter (Latin + Cyrillic), Cormorant Garamond for display, Amiri for Qur'anic text — all self-hosted via `next/font` |
+| ✅ | Trilingual i18n | `uz` (default, no URL prefix) · `en` · `ru`, with `dir` plumbing already in place for Arabic in Phase 2 |
+| ✅ | Public marketing site | Landing page: hero with a live product preview, the hadith band, the problem, **the interactive covenant demo**, the three tracks, the 604-tile mushaf mosaic, six practice modes, the feature grid, final CTA |
+| ✅ | Header / footer / language switcher / theme toggle | Responsive down to 320px, full mobile sheet, skip link, focus rings |
+| ⬜ | Neon Postgres + Drizzle schema | Next |
+| ⬜ | Auth: email + password, double entry, verification | Next |
+| ⬜ | Qur'an data pipeline (604-page index) | |
+| ⬜ | CI: typecheck, lint, test, verified-text check | |
+
+**The covenant demo on the landing page is real, not a mockup.** Pulling the deadline earlier recalculates the daily line count and appends a row to a visible `plan_amendments` log. Pushing it later is refused, with the card physically recoiling. That is the product's thesis, playable before you sign up.
+
+### ⬜ Phase 1 — MVP: The Covenant
+### ⬜ Phase 2 — Practice and Memory
+### ⬜ Phase 3 — Together
+### ⬜ Phase 4 — Offline and Android
+### ⬜ Phase 5 — Depth and iOS
+
+---
+
+## 15. Running it locally
+
+```bash
+npm install
+cp .env.example .env.local     # fill in Neon, Resend and AUTH_SECRET
+npm run dev                    # http://localhost:3000
+```
+
+| Script | What it does |
+|---|---|
+| `npm run dev` | Development server |
+| `npm run build` / `npm start` | Production build and serve |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | ESLint |
+| `npm test` | Vitest |
+| `npm run db:generate` / `db:migrate` / `db:studio` | Drizzle schema workflow |
+| `npm run quran:build` | Regenerate the Qur'an page/line index |
 
 ---
 

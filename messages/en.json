@@ -1,0 +1,254 @@
+{
+  "meta": {
+    "title": "Ahd — Your covenant with the Qur'an",
+    "titleTemplate": "{page} · Ahd",
+    "description": "Plan your hifz, commit to it, practice it, and never lose it. Ahd turns one decision into a daily plan of new memorization, recent revision and old revision — with a deadline that can only ever move closer.",
+    "tagline": "Your covenant with the Qur'an"
+  },
+  "nav": {
+    "features": "Features",
+    "howItWorks": "How it works",
+    "quran": "Read Qur'an",
+    "about": "About",
+    "login": "Log in",
+    "signup": "Get started",
+    "menu": "Menu",
+    "close": "Close menu",
+    "language": "Language",
+    "theme": "Theme",
+    "themeDark": "Dark",
+    "themeLight": "Light",
+    "themeSepia": "Sepia",
+    "skipToContent": "Skip to content"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Free forever · No ads",
+      "titleLine1": "Memorize the Qur'an.",
+      "titleLine2": "And never lose it.",
+      "lead": "Ahd turns one decision — the whole Qur'an in two years, or three, or five — into a plan for every single day. New memorization, recent revision, and old revision, scheduled for you. And a deadline that can only ever move closer.",
+      "ctaPrimary": "Begin your covenant",
+      "ctaSecondary": "Read the Qur'an",
+      "noAccount": "No account needed to read.",
+      "statPages": "pages",
+      "statLines": "lines",
+      "statJuz": "juz",
+      "statTracks": "daily tracks"
+    },
+    "hadith": {
+      "arabic": "تَعَاهَدُوا هَذَا الْقُرْآنَ، فَوَالَّذِي نَفْسُ مُحَمَّدٍ بِيَدِهِ لَهُوَ أَشَدُّ تَفَلُّتًا مِنَ الْإِبِلِ فِي عُقُلِهَا",
+      "translation": "Keep renewing your covenant with the Qur'an. By Him in whose hand is the soul of Muhammad, it slips away faster than camels from their tethers.",
+      "source": "Al-Bukhārī 5033 · Muslim 791",
+      "note": "‘Ahd — عَهْد — means covenant. That hadith is the whole reason this app exists."
+    },
+    "problem": {
+      "eyebrow": "Why this exists",
+      "title": "Hifz rarely fails at memorizing. It fails at keeping.",
+      "items": {
+        "endless": {
+          "title": "The plan that never ends",
+          "body": "You begin with a goal and no date. Every missed day quietly becomes tomorrow. Three years later the goal has not moved a single page."
+        },
+        "forget": {
+          "title": "Memorize a lot, forget more",
+          "body": "New pages feel like progress. Meanwhile the pages from six months ago are dissolving, and nothing anywhere tells you."
+        },
+        "blind": {
+          "title": "No idea what is weak",
+          "body": "You find out mid-salah, standing in front of people, exactly which page you no longer have."
+        },
+        "alone": {
+          "title": "Alone by week three",
+          "body": "Motivation is not a plan. Without a teacher, a circle, or something holding you to it, hifz quietly stops."
+        }
+      }
+    },
+    "covenant": {
+      "eyebrow": "The covenant",
+      "title": "A deadline that only moves closer.",
+      "lead": "When you create a plan you choose an end date. From that moment the date is one-directional. You may pull it earlier. You may never push it back — not once, not by a single day.",
+      "planLabel": "Your plan",
+      "planScope": "The whole Qur'an · 30 juz",
+      "finishBy": "Finish by",
+      "dailyDose": "Today's portion",
+      "linesPerDay": "{count} lines a day",
+      "pullEarlier": "Pull it earlier",
+      "pushLater": "Push it later",
+      "refusedTitle": "Refused.",
+      "refusedBody": "A covenant you can move is not a covenant. Fall behind and the workload redistributes across the days you have left — the time itself never grows.",
+      "acceptedTitle": "Accepted.",
+      "acceptedBody": "Your covenant just became more ambitious, and today's portion grew with it. This direction is always open to you.",
+      "tryIt": "Try both buttons.",
+      "rules": {
+        "db": {
+          "title": "Enforced in the database",
+          "body": "Not a disabled button. A check constraint and a trigger in Postgres. There is no path through the app that can extend your deadline."
+        },
+        "log": {
+          "title": "Written to a permanent log",
+          "body": "Every amendment is appended to an immutable history you can read. Nothing about your plan is ever silently rewritten."
+        },
+        "rukhsah": {
+          "title": "Rukhsah days, for real life",
+          "body": "Illness and travel happen. A rukhsah day protects your streak and lifts today's obligation — and still does not move the date. You fix the budget at the start and can never top it up."
+        }
+      }
+    },
+    "tracks": {
+      "eyebrow": "The daily engine",
+      "title": "Three obligations. Every single day.",
+      "lead": "This is how hifz has been taught for centuries. Ahd generates all three tracks for you each morning, from your plan and from what your memory actually looks like today.",
+      "roleNew": "New",
+      "roleRecent": "Recent",
+      "roleOld": "Old",
+      "sabaq": {
+        "name": "Sabaq",
+        "body": "Today's new portion — your plan's daily dose, measured down to the line, not a vague page."
+      },
+      "sabqi": {
+        "name": "Sabqi",
+        "body": "The last seven days of new memorization, recited again every day while it is still fragile enough to lose."
+      },
+      "manzil": {
+        "name": "Manzil",
+        "body": "Everything older, on a rotating cycle — with your weakest pages pulled to the front automatically, instead of a blind rotation."
+      },
+      "footnote": "All three green, or the day does not count."
+    },
+    "mosaic": {
+      "eyebrow": "The mushaf mosaic",
+      "title": "Every page you hold. And every page you are losing.",
+      "body": "All 604 pages of the mushaf, coloured by strength. Strength rises when you recite cleanly and decays on its own when you do not — because a page you have not touched in forty days is not the page you memorized. One glance and you know the entire state of your hifz.",
+      "legendNotStarted": "Not started",
+      "legendLearning": "Learning",
+      "legendWeak": "Memorized · weak",
+      "legendStrong": "Memorized · strong",
+      "juzLabel": "Juz {number}",
+      "pagesMemorized": "{count} of 604 pages"
+    },
+    "practice": {
+      "eyebrow": "Practice",
+      "title": "Six ways to actually test yourself.",
+      "lead": "Reading a page again is not revision. Producing it from memory is. Every mistake you make is recorded at word level and comes back to find you.",
+      "modes": {
+        "hide": {
+          "title": "Progressive hide",
+          "body": "The text fades word by word, then line by line, until the page is blank and only you are left."
+        },
+        "firstWord": {
+          "title": "First-word prompt",
+          "body": "Only the opening word of each ayah remains. The rest is yours to produce."
+        },
+        "next": {
+          "title": "What comes next?",
+          "body": "Hear or see an ayah, then recite the one that follows. The single most useful drill there is."
+        },
+        "shuffle": {
+          "title": "Ayah shuffle",
+          "body": "The ayahs of a page arrive scrambled. Put the page back in order."
+        },
+        "gap": {
+          "title": "Fill the gap",
+          "body": "Random words are lifted out of the page. Restore them exactly."
+        },
+        "mutashabihat": {
+          "title": "Mutashabihat duel",
+          "body": "Two nearly identical passages, side by side. Which is which? The hardest part of hifz, finally drilled directly."
+        }
+      }
+    },
+    "everything": {
+      "eyebrow": "Everything else",
+      "title": "Built for how you really study.",
+      "items": {
+        "offline": {
+          "title": "Works with no signal",
+          "body": "Read, drill and mark progress on the bus, in the masjid, on a journey. It syncs when you are back."
+        },
+        "audio": {
+          "title": "Audio built for hifz",
+          "body": "A–B loop with a repeat count, word-level highlighting synced to the recitation, and adjustable speed without the pitch shifting.",
+          "reciters": "Mishary Alafasy · Alijon Qori · Badr al-Turki · Al-Husary · Al-Minshawi"
+        },
+        "record": {
+          "title": "Record yourself",
+          "body": "Recite into your phone, listen back against the reciter, and keep every recording attached to that page's history."
+        },
+        "halaqah": {
+          "title": "Halaqah circles",
+          "body": "A private circle with an invite code. Your friends, your teacher, a shared board — and accountability that encourages rather than shames."
+        },
+        "teacher": {
+          "title": "A real teacher, if you have one",
+          "body": "Submit a recitation. Your teacher marks pass or repeat, pins the exact ayahs you stumbled on, and sends a voice note back."
+        },
+        "reminders": {
+          "title": "Reminders that mean it",
+          "body": "A nudge at the time you said you would study, and a second, quieter one if the day is still empty by evening."
+        },
+        "languages": {
+          "title": "Uzbek, English, Russian",
+          "body": "The full interface in all three from day one, with translations beside the Arabic. Arabic interface with right-to-left layout is next."
+        },
+        "yours": {
+          "title": "Your data is yours",
+          "body": "Free forever, no ads, no paid tier. Export everything as JSON or CSV whenever you like, and delete your account for real."
+        }
+      }
+    },
+    "platforms": {
+      "web": "Responsive web — phone to desktop",
+      "android": "Android app",
+      "ios": "iOS app",
+      "soon": "Coming"
+    },
+    "cta": {
+      "title": "Make your covenant today.",
+      "body": "Choose the whole Qur'an in two years, or a single juz in three months. Write your intention in your own words. Then let the plan hold you to it.",
+      "button": "Begin your covenant",
+      "secondary": "See how it works",
+      "note": "Free forever · No ads · Takes two minutes"
+    },
+    "preview": {
+      "today": "Today",
+      "streak": "{count} day streak",
+      "sabaqDetail": "Page 78 · lines 1–8",
+      "sabqiDetail": "Pages 71–77",
+      "manzilDetail": "Juz 4 · 20 pages",
+      "pace": "Pace pressure",
+      "onTrack": "On track",
+      "aheadBy": "2 days banked",
+      "mosaicCaption": "214 of 604 pages held"
+    }
+  },
+  "footer": {
+    "tagline": "Your covenant with the Qur'an.",
+    "product": "Product",
+    "learn": "Learn",
+    "legal": "Legal",
+    "features": "Features",
+    "howItWorks": "How it works",
+    "quran": "Read Qur'an",
+    "pricing": "Free forever",
+    "about": "About",
+    "faq": "FAQ",
+    "blog": "Blog",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "textNotice": "Qur'anic text is verified against the King Fahd Complex mushaf. Every translation shows its translator and licence.",
+    "rights": "Built as an act of service. May Allah accept it.",
+    "dua": "رَبِّ زِدْنِي عِلْمًا",
+    "duaTranslation": "My Lord, increase me in knowledge. — Ṭā-Hā 20:114"
+  },
+  "common": {
+    "loading": "Loading",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "back": "Back",
+    "next": "Next",
+    "cancel": "Cancel",
+    "save": "Save",
+    "confirm": "Confirm"
+  }
+}

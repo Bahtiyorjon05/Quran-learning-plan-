@@ -1,0 +1,364 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AHD — DESIGN TOKENS
+   The mood: the quiet of a masjid before Fajr. Deep, warm, unhurried.
+   Dark is the default because people memorize at Fajr and after Isha.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Brand: emerald (growth, the primary act) ── */
+  --color-emerald-50: #eafaf3;
+  --color-emerald-100: #cbf1e1;
+  --color-emerald-200: #97e2c5;
+  --color-emerald-300: #5ecca5;
+  --color-emerald-400: #2fae87;
+  --color-emerald-500: #1b8a6b;
+  --color-emerald-600: #146f57;
+  --color-emerald-700: #0e5c4a;
+  --color-emerald-800: #0b483a;
+  --color-emerald-900: #08342a;
+  --color-emerald-950: #041d17;
+
+  /* ── Brand: gold (milestone, ayah marker, illumination) ── */
+  --color-gold-50: #fdf9ec;
+  --color-gold-100: #faf0cc;
+  --color-gold-200: #f3df9b;
+  --color-gold-300: #e9c96a;
+  --color-gold-400: #dcb444;
+  --color-gold-500: #c9a227;
+  --color-gold-600: #a8811d;
+  --color-gold-700: #85631a;
+  --color-gold-800: #6b4f1c;
+  --color-gold-900: #5a421c;
+
+  /* ── Ink (dark ground) ── */
+  --color-ink-50: #eef1f0;
+  --color-ink-100: #d3dad7;
+  --color-ink-200: #a5b1ad;
+  --color-ink-300: #74847f;
+  --color-ink-400: #4c5b56;
+  --color-ink-500: #33403b;
+  --color-ink-600: #23302b;
+  --color-ink-700: #17221e;
+  --color-ink-800: #0f1815;
+  --color-ink-900: #0a0f0d;
+  --color-ink-950: #060908;
+
+  /* ── Parchment (light ground) ── */
+  --color-parchment-50: #fdfbf5;
+  --color-parchment-100: #f9f4e7;
+  --color-parchment-200: #f2e9d3;
+  --color-parchment-300: #e6d8b8;
+  --color-parchment-400: #d4c096;
+
+  /* ── Clay (warning, at-risk — warm, never alarming red) ── */
+  --color-clay-300: #e0a08c;
+  --color-clay-400: #cd775e;
+  --color-clay-500: #b4553c;
+  --color-clay-600: #93412c;
+
+  /* ── Typography ── */
+  --font-display: var(--font-cormorant), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: var(--font-amiri), "Traditional Arabic", serif;
+
+  /* ── Motion: slow and soft. Nothing bounces. ── */
+  --ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SEMANTIC LAYER — role tokens that flip with the theme
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  color-scheme: dark;
+
+  --surface-base: var(--color-ink-950);
+  --surface-raised: var(--color-ink-900);
+  --surface-overlay: var(--color-ink-800);
+  --surface-inset: #050807;
+
+  --line-subtle: color-mix(in oklab, var(--color-ink-50) 8%, transparent);
+  --line-strong: color-mix(in oklab, var(--color-ink-50) 16%, transparent);
+
+  --text-strong: #f2f6f4;
+  --text-default: #c3cec9;
+  --text-muted: #8b9a94;
+  --text-faint: #5d6b66;
+
+  --accent: var(--color-emerald-400);
+  --accent-strong: var(--color-emerald-300);
+  --accent-ground: var(--color-emerald-500);
+  --on-accent: #04120e;
+
+  --halo: color-mix(in oklab, var(--color-emerald-400) 22%, transparent);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --surface-base: var(--color-parchment-50);
+  --surface-raised: #ffffff;
+  --surface-overlay: var(--color-parchment-100);
+  --surface-inset: var(--color-parchment-200);
+
+  --line-subtle: color-mix(in oklab, var(--color-ink-900) 10%, transparent);
+  --line-strong: color-mix(in oklab, var(--color-ink-900) 20%, transparent);
+
+  --text-strong: var(--color-ink-900);
+  --text-default: var(--color-ink-600);
+  --text-muted: var(--color-ink-400);
+  --text-faint: var(--color-ink-300);
+
+  --accent: var(--color-emerald-700);
+  --accent-strong: var(--color-emerald-800);
+  --accent-ground: var(--color-emerald-600);
+  --on-accent: #ffffff;
+
+  --halo: color-mix(in oklab, var(--color-emerald-600) 16%, transparent);
+}
+
+:root[data-theme="sepia"] {
+  color-scheme: light;
+
+  --surface-base: #f4ead6;
+  --surface-raised: #fbf4e5;
+  --surface-overlay: #efe2c8;
+  --surface-inset: #e8dabc;
+
+  --line-subtle: color-mix(in oklab, #4a3a1e 12%, transparent);
+  --line-strong: color-mix(in oklab, #4a3a1e 24%, transparent);
+
+  --text-strong: #2c2313;
+  --text-default: #4a3d26;
+  --text-muted: #6f6047;
+  --text-faint: #8f8067;
+
+  --accent: var(--color-emerald-700);
+  --accent-strong: var(--color-emerald-800);
+  --accent-ground: var(--color-emerald-600);
+  --on-accent: #fbf4e5;
+
+  --halo: color-mix(in oklab, var(--color-emerald-700) 14%, transparent);
+}
+
+/* Expose the semantic layer to Tailwind utilities (bg-surface, text-strong, …) */
+@theme inline {
+  --color-surface: var(--surface-base);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-surface-inset: var(--surface-inset);
+  --color-line: var(--line-subtle);
+  --color-line-strong: var(--line-strong);
+  --color-strong: var(--text-strong);
+  --color-default: var(--text-default);
+  --color-muted: var(--text-muted);
+  --color-faint: var(--text-faint);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-ground: var(--accent-ground);
+  --color-on-accent: var(--on-accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  * {
+    border-color: var(--line-subtle);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--surface-base);
+    color: var(--text-default);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--text-strong);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 30%, transparent);
+    color: var(--text-strong);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Custom scrollbar — quiet, never scrollbar-gutter jumpy */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-faint);
+    background-clip: content-box;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPONENT-LEVEL UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@utility font-arabic {
+  font-family: var(--font-arabic);
+  font-feature-settings: "kern", "liga", "calt";
+}
+
+/* The girih lattice — an eight-fold Islamic geometric motif, drawn once as a
+   tiling SVG and used at very low opacity as page texture. Never decoration
+   for its own sake: it gives the deep ground a hand-made grain. */
+@utility girih {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M0 0 L80 80 M80 0 L0 80'/%3E%3Ccircle cx='40' cy='40' r='16'/%3E%3Cpath d='M40 24 L56 40 L40 56 L24 40 Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+/* A hairline that fades out at both ends — used to separate sections without
+   drawing a hard box around anything. */
+@utility rule-fade {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--line-strong) 20%,
+    var(--line-strong) 80%,
+    transparent
+  );
+}
+
+@utility text-gradient-gold {
+  background: linear-gradient(
+    100deg,
+    var(--color-gold-200),
+    var(--color-gold-400) 45%,
+    var(--color-gold-200)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Content width — one measure used everywhere so the page has a spine. */
+@utility measure {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 768px) {
+  .measure {
+    padding-inline: 2rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   KEYFRAMES — slow, soft, reverent
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes ahd-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ahd-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes ahd-shimmer {
+  from {
+    background-position: -140% 0;
+  }
+  to {
+    background-position: 240% 0;
+  }
+}
+
+@keyframes ahd-refuse {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-7px);
+  }
+  30% {
+    transform: translateX(6px);
+  }
+  45% {
+    transform: translateX(-4px);
+  }
+  60% {
+    transform: translateX(3px);
+  }
+  80% {
+    transform: translateX(-1px);
+  }
+}
+
+@utility animate-rise {
+  animation: ahd-rise 0.7s var(--ease-settle) both;
+}
+@utility animate-breathe {
+  animation: ahd-breathe 7s ease-in-out infinite;
+}
+@utility animate-refuse {
+  animation: ahd-refuse 0.5s ease-in-out;
+}
