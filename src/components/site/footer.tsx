@@ -10,7 +10,6 @@ const COLUMNS = [
       { href: "/#features", key: "features" },
       { href: "/#covenant", key: "howItWorks" },
       { href: "/quran", key: "quran" },
-      { href: "/pricing", key: "pricing" },
     ],
   },
   {
@@ -77,7 +76,7 @@ export function Footer() {
           <p
             lang="ar"
             dir="rtl"
-            className="font-arabic text-2xl leading-relaxed text-gold-300/90"
+            className="font-arabic text-2xl leading-relaxed text-gold-ink/90"
           >
             {t("dua")}
           </p>

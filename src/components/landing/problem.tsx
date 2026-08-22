@@ -28,7 +28,7 @@ export function Problem() {
               className="group bg-[var(--surface-base)] p-7 transition-colors duration-500 hover:bg-[var(--surface-raised)] sm:p-9"
             >
               <Icon
-                className="h-6 w-6 text-[var(--text-faint)] transition-colors duration-500 group-hover:text-clay-400"
+                className="h-6 w-6 text-[var(--text-faint)] transition-colors duration-500 group-hover:text-danger"
                 strokeWidth={1.5}
               />
               <h3 className="mt-5 font-[family-name:var(--font-display)] text-2xl font-normal">

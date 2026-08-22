@@ -94,6 +94,24 @@
   --on-accent: #04120e;
 
   --halo: color-mix(in oklab, var(--color-emerald-400) 22%, transparent);
+
+  /* Gold as *text* needs to flip with the ground. On ink a pale gold glows; on
+     parchment the same value is unreadable, so light themes take a deep gold. */
+  --gold: var(--color-gold-300);
+  --gold-strong: var(--color-gold-200);
+
+  /* Warning text. Warm clay, never an alarming red. */
+  --danger: var(--color-clay-300);
+
+  /* Ink colour of the girih lattice, applied through a mask. */
+  --texture: #ffffff;
+
+  /* Mushaf-mosaic strength ramp. Reversed between themes so that "stronger"
+     always means "more present": brighter on ink, deeper on parchment. */
+  --band-none: color-mix(in oklab, var(--text-strong) 6%, transparent);
+  --band-learning: var(--color-emerald-900);
+  --band-weak: var(--color-emerald-700);
+  --band-strong: var(--color-emerald-400);
 }
 
 :root[data-theme="light"] {
@@ -118,6 +136,16 @@
   --on-accent: #ffffff;
 
   --halo: color-mix(in oklab, var(--color-emerald-600) 16%, transparent);
+
+  --gold: var(--color-gold-700);
+  --gold-strong: var(--color-gold-800);
+  --danger: var(--color-clay-600);
+  --texture: var(--color-ink-900);
+
+  --band-none: color-mix(in oklab, var(--text-strong) 8%, transparent);
+  --band-learning: var(--color-emerald-200);
+  --band-weak: var(--color-emerald-500);
+  --band-strong: var(--color-emerald-800);
 }
 
 :root[data-theme="sepia"] {
@@ -142,6 +170,16 @@
   --on-accent: #fbf4e5;
 
   --halo: color-mix(in oklab, var(--color-emerald-700) 14%, transparent);
+
+  --gold: var(--color-gold-700);
+  --gold-strong: var(--color-gold-800);
+  --danger: var(--color-clay-600);
+  --texture: #4a3a1e;
+
+  --band-none: color-mix(in oklab, var(--text-strong) 10%, transparent);
+  --band-learning: var(--color-emerald-200);
+  --band-weak: var(--color-emerald-500);
+  --band-strong: var(--color-emerald-800);
 }
 
 /* Expose the semantic layer to Tailwind utilities (bg-surface, text-strong, …) */
@@ -160,6 +198,13 @@
   --color-accent-strong: var(--accent-strong);
   --color-accent-ground: var(--accent-ground);
   --color-on-accent: var(--on-accent);
+  --color-gold-ink: var(--gold);
+  --color-gold-ink-strong: var(--gold-strong);
+  --color-danger: var(--danger);
+  --color-band-none: var(--band-none);
+  --color-band-learning: var(--band-learning);
+  --color-band-weak: var(--band-weak);
+  --color-band-strong: var(--band-strong);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -251,10 +296,20 @@
 
 /* The girih lattice — an eight-fold Islamic geometric motif, drawn once as a
    tiling SVG and used at very low opacity as page texture. Never decoration
-   for its own sake: it gives the deep ground a hand-made grain. */
+   for its own sake: it gives the ground a hand-made grain.
+
+   Applied as a *mask* rather than a background image, so the lattice takes its
+   colour from a token. As a background image its strokes were hard-coded white
+   and the texture simply vanished on the light and sepia themes. */
 @utility girih {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M0 0 L80 80 M80 0 L0 80'/%3E%3Ccircle cx='40' cy='40' r='16'/%3E%3Cpath d='M40 24 L56 40 L40 56 L24 40 Z'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 80px 80px;
+  background-color: var(--texture);
+  --girih-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Cpath d='M0 0 L80 80 M80 0 L0 80'/%3E%3Ccircle cx='40' cy='40' r='16'/%3E%3Cpath d='M40 24 L56 40 L40 56 L24 40 Z'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask-image: var(--girih-tile);
+  mask-image: var(--girih-tile);
+  -webkit-mask-size: 80px 80px;
+  mask-size: 80px 80px;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
 }
 
 /* A hairline that fades out at both ends — used to separate sections without
@@ -273,9 +328,9 @@
 @utility text-gradient-gold {
   background: linear-gradient(
     100deg,
-    var(--color-gold-200),
-    var(--color-gold-400) 45%,
-    var(--color-gold-200)
+    var(--gold-strong),
+    var(--gold) 45%,
+    var(--gold-strong)
   );
   -webkit-background-clip: text;
   background-clip: text;

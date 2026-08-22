@@ -12,7 +12,12 @@ export const routing = defineRouting({
   locales: ["uz", "en", "ru"],
   defaultLocale: "uz",
   localePrefix: "as-needed",
-  localeDetection: true,
+  /* Off deliberately. With detection on, a phone whose browser says
+     Accept-Language: en would open the site in English on its very first visit,
+     which is wrong for a product built for Uzbekistan. Anyone arriving at the
+     bare URL gets Uzbek; choosing another language moves them to /en or /ru and
+     every link from there keeps it. */
+  localeDetection: false,
 });
 
 export type Locale = (typeof routing.locales)[number];

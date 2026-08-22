@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AppHomePage() {
   const user = await requireUser();
   const tn = await getTranslations("nav");
-  const tp = await getTranslations("landing.preview");
+  const ta = await getTranslations("app");
 
   const active = await db
     .select({
@@ -67,23 +67,23 @@ export default async function AppHomePage() {
       </header>
 
       <Measure className="py-12 sm:py-16">
-        <p className="flex items-center gap-2 text-sm text-emerald-400">
+        <p className="flex items-center gap-2 text-sm text-[var(--accent)]">
           <ShieldCheck className="h-4 w-4" />
           {user.email}
         </p>
 
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-[2.5rem] leading-tight font-light text-[var(--text-strong)]">
-          {tp("today")}
+          {ta("greeting")}
         </h1>
 
         <p className="mt-4 max-w-xl leading-relaxed text-[var(--text-muted)]">
-          Phase 1 puts the covenant wizard and the three daily tracks here.
+          {ta("placeholder")}
         </p>
 
         <Panel className="mt-10 max-w-2xl">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-[var(--text-strong)]">
             <MonitorSmartphone className="h-4 w-4 text-[var(--accent)]" />
-            Active sessions
+            {ta("sessions.title")}
           </h2>
 
           <ul className="mt-4 divide-y divide-[var(--line-subtle)]">
@@ -92,12 +92,12 @@ export default async function AppHomePage() {
                 <span
                   className={
                     session.id === user.sessionId
-                      ? "h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400"
+                      ? "h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]"
                       : "h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--text-faint)]"
                   }
                 />
                 <span className="min-w-0 flex-1 truncate text-[var(--text-muted)]">
-                  {session.userAgent ?? "unknown device"}
+                  {session.userAgent ?? ta("sessions.unknownDevice")}
                 </span>
                 <span className="shrink-0 text-xs text-[var(--text-faint)] tabular-nums">
                   {session.ip ?? "—"}
@@ -111,8 +111,11 @@ export default async function AppHomePage() {
               type="submit"
               className={buttonStyles({ variant: "ghost", size: "sm" })}
             >
-              Sign out everywhere
+              {ta("sessions.signOutEverywhere")}
             </button>
+            <p className="mt-3 text-xs text-[var(--text-faint)]">
+              {ta("sessions.note")}
+            </p>
           </form>
         </Panel>
       </Measure>

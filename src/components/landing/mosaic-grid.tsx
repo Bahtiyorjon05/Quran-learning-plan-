@@ -50,11 +50,13 @@ export function bandOf(strength: number): Band {
   return "strong";
 }
 
+/* Tokens, not fixed shades: on ink "strong" is the brightest tile, on parchment
+   it is the deepest. Either way the eye reads strength as presence. */
 const BAND_CLASS: Record<Band, string> = {
-  none: "bg-[color-mix(in_oklab,var(--text-strong)_5%,transparent)]",
-  learning: "bg-emerald-900",
-  weak: "bg-emerald-700",
-  strong: "bg-emerald-400 shadow-[0_0_10px_-2px_var(--halo)]",
+  none: "bg-band-none",
+  learning: "bg-band-learning",
+  weak: "bg-band-weak",
+  strong: "bg-band-strong shadow-[0_0_10px_-2px_var(--halo)]",
 };
 
 export function MosaicLegend({

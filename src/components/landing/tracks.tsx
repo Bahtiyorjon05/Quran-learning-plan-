@@ -46,7 +46,7 @@ export function Tracks() {
                   <Icon
                     className={cn(
                       "h-4.5 w-4.5",
-                      accent === "gold" ? "text-gold-400" : "text-[var(--accent)]",
+                      accent === "gold" ? "text-gold-ink" : "text-[var(--accent)]",
                     )}
                     strokeWidth={1.6}
                   />
@@ -60,7 +60,7 @@ export function Tracks() {
                 <span className="font-[family-name:var(--font-display)] text-3xl font-normal text-[var(--text-strong)]">
                   {t(`${key}.name`)}
                 </span>
-                <span className="font-arabic text-lg text-gold-300/80" aria-hidden dir="rtl">
+                <span className="font-arabic text-lg text-gold-ink/80" aria-hidden dir="rtl">
                   {ar}
                 </span>
               </h3>

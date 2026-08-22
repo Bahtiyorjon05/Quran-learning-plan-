@@ -22,7 +22,7 @@ export function HadithBand() {
           <p
             lang="ar"
             dir="rtl"
-            className="font-arabic mx-auto max-w-3xl text-[1.75rem] leading-[2] text-gold-200/95 sm:text-[2.125rem] sm:leading-[2.1]"
+            className="font-arabic mx-auto max-w-3xl text-[1.75rem] leading-[2] text-gold-ink-strong/95 sm:text-[2.125rem] sm:leading-[2.1]"
           >
             {t("arabic")}
           </p>

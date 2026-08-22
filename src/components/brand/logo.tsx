@@ -38,7 +38,13 @@ export function AhdMark({
       width={size}
       height={size}
       priority={priority}
-      className={cn("shrink-0 select-none", className)}
+      /* The seal is cream-on-transparent. On ink it glows on its own; on
+         parchment it needs a whisper of a shadow or its edge disappears into
+         the page. Invisible on dark, so it can simply always be on. */
+      className={cn(
+        "shrink-0 select-none [filter:drop-shadow(0_1px_2px_rgb(0_0_0/0.10))]",
+        className,
+      )}
       style={{ width: size, height: size }}
     />
   );

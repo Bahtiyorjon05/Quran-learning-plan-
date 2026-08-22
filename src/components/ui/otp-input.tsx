@@ -85,7 +85,7 @@ export function OtpInput({
                 "font-[family-name:var(--font-display)] text-2xl font-medium tabular-nums sm:text-3xl",
                 "transition-[border-color,box-shadow,background-color,transform] duration-200 ease-[var(--ease-calm)]",
                 invalid
-                  ? "border-clay-500/60 bg-clay-500/[0.06] text-clay-200"
+                  ? "border-clay-500/60 bg-clay-500/[0.06] text-danger"
                   : char
                     ? "border-[var(--accent)]/60 bg-[color-mix(in_oklab,var(--accent)_9%,transparent)] text-[var(--text-strong)]"
                     : "border-[var(--line-strong)] bg-[var(--surface-inset)]/60 text-[var(--text-strong)]",

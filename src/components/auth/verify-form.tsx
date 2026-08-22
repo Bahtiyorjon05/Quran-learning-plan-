@@ -106,7 +106,7 @@ export function VerifyForm({ showDevHint }: { showDevHint: boolean }) {
       </div>
 
       {showDevHint && (
-        <p className="rounded-xl border border-gold-500/25 bg-gold-500/[0.06] px-4 py-3 text-center text-[0.8125rem] text-gold-200/90">
+        <p className="rounded-xl border border-gold-500/25 bg-gold-500/[0.06] px-4 py-3 text-center text-[0.8125rem] text-gold-ink-strong/90">
           {t("devHint")}
         </p>
       )}

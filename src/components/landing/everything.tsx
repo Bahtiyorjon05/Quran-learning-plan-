@@ -81,7 +81,7 @@ export function Everything() {
               <Icon className="h-3.5 w-3.5" strokeWidth={1.6} />
               {label}
               {soon && (
-                <span className="rounded-full bg-gold-500/15 px-2 py-0.5 text-[0.625rem] font-medium tracking-wide text-gold-300">
+                <span className="rounded-full bg-gold-500/15 px-2 py-0.5 text-[0.625rem] font-medium tracking-wide text-gold-ink">
                   {tp("soon")}
                 </span>
               )}

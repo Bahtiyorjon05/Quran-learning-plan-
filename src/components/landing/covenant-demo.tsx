@@ -79,7 +79,7 @@ export function CovenantDemo() {
                   {t("planScope")}
                 </p>
               </div>
-              <Lock className="mt-1 h-5 w-5 shrink-0 text-gold-400" strokeWidth={1.5} />
+              <Lock className="mt-1 h-5 w-5 shrink-0 text-gold-ink" strokeWidth={1.5} />
             </div>
 
             <div className="relative mt-8 grid gap-6 sm:grid-cols-2">
@@ -91,7 +91,7 @@ export function CovenantDemo() {
               </div>
               <div className="sm:text-end">
                 <p className="text-xs text-[var(--text-muted)]">{t("dailyDose")}</p>
-                <p className="mt-1.5 font-[family-name:var(--font-display)] text-3xl leading-none font-light text-emerald-300 tabular-nums transition-all duration-500 sm:text-[2.25rem]">
+                <p className="mt-1.5 font-[family-name:var(--font-display)] text-3xl leading-none font-light text-[var(--accent-strong)] tabular-nums transition-all duration-500 sm:text-[2.25rem]">
                   {mounted ? t("linesPerDay", { count: linesPerDay }) : "—"}
                 </p>
               </div>
@@ -105,7 +105,7 @@ export function CovenantDemo() {
                 disabled={months <= MIN_MONTHS}
                 className={cn(
                   "group flex items-center justify-center gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/[0.07] px-4 py-3.5",
-                  "text-sm font-medium text-emerald-300 transition-all duration-300",
+                  "text-sm font-medium text-[var(--accent-strong)] transition-all duration-300",
                   "hover:border-emerald-400/60 hover:bg-emerald-500/15 active:scale-[0.99]",
                   "disabled:pointer-events-none disabled:opacity-40",
                 )}
@@ -120,7 +120,7 @@ export function CovenantDemo() {
                 className={cn(
                   "group flex items-center justify-center gap-2 rounded-xl border border-[var(--line-strong)] px-4 py-3.5",
                   "text-sm font-medium text-[var(--text-muted)] transition-all duration-300",
-                  "hover:border-clay-500/50 hover:bg-clay-500/[0.07] hover:text-clay-300 active:scale-[0.99]",
+                  "hover:border-clay-500/50 hover:bg-clay-500/[0.07] hover:text-danger active:scale-[0.99]",
                 )}
               >
                 {t("pushLater")}
@@ -145,15 +145,15 @@ export function CovenantDemo() {
                   )}
                 >
                   {refused ? (
-                    <X className="mt-0.5 h-4 w-4 shrink-0 text-clay-400" />
+                    <X className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
                   ) : (
-                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
                   )}
                   <div>
                     <p
                       className={cn(
                         "text-sm font-semibold",
-                        refused ? "text-clay-300" : "text-emerald-300",
+                        refused ? "text-danger" : "text-[var(--accent-strong)]",
                       )}
                     >
                       {refused ? t("refusedTitle") : t("acceptedTitle")}
@@ -176,7 +176,7 @@ export function CovenantDemo() {
                 <ul className="mt-3 space-y-1.5 font-mono text-[0.6875rem] text-[var(--text-muted)]">
                   {log.map((entry, i) => (
                     <li key={i} className="animate-rise flex items-center gap-2 tabular-nums">
-                      <span className="text-emerald-400">+</span>
+                      <span className="text-[var(--accent)]">+</span>
                       <span>
                         {entry.from}mo → {entry.to}mo
                       </span>

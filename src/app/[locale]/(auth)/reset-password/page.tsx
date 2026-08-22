@@ -30,7 +30,7 @@ export default async function ResetPasswordPage() {
       }
     >
       {email && (
-        <p className="mb-6 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.06] px-4 py-3 text-[0.875rem] leading-relaxed text-emerald-200">
+        <p className="mb-6 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.06] px-4 py-3 text-[0.875rem] leading-relaxed text-[var(--accent-strong)]">
           {tf("sent")}
         </p>
       )}

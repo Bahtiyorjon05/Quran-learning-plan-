@@ -26,7 +26,7 @@
   },
   "landing": {
     "hero": {
-      "badge": "Abadiy bepul · Reklamasiz",
+      "badge": "604 sahifa · 30 juz · bitta ahd",
       "titleLine1": "Qurʼonni yod oling.",
       "titleLine2": "Va uni hech qachon yoʻqotmang.",
       "lead": "Ahd bitta qarorni — butun Qurʼonni ikki yilda, yoki uch, yoki besh yilda — har bir kun uchun rejaga aylantiradi. Yangi yod olish, yaqinda yodlanganini takrorlash va eskisini takrorlash siz uchun rejalashtiriladi. Muddat esa faqat yaqinlashishi mumkin.",
@@ -195,7 +195,7 @@
         },
         "yours": {
           "title": "Maʼlumotlaringiz — sizniki",
-          "body": "Abadiy bepul, reklamasiz, pullik tarifsiz. Istagan payt hammasini JSON yoki CSV holida yuklab oling, hisobingizni esa haqiqatan oʻchiring."
+          "body": "Istagan payt hammasini JSON yoki CSV holida yuklab oling, hisobingizni esa chinakam oʻchiring — yashirilmaydi, muzlatilmaydi, yoʻq boʻladi."
         }
       }
     },
@@ -210,14 +210,14 @@
       "body": "Butun Qurʼonni ikki yilda yoki bitta juzni uch oyda — oʻzingiz tanlang. Niyatingizni oʻz soʻzlaringiz bilan yozing. Soʻng reja sizni unga bogʻlab tursin.",
       "button": "Ahdingizni boshlang",
       "secondary": "Qanday ishlashini koʻring",
-      "note": "Abadiy bepul · Reklamasiz · Ikki daqiqa vaqt oladi"
+      "note": "Taxminan ikki daqiqa vaqt oladi"
     },
     "preview": {
       "today": "Bugun",
       "streak": "{count} kunlik ketma-ketlik",
-      "sabaqDetail": "78-sahifa · 1–8-qatorlar",
-      "sabqiDetail": "71–77-sahifalar",
-      "manzilDetail": "4-juz · 20 sahifa",
+      "sabaqDetail": "Baqara surasi · 255–257-oyatlar",
+      "sabqiDetail": "Baqara surasi · 240–254-oyatlar",
+      "manzilDetail": "30-juz · Nabaʼdan Nosgacha",
       "pace": "Surʼat bosimi",
       "onTrack": "Rejada",
       "aheadBy": "2 kun zaxirada",
@@ -232,7 +232,6 @@
     "features": "Imkoniyatlar",
     "howItWorks": "Qanday ishlaydi",
     "quran": "Qurʼon oʻqish",
-    "pricing": "Abadiy bepul",
     "about": "Loyiha haqida",
     "faq": "Savol-javob",
     "blog": "Blog",
@@ -264,7 +263,7 @@
     },
     "signup": {
       "title": "Ahdingizni boshlang",
-      "subtitle": "Ikki daqiqa, va abadiy bepul.",
+      "subtitle": "Taxminan ikki daqiqa vaqt oladi.",
       "email": "Elektron pochta",
       "emailConfirm": "Pochtani tasdiqlang",
       "emailPlaceholder": "siz@example.com",
@@ -378,6 +377,17 @@
       "body": "Yangi parol tanlash uchun bu kodni Ahd’ga kiriting.",
       "expiry": "Bu kod {minutes} daqiqadan soʻng eskiradi.",
       "ignore": "Agar parolni tiklashni soʻramagan boʻlsangiz, bu xatni eʼtiborsiz qoldiring — hech narsa oʻzgarmadi."
+    }
+  },
+  "app": {
+    "greeting": "Bugun",
+    "placeholder": "Ahdingiz va uchta kunlik yoʼnalish keyingi qadamda shu yerda paydo boʻladi.",
+    "sessions": {
+      "title": "Qayerlarda kirgansiz",
+      "thisDevice": "Shu qurilma",
+      "unknownDevice": "Nomaʼlum qurilma",
+      "signOutEverywhere": "Hamma joydan chiqish",
+      "note": "Hamma joydan chiqish barcha seanslarni, shu jumladan shu qurilmani ham tugatadi."
     }
   }
 }

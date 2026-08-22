@@ -26,7 +26,7 @@
   },
   "landing": {
     "hero": {
-      "badge": "Free forever · No ads",
+      "badge": "604 pages · 30 juz · one covenant",
       "titleLine1": "Memorize the Qur'an.",
       "titleLine2": "And never lose it.",
       "lead": "Ahd turns one decision — the whole Qur'an in two years, or three, or five — into a plan for every single day. New memorization, recent revision, and old revision, scheduled for you. And a deadline that can only ever move closer.",
@@ -195,7 +195,7 @@
         },
         "yours": {
           "title": "Your data is yours",
-          "body": "Free forever, no ads, no paid tier. Export everything as JSON or CSV whenever you like, and delete your account for real."
+          "body": "Export everything as JSON or CSV whenever you like, and delete your account for real — not hidden, not deactivated, gone."
         }
       }
     },
@@ -210,14 +210,14 @@
       "body": "Choose the whole Qur'an in two years, or a single juz in three months. Write your intention in your own words. Then let the plan hold you to it.",
       "button": "Begin your covenant",
       "secondary": "See how it works",
-      "note": "Free forever · No ads · Takes two minutes"
+      "note": "It takes about two minutes"
     },
     "preview": {
       "today": "Today",
       "streak": "{count} day streak",
-      "sabaqDetail": "Page 78 · lines 1–8",
-      "sabqiDetail": "Pages 71–77",
-      "manzilDetail": "Juz 4 · 20 pages",
+      "sabaqDetail": "Al-Baqarah · ayahs 255–257",
+      "sabqiDetail": "Al-Baqarah · ayahs 240–254",
+      "manzilDetail": "Juz 30 · An-Naba to An-Nas",
       "pace": "Pace pressure",
       "onTrack": "On track",
       "aheadBy": "2 days banked",
@@ -232,7 +232,6 @@
     "features": "Features",
     "howItWorks": "How it works",
     "quran": "Read Qur'an",
-    "pricing": "Free forever",
     "about": "About",
     "faq": "FAQ",
     "blog": "Blog",
@@ -264,7 +263,7 @@
     },
     "signup": {
       "title": "Begin your covenant",
-      "subtitle": "Two minutes, and free forever.",
+      "subtitle": "It takes about two minutes.",
       "email": "Email",
       "emailConfirm": "Confirm email",
       "emailPlaceholder": "you@example.com",
@@ -378,6 +377,17 @@
       "body": "Enter this code in Ahd to choose a new password.",
       "expiry": "This code expires in {minutes} minutes.",
       "ignore": "If you did not ask to reset your password, ignore this email — nothing has changed."
+    }
+  },
+  "app": {
+    "greeting": "Today",
+    "placeholder": "Your covenant and the three daily tracks arrive here next.",
+    "sessions": {
+      "title": "Where you are signed in",
+      "thisDevice": "This device",
+      "unknownDevice": "Unknown device",
+      "signOutEverywhere": "Sign out everywhere",
+      "note": "Signing out everywhere ends every session, including this one."
     }
   }
 }

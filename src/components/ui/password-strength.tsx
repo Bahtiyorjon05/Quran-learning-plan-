@@ -13,11 +13,11 @@ const BAR = [
 ] as const;
 
 const TEXT = [
-  "text-clay-300",
-  "text-clay-300",
-  "text-gold-300",
-  "text-emerald-300",
-  "text-emerald-300",
+  "text-danger",
+  "text-danger",
+  "text-gold-ink",
+  "text-[var(--accent-strong)]",
+  "text-[var(--accent-strong)]",
 ] as const;
 
 /**

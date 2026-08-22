@@ -72,7 +72,7 @@ export function AuthShell({
           <p
             lang="ar"
             dir="rtl"
-            className="font-arabic text-lg text-gold-300/50"
+            className="font-arabic text-lg text-gold-ink/50"
             aria-hidden
           >
             رَبِّ زِدْنِي عِلْمًا

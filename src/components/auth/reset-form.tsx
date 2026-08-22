@@ -60,7 +60,7 @@ export function ResetForm({ email }: { email: string | null }) {
           disabled={pending}
         />
         {fieldError("code") && (
-          <p role="alert" className="text-[0.8125rem] text-clay-300">
+          <p role="alert" className="text-[0.8125rem] text-danger">
             {fieldError("code")}
           </p>
         )}

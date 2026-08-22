@@ -57,7 +57,7 @@ export function Field({
         <p
           id={`${htmlFor}-error`}
           role="alert"
-          className="flex items-start gap-1.5 text-[0.8125rem] text-clay-300"
+          className="flex items-start gap-1.5 text-[0.8125rem] text-danger"
         >
           <AlertCircle className="mt-px h-3.5 w-3.5 shrink-0" />
           {error}
@@ -137,9 +137,9 @@ export function FormError({ children }: { children: React.ReactNode }) {
   return (
     <div
       role="alert"
-      className="animate-rise flex items-start gap-2.5 rounded-xl border border-clay-500/35 bg-clay-500/[0.08] px-4 py-3 text-[0.875rem] leading-relaxed text-clay-200"
+      className="animate-rise flex items-start gap-2.5 rounded-xl border border-clay-500/35 bg-clay-500/[0.08] px-4 py-3 text-[0.875rem] leading-relaxed text-danger"
     >
-      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-clay-400" />
+      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
       <span>{children}</span>
     </div>
   );
@@ -150,7 +150,7 @@ export function FormNotice({ children }: { children: React.ReactNode }) {
   return (
     <div
       role="status"
-      className="animate-rise rounded-xl border border-emerald-500/30 bg-emerald-500/[0.07] px-4 py-3 text-[0.875rem] leading-relaxed text-emerald-200"
+      className="animate-rise rounded-xl border border-emerald-500/30 bg-emerald-500/[0.07] px-4 py-3 text-[0.875rem] leading-relaxed text-[var(--accent-strong)]"
     >
       {children}
     </div>

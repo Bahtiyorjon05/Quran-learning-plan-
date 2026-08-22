@@ -73,7 +73,7 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <LanguageSwitcher className="hidden sm:block" />
+            <LanguageSwitcher />
             <ThemeToggle className="hidden sm:inline-grid" />
             <Link
               href="/login"

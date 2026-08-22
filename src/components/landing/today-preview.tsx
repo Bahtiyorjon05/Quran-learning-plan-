@@ -25,14 +25,14 @@ function Ring({ value, done }: { value: number; done?: boolean }) {
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c * (1 - value / 100)}
-          className={done ? "stroke-emerald-400" : "stroke-gold-400"}
+          className={done ? "stroke-[var(--accent)]" : "stroke-[var(--gold)]"}
         />
       </svg>
       <span className="absolute grid place-items-center">
         {done ? (
-          <Check className="h-4 w-4 text-emerald-400" />
+          <Check className="h-4 w-4 text-[var(--accent)]" />
         ) : (
-          <span className="text-[0.625rem] font-semibold text-gold-300 tabular-nums">
+          <span className="text-[0.625rem] font-semibold text-gold-ink tabular-nums">
             {value}
           </span>
         )}
@@ -52,10 +52,10 @@ const STRIP = [
 ] as const;
 
 const STRIP_CLASS = [
-  "bg-[color-mix(in_oklab,var(--text-strong)_7%,transparent)]",
-  "bg-emerald-900",
-  "bg-emerald-700",
-  "bg-emerald-400",
+  "bg-band-none",
+  "bg-band-learning",
+  "bg-band-weak",
+  "bg-band-strong",
 ];
 
 export function TodayPreview() {
@@ -109,7 +109,7 @@ export function TodayPreview() {
                 اليوم
               </span>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-1 text-[0.6875rem] font-medium text-gold-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-1 text-[0.6875rem] font-medium text-gold-ink">
               <Flame className="h-3 w-3" />
               {tp("streak", { count: 41 })}
             </span>
@@ -130,7 +130,7 @@ export function TodayPreview() {
                 <Ring value={track.value} done={track.done} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-2">
-                    <span className="font-arabic text-[0.9375rem] leading-none text-gold-300/90" aria-hidden>
+                    <span className="font-arabic text-[0.9375rem] leading-none text-gold-ink/90" aria-hidden>
                       {track.ar}
                     </span>
                     <span className="text-sm font-medium text-[var(--text-strong)]">
@@ -152,7 +152,7 @@ export function TodayPreview() {
           <div className="mt-5 rounded-xl border border-[var(--line-subtle)] px-3.5 py-3">
             <div className="flex items-center justify-between text-xs">
               <span className="text-[var(--text-muted)]">{tp("pace")}</span>
-              <span className="font-medium text-emerald-400">{tp("onTrack")}</span>
+              <span className="font-medium text-[var(--accent)]">{tp("onTrack")}</span>
             </div>
             <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-strong)_8%,transparent)]">
               <div className="h-full w-[38%] rounded-full bg-[linear-gradient(90deg,var(--color-emerald-500),var(--color-emerald-300))]" />
