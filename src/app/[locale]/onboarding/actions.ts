@@ -11,13 +11,7 @@ import { requirePasswordUser } from "@/auth/guard";
 import { redirectTo } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { DEFAULT_RECITER, isReciterId } from "@/lib/reciters";
-
-export type OnboardingState = {
-  status: "idle" | "error";
-  fieldErrors?: Record<string, string>;
-};
-
-export const ONBOARDING_IDLE: OnboardingState = { status: "idle" };
+import type { OnboardingState } from "@/auth/form-state";
 
 const schema = z.object({
   studyTime: z

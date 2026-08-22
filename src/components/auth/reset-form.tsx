@@ -7,7 +7,8 @@ import { Info } from "lucide-react";
 import { Field, FormError, PasswordInput, TextInput } from "@/components/ui/field";
 import { OtpInput } from "@/components/ui/otp-input";
 import { PasswordStrength } from "@/components/ui/password-strength";
-import { IDLE, resetAction } from "@/app/[locale]/(auth)/actions";
+import { resetAction } from "@/app/[locale]/(auth)/actions";
+import { IDLE } from "@/auth/form-state";
 import { SubmitButton } from "./submit-button";
 
 export function ResetForm({ email }: { email: string | null }) {

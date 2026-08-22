@@ -8,7 +8,8 @@ import { Link } from "@/i18n/navigation";
 import { FormError, FormNotice } from "@/components/ui/field";
 import { OtpInput } from "@/components/ui/otp-input";
 import { OTP_RESEND_COOLDOWN_SECONDS, OTP_TTL_MINUTES } from "@/auth/constants";
-import { IDLE, resendAction, verifyAction, type FormState } from "@/app/[locale]/(auth)/actions";
+import { resendAction, verifyAction } from "@/app/[locale]/(auth)/actions";
+import { IDLE, type FormState } from "@/auth/form-state";
 import { SubmitButton } from "./submit-button";
 import { cn } from "@/lib/utils";
 

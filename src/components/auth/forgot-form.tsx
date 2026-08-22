@@ -4,7 +4,8 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 
 import { Field, FormError, TextInput } from "@/components/ui/field";
-import { forgotAction, IDLE } from "@/app/[locale]/(auth)/actions";
+import { forgotAction } from "@/app/[locale]/(auth)/actions";
+import { IDLE } from "@/auth/form-state";
 import { SubmitButton } from "./submit-button";
 
 export function ForgotForm() {

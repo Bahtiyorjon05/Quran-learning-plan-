@@ -7,10 +7,8 @@ import { Check } from "lucide-react";
 import { Field, TextInput } from "@/components/ui/field";
 import { RECITERS, DEFAULT_RECITER } from "@/lib/reciters";
 import { cn } from "@/lib/utils";
-import {
-  completeOnboarding,
-  ONBOARDING_IDLE,
-} from "@/app/[locale]/onboarding/actions";
+import { completeOnboarding } from "@/app/[locale]/onboarding/actions";
+import { ONBOARDING_IDLE } from "@/auth/form-state";
 import { SubmitButton } from "./submit-button";
 
 export function OnboardingForm() {

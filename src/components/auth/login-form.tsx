@@ -5,7 +5,8 @@ import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { Field, FormError, PasswordInput, TextInput } from "@/components/ui/field";
-import { IDLE, loginAction } from "@/app/[locale]/(auth)/actions";
+import { loginAction } from "@/app/[locale]/(auth)/actions";
+import { IDLE } from "@/auth/form-state";
 import { SubmitButton } from "./submit-button";
 
 export function LoginForm() {

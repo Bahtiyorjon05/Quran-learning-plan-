@@ -9,7 +9,7 @@ import { requestContext } from "@/auth/session";
 import { toAuthError } from "@/auth/errors";
 import { redirectTo } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import type { FormState } from "@/app/[locale]/(auth)/actions";
+import type { FormState } from "@/auth/form-state";
 
 const schema = z
   .object({

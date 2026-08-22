@@ -14,6 +14,7 @@ import {
   signup,
   verifyEmail,
 } from "@/auth/service";
+import { type FormState } from "@/auth/form-state";
 import {
   clearPendingReset,
   getPendingResetEmail,
@@ -21,24 +22,6 @@ import {
   setPendingReset,
 } from "@/auth/session";
 
-/**
- * Every auth form speaks this one shape.
- *
- * `error` and `fieldErrors` carry translation *keys*, never sentences: the
- * server has no business deciding which of three languages the visitor reads,
- * and a key survives a locale switch that a baked-in string would not.
- */
-export type FormState = {
-  status: "idle" | "error" | "success";
-  /** Key under `auth.errors`, plus any values its message interpolates. */
-  error?: { code: AuthErrorCode; values?: Record<string, string | number> };
-  /** Field name → key under `auth.validation`. */
-  fieldErrors?: Record<string, string>;
-  /** Key under `auth.<page>` for a success line, e.g. a resent code. */
-  notice?: string;
-};
-
-export const IDLE: FormState = { status: "idle" };
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 

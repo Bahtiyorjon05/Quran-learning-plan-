@@ -6,7 +6,7 @@ import { BadgeCheck } from "lucide-react";
 
 import { Field, FormError, PasswordInput, TextInput } from "@/components/ui/field";
 import { PasswordStrength } from "@/components/ui/password-strength";
-import { IDLE } from "@/app/[locale]/(auth)/actions";
+import { IDLE } from "@/auth/form-state";
 import { setPasswordAction } from "@/app/[locale]/set-password/actions";
 import { SubmitButton } from "./submit-button";
 
