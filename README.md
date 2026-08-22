@@ -585,7 +585,8 @@ What is actually built, as of the latest commit. Updated every time something la
 | ✅ | Public marketing site | Landing page: hero with a live product preview, the hadith band, the problem, **the interactive covenant demo**, the three tracks, the 604-tile mushaf mosaic, six practice modes, the feature grid, final CTA |
 | ✅ | Header / footer / language switcher / theme toggle | Responsive down to 320px, full mobile sheet, skip link, focus rings |
 | ✅ | Region decision + `vercel.json` | Neon **Frankfurt** (`aws-eu-central-1`) paired with Vercel functions pinned to **`fra1`** |
-| ⬜ | Neon Postgres + Drizzle schema | Next |
+| ✅ | Neon Postgres + Drizzle schema | 12 tables, 26 check constraints, PostgreSQL 18 in Frankfurt. `uuidv7()` primary keys for index locality |
+| ✅ | **The covenant, enforced in the database** | 8 triggers. The deadline cannot be extended by any path — ORM, raw SQL or psql. The amendment log writes itself and is append-only. **24 integration tests against the live database, all passing** |
 | ⬜ | Auth: email + password, double entry, verification | Next |
 | ⬜ | Qur'an data pipeline (604-page index) | |
 | ⬜ | CI: typecheck, lint, test, verified-text check | |
@@ -616,6 +617,7 @@ npm run dev                    # http://localhost:3000
 | `npm run lint` | ESLint |
 | `npm test` | Vitest |
 | `npm run db:generate` / `db:migrate` / `db:studio` | Drizzle schema workflow |
+| `npm run db:status` | Print tables, constraints, triggers and row counts |
 | `npm run quran:build` | Regenerate the Qur'an page/line index |
 
 ---
