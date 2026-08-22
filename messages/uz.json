@@ -19,7 +19,10 @@
     "themeDark": "Tungi",
     "themeLight": "Kunduzgi",
     "themeSepia": "Sepiya",
-    "skipToContent": "Asosiy qismga oʻtish"
+    "skipToContent": "Asosiy qismga oʻtish",
+    "logout": "Chiqish",
+    "dashboard": "Boshqaruv paneli",
+    "account": "Hisob"
   },
   "landing": {
     "hero": {
@@ -250,5 +253,131 @@
     "cancel": "Bekor qilish",
     "save": "Saqlash",
     "confirm": "Tasdiqlash"
+  },
+  "auth": {
+    "brand": {
+      "quote": "Bu Qurʼonni doimo takrorlab turinglar.",
+      "quoteSource": "Al-Buxoriy 5033",
+      "point1": "Faqat yaqinlashadigan muddat",
+      "point2": "Sabaq, sabqiy va manzil — har kuni siz uchun rejalashtiriladi",
+      "point3": "Barcha 604 sahifa, haqiqiy mustahkamligi boʻyicha ranglangan"
+    },
+    "signup": {
+      "title": "Ahdingizni boshlang",
+      "subtitle": "Ikki daqiqa, va abadiy bepul.",
+      "email": "Elektron pochta",
+      "emailConfirm": "Pochtani tasdiqlang",
+      "emailPlaceholder": "siz@example.com",
+      "password": "Parol",
+      "passwordConfirm": "Parolni tasdiqlang",
+      "passwordHint": "Kamida 8 belgi. Belgilardan koʻra uzunlik ancha muhimroq.",
+      "submit": "Hisob yaratish",
+      "submitting": "Hisobingiz yaratilmoqda…",
+      "haveAccount": "Hisobingiz bormi?",
+      "login": "Kirish",
+      "termsPrefix": "Hisob yaratish orqali siz",
+      "terms": "Shartlar",
+      "termsAnd": "va",
+      "privacy": "Maxfiylik siyosati",
+      "strengthLabel": "Kuchi",
+      "strength0": "Juda zaif",
+      "strength1": "Zaif",
+      "strength2": "Oʻrtacha",
+      "strength3": "Yaxshi",
+      "strength4": "Mustahkam"
+    },
+    "verify": {
+      "title": "Pochtangizni tekshiring",
+      "subtitle": "{email} manziliga olti xonali kod yubordik.",
+      "codeLabel": "Tasdiqlash kodi",
+      "submit": "Tasdiqlash va davom etish",
+      "submitting": "Tekshirilmoqda…",
+      "resend": "Yangi kod yuborish",
+      "resendIn": "Yangi kod {seconds} soniyadan keyin",
+      "resent": "Yangi kod yoʻlga chiqdi.",
+      "expiresIn": "Kod {minutes} daqiqadan soʻng eskiradi.",
+      "wrongEmail": "Manzil notoʻgʻrimi?",
+      "startOver": "Boshidan boshlash",
+      "devHint": "Hozircha pochta xizmati ulanmagan, shuning uchun kod terminalda chiqadi."
+    },
+    "login": {
+      "title": "Xush kelibsiz",
+      "subtitle": "Rejangiz sizni kutmoqda.",
+      "email": "Elektron pochta",
+      "password": "Parol",
+      "submit": "Kirish",
+      "submitting": "Kirilmoqda…",
+      "forgot": "Parolni unutdingizmi?",
+      "noAccount": "Hali hisobingiz yoʻqmi?",
+      "signup": "Yarating"
+    },
+    "forgot": {
+      "title": "Parolni tiklash",
+      "subtitle": "Pochtangizni kiriting, biz olti xonali kod yuboramiz.",
+      "email": "Elektron pochta",
+      "submit": "Kod yuborish",
+      "submitting": "Yuborilmoqda…",
+      "sent": "Agar bu manzilda hisob boʻlsa, kod yoʻlga chiqdi. Pochtangizni tekshiring.",
+      "continue": "Menda kod bor",
+      "backToLogin": "Kirishga qaytish"
+    },
+    "reset": {
+      "title": "Yangi parol tanlang",
+      "subtitle": "Sizga yuborilgan kodni, soʻng yangi parolni kiriting.",
+      "email": "Elektron pochta",
+      "code": "Kod",
+      "password": "Yangi parol",
+      "passwordConfirm": "Yangi parolni tasdiqlang",
+      "submit": "Saqlash va kirish",
+      "submitting": "Saqlanmoqda…",
+      "note": "Qolgan barcha qurilmalardan chiqarilasiz."
+    },
+    "errors": {
+      "emailTaken": "Bu pochtada hisob allaqachon bor. Kiring.",
+      "invalidCredentials": "Pochta va parol mos kelmadi.",
+      "accountLocked": "Juda koʻp urinish. {minutes} daqiqadan soʻng qayta urinib koʻring.",
+      "emailNotVerified": "Avval pochtangizni tasdiqlang — sizga yangi kod yubordik.",
+      "codeInvalid": "Kod notoʻgʻri.",
+      "codeExpired": "Kod eskirdi. Yangisini soʻrang.",
+      "codeAttemptsExceeded": "Juda koʻp notoʻgʻri kod kiritildi. Yangisini soʻrang.",
+      "resendTooSoon": "Yangi kod soʻrashdan oldin {seconds} soniya kuting.",
+      "rateLimited": "Juda koʻp urinish. Birozdan soʻng qayta urinib koʻring.",
+      "weakPassword": "Iltimos, kuchliroq parol tanlang.",
+      "passwordMismatch": "Ikki parol mos kelmadi.",
+      "emailMismatch": "Ikki pochta manzili mos kelmadi.",
+      "sessionRequired": "Davom etish uchun tizimga kiring.",
+      "verificationExpired": "Tasdiqlash seansi tugadi. Qaytadan kiring.",
+      "unknown": "Nimadir notoʻgʻri ketdi. Qayta urinib koʻring."
+    },
+    "validation": {
+      "required": "Bu maydon toʻldirilishi shart",
+      "emailInvalid": "Toʻgʻri pochta manzilini kiriting",
+      "passwordTooShort": "Kamida 8 belgi",
+      "passwordTooLong": "Bu 128 belgidan uzun",
+      "codeLength": "Olti xonali kodni kiriting",
+      "emailMismatch": "Ikki pochta manzili mos kelmadi",
+      "passwordMismatch": "Ikki parol mos kelmadi"
+    }
+  },
+  "email": {
+    "common": {
+      "signature": "Ahd — Qurʼon bilan ahdingiz"
+    },
+    "verify": {
+      "subject": "{code} — Ahd tasdiqlash kodingiz",
+      "preheader": "Ahd kodingiz: {code}",
+      "heading": "Pochtangizni tasdiqlang",
+      "body": "Hisobingizni yakunlash uchun bu kodni Ahd’ga kiriting.",
+      "expiry": "Bu kod {minutes} daqiqadan soʻng eskiradi.",
+      "ignore": "Agar Ahd hisobini siz yaratmagan boʻlsangiz, bu xatni eʼtiborsiz qoldiring."
+    },
+    "reset": {
+      "subject": "Ahd parolini tiklash",
+      "preheader": "Parolni tiklash kodingiz",
+      "heading": "Parolni tiklash",
+      "body": "Yangi parol tanlash uchun bu kodni Ahd’ga kiriting.",
+      "expiry": "Bu kod {minutes} daqiqadan soʻng eskiradi.",
+      "ignore": "Agar parolni tiklashni soʻramagan boʻlsangiz, bu xatni eʼtiborsiz qoldiring — hech narsa oʻzgarmadi."
+    }
   }
 }

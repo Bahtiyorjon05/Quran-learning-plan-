@@ -13,10 +13,23 @@ const schema = z.object({
   // Signs session tokens and the HMACs stored for verification links.
   AUTH_SECRET: z.string().min(32, "AUTH_SECRET must be at least 32 characters"),
 
-  // Email is optional in development: without a Resend key we log the
-  // verification link to the console instead of sending it.
+  /* ── Email ──────────────────────────────────────────────────────────────
+     Three transports, chosen in this order: SMTP if a host is configured,
+     otherwise Resend if there is an API key, otherwise the console. Development
+     therefore works with no mail provider at all — the code is printed to the
+     terminal — and adding SMTP later is purely an environment change. */
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  SMTP_SECURE: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
+
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default("Ahd <onboarding@resend.dev>"),
+  EMAIL_REPLY_TO: z.string().optional(),
 
   NEXT_PUBLIC_SITE_URL: z.url().default("http://localhost:3000"),
 
@@ -24,7 +37,14 @@ const schema = z.object({
 });
 
 function load() {
-  const parsed = schema.safeParse(process.env);
+  /* An unset variable in a .env file is usually written as SMTP_HOST="" rather
+     than left out, so an empty string has to mean "not configured" — otherwise
+     every optional field arrives as "" and defaults never apply. */
+  const source = Object.fromEntries(
+    Object.entries(process.env).filter(([, value]) => value !== undefined && value !== ""),
+  );
+
+  const parsed = schema.safeParse(source);
   if (!parsed.success) {
     const issues = parsed.error.issues
       .map((i) => `  · ${i.path.join(".")}: ${i.message}`)

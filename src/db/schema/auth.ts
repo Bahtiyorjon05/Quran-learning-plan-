@@ -147,40 +147,53 @@ export const sessions = pgTable(
    verified against the new address before it replaces the old one.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-export const emailVerificationTokens = pgTable(
-  "email_verification_tokens",
+export const emailVerificationCodes = pgTable(
+  "email_verification_codes",
   {
     id: id(),
     userId: uuid()
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    /* The address being proved. Kept here so an email *change* is verified
+       against the new address before it replaces the old one. */
     email: text().notNull(),
-    tokenHash: text().notNull(),
+
+    /* HMAC-SHA256 of "userId:code" under AUTH_SECRET. A six-digit space is
+       small, so the raw code is never stored and the user id is folded in to
+       make one rainbow table useless across accounts. */
+    codeHash: text().notNull(),
+
+    attempts: smallint().notNull().default(0),
     expiresAt: timestamp({ withTimezone: true }).notNull(),
     consumedAt: timestamp({ withTimezone: true }),
+    lastSentAt: now(),
     createdAt: now(),
   },
   (t) => [
-    uniqueIndex("email_verification_tokens_hash_key").on(t.tokenHash),
-    index("email_verification_tokens_user_id_idx").on(t.userId),
+    uniqueIndex("email_verification_codes_hash_key").on(t.codeHash),
+    index("email_verification_codes_user_id_idx").on(t.userId),
+    check("email_verification_codes_attempts_sane", sql`${t.attempts} >= 0`),
   ],
 );
 
-export const passwordResetTokens = pgTable(
-  "password_reset_tokens",
+export const passwordResetCodes = pgTable(
+  "password_reset_codes",
   {
     id: id(),
     userId: uuid()
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    tokenHash: text().notNull(),
+    codeHash: text().notNull(),
+    attempts: smallint().notNull().default(0),
     expiresAt: timestamp({ withTimezone: true }).notNull(),
     consumedAt: timestamp({ withTimezone: true }),
+    lastSentAt: now(),
     createdAt: now(),
   },
   (t) => [
-    uniqueIndex("password_reset_tokens_hash_key").on(t.tokenHash),
-    index("password_reset_tokens_user_id_idx").on(t.userId),
+    uniqueIndex("password_reset_codes_hash_key").on(t.codeHash),
+    index("password_reset_codes_user_id_idx").on(t.userId),
+    check("password_reset_codes_attempts_sane", sql`${t.attempts} >= 0`),
   ],
 );
 
@@ -212,3 +225,4 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Profile = typeof profiles.$inferSelect;
 export type Session = typeof sessions.$inferSelect;
+export type EmailVerificationCode = typeof emailVerificationCodes.$inferSelect;

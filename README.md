@@ -587,8 +587,10 @@ What is actually built, as of the latest commit. Updated every time something la
 | ✅ | Region decision + `vercel.json` | Neon **Frankfurt** (`aws-eu-central-1`) paired with Vercel functions pinned to **`fra1`** |
 | ✅ | Neon Postgres + Drizzle schema | 12 tables, 26 check constraints, PostgreSQL 18 in Frankfurt. `uuidv7()` primary keys for index locality |
 | ✅ | **The covenant, enforced in the database** | 8 triggers. The deadline cannot be extended by any path — ORM, raw SQL or psql. The amendment log writes itself and is append-only. **24 integration tests against the live database, all passing** |
-| ⬜ | Auth: email + password, double entry, verification | Next |
+| ✅ | **Auth, end to end** | Email + password with both entered twice, **six-digit OTP verification**, Argon2id, DB-backed sessions, per-account lockout, per-IP/per-email rate limiting, password reset that revokes every session. **23 integration tests** |
+| ✅ | Email transport | SMTP → Resend → console, chosen from the environment. Branded trilingual HTML + plain-text templates. Adding SMTP is an env change, not a code change |
 | ⬜ | Qur'an data pipeline (604-page index) | |
+| ✅ | Translation parity tests | 11 tests: no missing or stray keys, every ICU placeholder preserved, nothing silently left in English |
 | ⬜ | CI: typecheck, lint, test, verified-text check | |
 
 **The covenant demo on the landing page is real, not a mockup.** Pulling the deadline earlier recalculates the daily line count and appends a row to a visible `plan_amendments` log. Pushing it later is refused, with the card physically recoiling. That is the product's thesis, playable before you sign up.
@@ -618,6 +620,7 @@ npm run dev                    # http://localhost:3000
 | `npm test` | Vitest |
 | `npm run db:generate` / `db:migrate` / `db:studio` | Drizzle schema workflow |
 | `npm run db:status` | Print tables, constraints, triggers and row counts |
+| `npm run db:reset` / `db:clean` | Rebuild the dev schema / remove integration-test rows |
 | `npm run quran:build` | Regenerate the Qur'an page/line index |
 
 ---

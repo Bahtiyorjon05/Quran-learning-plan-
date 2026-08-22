@@ -5,14 +5,14 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1787404305048,
+      "when": 1787405443898,
       "tag": "0000_initial_schema",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1787404316809,
+      "when": 1787405454341,
       "tag": "0001_covenant_triggers",
       "breakpoints": true
     }

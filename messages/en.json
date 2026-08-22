@@ -19,7 +19,10 @@
     "themeDark": "Dark",
     "themeLight": "Light",
     "themeSepia": "Sepia",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "logout": "Log out",
+    "dashboard": "Dashboard",
+    "account": "Account"
   },
   "landing": {
     "hero": {
@@ -250,5 +253,131 @@
     "cancel": "Cancel",
     "save": "Save",
     "confirm": "Confirm"
+  },
+  "auth": {
+    "brand": {
+      "quote": "Keep renewing your covenant with the Qur'an.",
+      "quoteSource": "al-Bukhārī 5033",
+      "point1": "A deadline that only ever moves closer",
+      "point2": "Sabaq, sabqi and manzil, scheduled for you every day",
+      "point3": "All 604 pages, coloured by how strong they really are"
+    },
+    "signup": {
+      "title": "Begin your covenant",
+      "subtitle": "Two minutes, and free forever.",
+      "email": "Email",
+      "emailConfirm": "Confirm email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordConfirm": "Confirm password",
+      "passwordHint": "At least 8 characters. Length matters far more than symbols.",
+      "submit": "Create account",
+      "submitting": "Creating your account…",
+      "haveAccount": "Already have an account?",
+      "login": "Log in",
+      "termsPrefix": "By creating an account you agree to our",
+      "terms": "Terms",
+      "termsAnd": "and",
+      "privacy": "Privacy Policy",
+      "strengthLabel": "Strength",
+      "strength0": "Too weak",
+      "strength1": "Weak",
+      "strength2": "Fair",
+      "strength3": "Good",
+      "strength4": "Strong"
+    },
+    "verify": {
+      "title": "Check your email",
+      "subtitle": "We sent a six-digit code to {email}.",
+      "codeLabel": "Verification code",
+      "submit": "Verify and continue",
+      "submitting": "Verifying…",
+      "resend": "Send a new code",
+      "resendIn": "Send a new code in {seconds}s",
+      "resent": "A new code is on its way.",
+      "expiresIn": "The code expires in {minutes} minutes.",
+      "wrongEmail": "Wrong address?",
+      "startOver": "Start over",
+      "devHint": "No mail provider is configured yet, so the code is printed in your terminal."
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Your plan is waiting for you.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "forgot": "Forgot your password?",
+      "noAccount": "No account yet?",
+      "signup": "Create one"
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we will send a six-digit code.",
+      "email": "Email",
+      "submit": "Send the code",
+      "submitting": "Sending…",
+      "sent": "If that address has an account, a code is on its way. Check your inbox.",
+      "continue": "I have a code",
+      "backToLogin": "Back to log in"
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "subtitle": "Enter the code we sent you, then your new password.",
+      "email": "Email",
+      "code": "Code",
+      "password": "New password",
+      "passwordConfirm": "Confirm new password",
+      "submit": "Save and log in",
+      "submitting": "Saving…",
+      "note": "Every other device will be signed out."
+    },
+    "errors": {
+      "emailTaken": "That email already has an account. Log in instead.",
+      "invalidCredentials": "That email and password do not match.",
+      "accountLocked": "Too many attempts. Try again in {minutes} minutes.",
+      "emailNotVerified": "Verify your email first — we have just sent you a new code.",
+      "codeInvalid": "That code is not right.",
+      "codeExpired": "That code has expired. Ask for a new one.",
+      "codeAttemptsExceeded": "Too many wrong codes. Ask for a new one.",
+      "resendTooSoon": "Please wait {seconds} seconds before asking for another code.",
+      "rateLimited": "Too many attempts. Please try again a little later.",
+      "weakPassword": "Please choose a stronger password.",
+      "passwordMismatch": "The two passwords do not match.",
+      "emailMismatch": "The two email addresses do not match.",
+      "sessionRequired": "Please log in to continue.",
+      "verificationExpired": "That verification session has expired. Please log in again.",
+      "unknown": "Something went wrong. Please try again."
+    },
+    "validation": {
+      "required": "This field is required",
+      "emailInvalid": "Enter a valid email address",
+      "passwordTooShort": "At least 8 characters",
+      "passwordTooLong": "That is longer than 128 characters",
+      "codeLength": "Enter the six-digit code",
+      "emailMismatch": "The two email addresses do not match",
+      "passwordMismatch": "The two passwords do not match"
+    }
+  },
+  "email": {
+    "common": {
+      "signature": "Ahd — your covenant with the Qur'an"
+    },
+    "verify": {
+      "subject": "{code} is your Ahd verification code",
+      "preheader": "Your Ahd code is {code}",
+      "heading": "Confirm your email",
+      "body": "Enter this code in Ahd to finish creating your account.",
+      "expiry": "This code expires in {minutes} minutes.",
+      "ignore": "If you did not create an Ahd account, you can safely ignore this email."
+    },
+    "reset": {
+      "subject": "Reset your Ahd password",
+      "preheader": "Your Ahd password reset code",
+      "heading": "Reset your password",
+      "body": "Enter this code in Ahd to choose a new password.",
+      "expiry": "This code expires in {minutes} minutes.",
+      "ignore": "If you did not ask to reset your password, ignore this email — nothing has changed."
+    }
   }
 }
