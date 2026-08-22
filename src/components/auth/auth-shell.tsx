@@ -45,7 +45,7 @@ export function AuthShell({
           </Link>
 
           <div className="max-w-md">
-            <AhdMark className="h-9 w-9 opacity-80" />
+            <AhdMark size={64} className="opacity-90" />
             <blockquote className="mt-8">
               <p className="font-[family-name:var(--font-display)] text-[1.75rem] leading-[1.4] font-light text-[var(--text-strong)] italic xl:text-[2rem]">
                 “{t("quote")}”

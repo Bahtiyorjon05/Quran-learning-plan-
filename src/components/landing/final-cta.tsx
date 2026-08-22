@@ -18,7 +18,7 @@ export function FinalCta() {
 
       <Measure>
         <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
-          <AhdMark className="h-10 w-10" />
+          <AhdMark size={88} />
 
           <h2 className="mt-8 font-[family-name:var(--font-display)] text-[2.25rem] leading-[1.06] font-light tracking-[-0.02em] text-balance sm:text-5xl lg:text-[3.5rem]">
             {t("title")}

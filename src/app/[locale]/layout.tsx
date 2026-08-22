@@ -68,8 +68,16 @@ export async function generateMetadata({
       title: t("title"),
       description: t("description"),
       locale: localeTag[locale as Locale],
+      images: [
+        { url: "/brand/og.png", width: 1200, height: 630, alt: "Ahd" },
+      ],
     },
-    twitter: { card: "summary_large_image", title: t("title"), description: t("description") },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("description"),
+      images: ["/brand/og.png"],
+    },
     robots: { index: true, follow: true },
   };
 }

@@ -5,6 +5,7 @@ import { createTranslator } from "next-intl";
 import { formatOtp, OTP_TTL_MINUTES } from "@/auth/constants";
 import type { Locale } from "@/i18n/routing";
 import type { Mail } from "./mailer";
+import { env } from "@/lib/env";
 
 import en from "../../messages/en.json";
 import ru from "../../messages/ru.json";
@@ -38,6 +39,11 @@ const EMERALD = "#0e5c4a";
 const GOLD = "#c9a227";
 const PAPER = "#f7f1e3";
 const MUTED = "#6b7a74";
+
+/* Absolute, because an email is read outside our origin. The wordmark stays as
+   text beside it: most clients block remote images until the reader allows
+   them, and a header that renders as an empty box is worse than no logo. */
+const LOGO = `${env.NEXT_PUBLIC_SITE_URL}/brand/mark-128.png`;
 
 function escapeHtml(value: string) {
   return value
@@ -79,9 +85,17 @@ function shell({
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(15,24,21,0.08);">
 
             <tr>
-              <td style="background:${INK};padding:26px 32px;">
-                <span style="color:#ffffff;font-size:19px;font-weight:600;letter-spacing:0.02em;">Ahd</span>
-                <span style="color:${GOLD};font-size:15px;padding-left:8px;">&#1593;&#1607;&#1583;</span>
+              <td style="background:${INK};padding:22px 32px;">
+                <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+                  <td style="padding-right:12px;vertical-align:middle;">
+                    <img src="${LOGO}" width="40" height="40" alt="Ahd"
+                         style="display:block;width:40px;height:40px;border:0;border-radius:50%;" />
+                  </td>
+                  <td style="vertical-align:middle;">
+                    <span style="color:#ffffff;font-size:19px;font-weight:600;letter-spacing:0.02em;">Ahd</span>
+                    <span style="color:${GOLD};font-size:15px;padding-left:8px;">&#1593;&#1607;&#1583;</span>
+                  </td>
+                </tr></table>
               </td>
             </tr>
 

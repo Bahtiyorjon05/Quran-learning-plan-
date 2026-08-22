@@ -16,7 +16,7 @@ export function HadithBand() {
       />
 
       <div className="measure relative flex flex-col items-center text-center">
-        <AhdMark className="h-9 w-9 opacity-80" />
+        <AhdMark size={72} className="opacity-90" />
 
         <blockquote className="mt-8">
           <p

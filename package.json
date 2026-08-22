@@ -19,7 +19,8 @@
     "db:status": "tsx scripts/db-status.ts",
     "db:reset": "tsx scripts/db-reset.ts",
     "db:clean": "tsx scripts/db-clean-tests.ts",
-    "quran:build": "tsx scripts/build-quran-index.ts"
+    "quran:build": "tsx scripts/build-quran-index.ts",
+    "brand:build": "tsx scripts/build-brand-assets.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
@@ -55,6 +56,7 @@
     "pg": "^8.16.5",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4",
     "tsx": "^4.20.7",
     "typescript": "^5",

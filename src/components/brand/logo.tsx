@@ -1,57 +1,64 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * The Ahd mark is the rub' al-hizb — ۞ — the eight-pointed star that marks
- * divisions in the mushaf itself: two squares, one turned forty-five degrees,
- * held inside a ring. It already means "a measured portion of the Qur'an",
- * which is exactly what this app hands you every morning. The ring is the
- * covenant closing around it.
+ * The Ahd seal.
+ *
+ * The mark is a circular seal — the open mushaf beneath a crescent and sun,
+ * ringed in girih geometry, carrying AHD and عهد. It is generated from
+ * `brand/ahd-source.png` by `npm run brand:build`, cropped to the seal and
+ * masked to a circle so the corners are transparent and it sits correctly on
+ * the dark ground.
+ *
+ * Rendered at a real pixel size rather than a CSS class, so the right file is
+ * chosen for the job: a 36px header icon should not download the 1024px master.
  */
+
+const AVAILABLE = [64, 128, 256, 512, 1024] as const;
+
+/** Smallest asset that still covers a 2× display at this size. */
+function sourceFor(size: number) {
+  return AVAILABLE.find((candidate) => candidate >= size * 2) ?? 1024;
+}
+
 export function AhdMark({
+  size = 32,
   className,
-  strokeWidth = 1.4,
+  priority,
 }: {
+  size?: number;
   className?: string;
-  strokeWidth?: number;
+  priority?: boolean;
 }) {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      fill="none"
-      aria-hidden="true"
-      className={cn("h-8 w-8", className)}
-    >
-      <defs>
-        <linearGradient id="ahd-mark-g" x1="4" y1="2" x2="28" y2="30">
-          <stop offset="0%" stopColor="var(--color-gold-300)" />
-          <stop offset="55%" stopColor="var(--accent)" />
-          <stop offset="100%" stopColor="var(--color-emerald-600)" />
-        </linearGradient>
-      </defs>
-      <g
-        stroke="url(#ahd-mark-g)"
-        strokeWidth={strokeWidth}
-        strokeLinejoin="round"
-      >
-        <path d="M16 1.6 30.4 16 16 30.4 1.6 16Z" />
-        <path d="M5.9 5.9h20.2v20.2H5.9Z" />
-        <circle cx="16" cy="16" r="4.6" />
-      </g>
-      <circle cx="16" cy="16" r="1.5" fill="var(--color-gold-400)" />
-    </svg>
+    <Image
+      src={`/brand/mark-${sourceFor(size)}.png`}
+      alt=""
+      aria-hidden
+      width={size}
+      height={size}
+      priority={priority}
+      className={cn("shrink-0 select-none", className)}
+      style={{ width: size, height: size }}
+    />
   );
 }
 
 export function Wordmark({
   className,
-  showArabic = true,
+  size = 34,
+  showArabic = false,
+  priority,
 }: {
   className?: string;
+  size?: number;
+  /** The seal already carries عهد; only set this where it is wanted twice. */
   showArabic?: boolean;
+  priority?: boolean;
 }) {
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
-      <AhdMark className="h-7 w-7 shrink-0" />
+      <AhdMark size={size} priority={priority} />
       <span className="flex items-baseline gap-2">
         <span className="font-[family-name:var(--font-display)] text-[1.375rem] leading-none font-semibold tracking-[0.02em] text-[var(--text-strong)]">
           Ahd

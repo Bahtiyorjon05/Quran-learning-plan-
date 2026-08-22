@@ -57,7 +57,7 @@ export function Header() {
       >
         <div className="measure flex h-16 items-center justify-between gap-4 sm:h-18">
           <Link href="/" aria-label="Ahd" className="shrink-0">
-            <Wordmark />
+            <Wordmark priority />
           </Link>
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
