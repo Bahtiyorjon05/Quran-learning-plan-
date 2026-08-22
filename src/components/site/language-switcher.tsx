@@ -52,7 +52,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
             aria-label={localeNames[locale]}
             aria-current={isActive ? "true" : undefined}
             className={cn(
-              "relative rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold tracking-wide uppercase",
+              "relative rounded-full px-2 py-1 text-[0.625rem] font-semibold tracking-wide uppercase",
+              "sm:px-2.5 sm:text-[0.6875rem]",
               "transition-[color,background-color] duration-300 ease-[var(--ease-calm)]",
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]",
               isActive

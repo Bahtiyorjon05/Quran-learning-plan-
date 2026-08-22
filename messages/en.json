@@ -22,7 +22,8 @@
     "skipToContent": "Skip to content",
     "logout": "Log out",
     "dashboard": "Dashboard",
-    "account": "Account"
+    "account": "Account",
+    "home": "Home"
   },
   "landing": {
     "hero": {
@@ -381,7 +382,18 @@
   },
   "app": {
     "greeting": "Today",
+    "welcome": "As-salamu alaykum",
     "placeholder": "Your covenant and the three daily tracks arrive here next.",
+    "covenant": {
+      "title": "Your covenant",
+      "empty": "You have not made a covenant yet.",
+      "soon": "The plan wizard is the next thing being built. When it lands you will choose a scope and an end date, write your intention, and this page becomes your daily sheet.",
+      "upcoming": "Coming next"
+    },
+    "account": {
+      "title": "Account",
+      "verified": "Email verified"
+    },
     "sessions": {
       "title": "Where you are signed in",
       "thisDevice": "This device",
@@ -389,5 +401,19 @@
       "signOutEverywhere": "Sign out everywhere",
       "note": "Signing out everywhere ends every session, including this one."
     }
+  },
+  "onboarding": {
+    "title": "One last thing",
+    "subtitle": "Three quick answers, and Ahd is yours.",
+    "name": "What should we call you?",
+    "namePlaceholder": "Your name",
+    "nameHint": "Shown when you open the app. Nobody else sees it.",
+    "studyTime": "When do you usually study?",
+    "studyTimeHint": "Your daily reminder arrives at this time.",
+    "reciter": "Which reciter do you listen to?",
+    "reciterHint": "You can change this any time, and pick a different one per surah.",
+    "submit": "Finish and begin",
+    "submitting": "Saving…",
+    "skip": "Set this up later"
   }
 }

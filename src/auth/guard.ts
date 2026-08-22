@@ -26,6 +26,19 @@ export async function requireUser(): Promise<CurrentUser> {
   return user;
 }
 
+/**
+ * For everything inside the product proper.
+ *
+ * Kept separate from requireUser because the onboarding page itself has to be
+ * reachable by someone who has not onboarded — guarding it with this would
+ * bounce them to it forever.
+ */
+export async function requireOnboardedUser(): Promise<CurrentUser> {
+  const user = await requireUser();
+  if (!user.onboardedAt) redirectTo("/onboarding", user.locale);
+  return user;
+}
+
 export async function requireRole(role: "teacher" | "admin"): Promise<CurrentUser> {
   const user = await requireUser();
   if (user.role !== role && user.role !== "admin") {

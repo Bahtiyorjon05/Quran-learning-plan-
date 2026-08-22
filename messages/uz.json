@@ -22,7 +22,8 @@
     "skipToContent": "Asosiy qismga oʻtish",
     "logout": "Chiqish",
     "dashboard": "Boshqaruv paneli",
-    "account": "Hisob"
+    "account": "Hisob",
+    "home": "Bosh sahifa"
   },
   "landing": {
     "hero": {
@@ -381,7 +382,18 @@
   },
   "app": {
     "greeting": "Bugun",
+    "welcome": "Assalomu alaykum",
     "placeholder": "Ahdingiz va uchta kunlik yoʼnalish keyingi qadamda shu yerda paydo boʻladi.",
+    "covenant": {
+      "title": "Sizning ahdingiz",
+      "empty": "Siz hali ahd tuzmagansiz.",
+      "soon": "Keyingi navbatda reja ustasi quriladi. U tayyor boʻlganda siz hajm va tugash sanasini tanlaysiz, niyatingizni yozasiz, bu sahifa esa kunlik varaqangizga aylanadi.",
+      "upcoming": "Tez orada"
+    },
+    "account": {
+      "title": "Hisob",
+      "verified": "Pochta tasdiqlangan"
+    },
     "sessions": {
       "title": "Qayerlarda kirgansiz",
       "thisDevice": "Shu qurilma",
@@ -389,5 +401,19 @@
       "signOutEverywhere": "Hamma joydan chiqish",
       "note": "Hamma joydan chiqish barcha seanslarni, shu jumladan shu qurilmani ham tugatadi."
     }
+  },
+  "onboarding": {
+    "title": "Oxirgi bitta narsa",
+    "subtitle": "Uchta qisqa javob — va Ahd sizniki.",
+    "name": "Sizni qanday chaqiraylik?",
+    "namePlaceholder": "Ismingiz",
+    "nameHint": "Ilovani ochganingizda koʻrinadi. Boshqa hech kim koʻrmaydi.",
+    "studyTime": "Odatda qachon oʻqiysiz?",
+    "studyTimeHint": "Kunlik eslatma shu vaqtda keladi.",
+    "reciter": "Qaysi qorini tinglaysiz?",
+    "reciterHint": "Buni istagan payt oʻzgartirasiz, har sura uchun boshqasini tanlashingiz ham mumkin.",
+    "submit": "Yakunlash va boshlash",
+    "submitting": "Saqlanmoqda…",
+    "skip": "Buni keyinroq sozlayman"
   }
 }

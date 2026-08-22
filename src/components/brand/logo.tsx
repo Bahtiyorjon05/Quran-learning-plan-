@@ -65,7 +65,7 @@ export function Wordmark({
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
       <AhdMark size={size} priority={priority} />
-      <span className="flex items-baseline gap-2">
+      <span className="flex items-baseline gap-2 max-[359px]:hidden">
         <span className="font-[family-name:var(--font-display)] text-[1.375rem] leading-none font-semibold tracking-[0.02em] text-[var(--text-strong)]">
           Ahd
         </span>

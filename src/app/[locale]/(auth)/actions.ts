@@ -146,7 +146,9 @@ export async function verifyAction(
     return failure(error);
   }
 
-  return redirectTo("/app", locale);
+  /* Straight into onboarding. The guard on /app would bounce them here anyway;
+     sending them directly avoids a visible extra redirect. */
+  return redirectTo("/onboarding", locale);
 }
 
 export async function resendAction(): Promise<FormState> {

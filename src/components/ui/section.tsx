@@ -18,12 +18,17 @@ export function Section({
   className,
   children,
   id,
+  reveal = true,
   ...props
-}: React.HTMLAttributes<HTMLElement>) {
+}: React.HTMLAttributes<HTMLElement> & { reveal?: boolean }) {
   return (
     <section
       id={id}
-      className={cn("relative py-24 sm:py-28 lg:py-36", className)}
+      className={cn(
+        "relative py-24 sm:py-28 lg:py-36",
+        reveal && "reveal",
+        className,
+      )}
       {...props}
     >
       {children}

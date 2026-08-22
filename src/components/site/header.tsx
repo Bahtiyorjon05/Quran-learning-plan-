@@ -30,11 +30,15 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Lock the page while the mobile sheet is open.
+  // Lock the page while the sheet is open, and close it on Escape.
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKey);
     };
   }, [open]);
 
@@ -55,9 +59,9 @@ export function Header() {
             : "border-b border-transparent",
         )}
       >
-        <div className="measure flex h-16 items-center justify-between gap-4 sm:h-18">
+        <div className="measure flex h-16 items-center justify-between gap-3 sm:h-18 sm:gap-4">
           <Link href="/" aria-label="Ahd" className="shrink-0">
-            <Wordmark priority />
+            <Wordmark priority size={32} />
           </Link>
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
@@ -72,16 +76,28 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          {/* Language and theme sit here at every width, phones included. They
+              are the two controls someone reaches for the instant they land in
+              the wrong language or the wrong brightness, and burying either
+              behind a hamburger makes people leave rather than adjust. */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <LanguageSwitcher />
-            <ThemeToggle className="hidden sm:inline-grid" />
+            <ThemeToggle />
+
             <Link
               href="/login"
-              className="hidden rounded-full px-3.5 py-2 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)] sm:inline-flex"
+              className="hidden rounded-full px-3.5 py-2 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)] lg:inline-flex"
             >
               {t("login")}
             </Link>
-            <Link href="/signup" className={buttonStyles({ size: "sm" })}>
+
+            {/* The primary action is dropped on phones: with the two controls
+                above it, the row would overflow a 320px screen. The hero
+                carries the same button one scroll down, and the sheet has it. */}
+            <Link
+              href="/signup"
+              className={buttonStyles({ size: "sm", className: "hidden lg:inline-flex" })}
+            >
               {t("signup")}
             </Link>
 
@@ -89,7 +105,8 @@ export function Header() {
               type="button"
               onClick={() => setOpen(true)}
               aria-label={t("menu")}
-              className="inline-grid h-9 w-9 place-items-center rounded-full border border-[var(--line-subtle)] text-[var(--text-muted)] lg:hidden"
+              aria-expanded={open}
+              className="inline-grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[var(--line-subtle)] text-[var(--text-muted)] transition-colors hover:border-[var(--line-strong)] hover:text-[var(--text-strong)] lg:hidden"
             >
               <Menu className="h-4.5 w-4.5" />
             </button>
@@ -97,57 +114,70 @@ export function Header() {
         </div>
       </header>
 
-      {/* ── Mobile sheet ── */}
+      {/* ── Sheet ─────────────────────────────────────────────────────────── */}
       {open && (
-        <div className="fixed inset-0 z-[100] lg:hidden">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("menu")}
+          className="fixed inset-0 z-[100] lg:hidden"
+        >
+          {/* Fully opaque. At 95% the header showed through the panel, so two
+              wordmarks sat almost exactly on top of each other. */}
           <div
-            className="absolute inset-0 bg-[var(--surface-base)]/95 backdrop-blur-xl"
+            className="absolute inset-0 bg-[var(--surface-base)]"
             onClick={() => setOpen(false)}
           />
+          <div aria-hidden className="girih absolute inset-0 opacity-[0.03]" />
+
           <div className="measure relative flex h-full flex-col">
             <div className="flex h-16 items-center justify-between sm:h-18">
-              <Wordmark />
+              <Wordmark size={32} />
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={t("close")}
-                className="inline-grid h-9 w-9 place-items-center rounded-full border border-[var(--line-subtle)] text-[var(--text-muted)]"
+                className="inline-grid h-9 w-9 place-items-center rounded-full border border-[var(--line-subtle)] text-[var(--text-muted)] transition-colors hover:border-[var(--line-strong)] hover:text-[var(--text-strong)]"
               >
                 <X className="h-4.5 w-4.5" />
               </button>
             </div>
 
-            <nav className="mt-6 flex flex-col gap-1" aria-label="Mobile">
+            <nav className="mt-8 flex flex-col" aria-label="Mobile">
               {LINKS.map((l, i) => (
                 <Link
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
                   style={{ animationDelay: `${i * 55}ms` }}
-                  className="animate-rise border-b border-[var(--line-subtle)] py-4 font-[family-name:var(--font-display)] text-2xl font-light text-[var(--text-strong)]"
+                  className="animate-rise border-b border-[var(--line-subtle)] py-4 font-[family-name:var(--font-display)] text-[1.75rem] leading-tight font-light text-[var(--text-strong)] transition-colors hover:text-[var(--accent-strong)]"
                 >
                   {t(l.key)}
                 </Link>
               ))}
-              <Link
-                href="/login"
-                onClick={() => setOpen(false)}
-                style={{ animationDelay: `${LINKS.length * 55}ms` }}
-                className="animate-rise border-b border-[var(--line-subtle)] py-4 font-[family-name:var(--font-display)] text-2xl font-light text-[var(--text-strong)]"
-              >
-                {t("login")}
-              </Link>
             </nav>
 
-            <div className="mt-auto flex items-center gap-3 py-8">
-              <LanguageSwitcher />
-              <ThemeToggle />
+            <div
+              className="animate-rise mt-auto flex flex-col gap-3 py-8"
+              style={{ animationDelay: `${LINKS.length * 55}ms` }}
+            >
               <Link
                 href="/signup"
                 onClick={() => setOpen(false)}
-                className={buttonStyles({ className: "ms-auto" })}
+                className={buttonStyles({ size: "lg", className: "w-full" })}
               >
                 {t("signup")}
+              </Link>
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className={buttonStyles({
+                  variant: "outline",
+                  size: "lg",
+                  className: "w-full",
+                })}
+              >
+                {t("login")}
               </Link>
             </div>
           </div>
