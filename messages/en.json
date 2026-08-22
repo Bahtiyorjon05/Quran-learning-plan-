@@ -279,7 +279,7 @@
     },
     "verify": {
       "title": "Check your email",
-      "subtitle": "We sent a six-digit code to {email}.",
+      "subtitle": "We sent a six-digit code to <b>{email}</b>.",
       "codeLabel": "Verification code",
       "submit": "Verify and continue",
       "submitting": "Verifying…",
@@ -423,5 +423,17 @@
     "submit": "Finish and begin",
     "submitting": "Saving…",
     "skip": "Set this up later"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "body": "This is on us, not on you. Try again, and if it keeps happening the reference below will help us find it.",
+    "retry": "Try again",
+    "home": "Go home",
+    "reference": "Reference"
+  },
+  "notFound": {
+    "title": "This page does not exist",
+    "body": "The link may be old, or the address mistyped.",
+    "home": "Go home"
   }
 }

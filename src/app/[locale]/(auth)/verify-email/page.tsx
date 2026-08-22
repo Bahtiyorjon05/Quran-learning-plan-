@@ -29,9 +29,14 @@ export default async function VerifyEmailPage({
   return (
     <AuthShell
       title={t("title")}
+      /* The address is a value; the emphasis is a tag. Passing a function for
+         `{email}` handed React a function to render, which it refuses — and
+         because this page only ever renders with a pending cookie, nothing
+         before a real sign-up ever reached it. */
       subtitle={t.rich("subtitle", {
-        email: () => (
-          <strong className="font-medium text-[var(--text-strong)]">{pending.email}</strong>
+        email: pending.email,
+        b: (chunks) => (
+          <strong className="font-medium text-[var(--text-strong)]">{chunks}</strong>
         ),
       })}
     >

@@ -279,7 +279,7 @@
     },
     "verify": {
       "title": "Pochtangizni tekshiring",
-      "subtitle": "{email} manziliga olti xonali kod yubordik.",
+      "subtitle": "<b>{email}</b> manziliga olti xonali kod yubordik.",
       "codeLabel": "Tasdiqlash kodi",
       "submit": "Tasdiqlash va davom etish",
       "submitting": "Tekshirilmoqda…",
@@ -423,5 +423,17 @@
     "submit": "Yakunlash va boshlash",
     "submitting": "Saqlanmoqda…",
     "skip": "Buni keyinroq sozlayman"
+  },
+  "error": {
+    "title": "Nimadir notoʻgʻri ketdi",
+    "body": "Bu bizning xatomiz, sizniki emas. Qayta urinib koʻring; agar takrorlansa, quyidagi raqam bizga topishga yordam beradi.",
+    "retry": "Qayta urinish",
+    "home": "Bosh sahifaga",
+    "reference": "Havola raqami"
+  },
+  "notFound": {
+    "title": "Bunday sahifa yoʻq",
+    "body": "Havola eskirgan yoki manzil notoʻgʻri yozilgan boʻlishi mumkin.",
+    "home": "Bosh sahifaga"
   }
 }
