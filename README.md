@@ -28,13 +28,13 @@
 10. [Roadmap & phases](#10-roadmap--phases)
 11. [Deployment: Vercel → Play Store](#11-deployment-vercel--play-store)
 12. [Success metrics](#12-success-metrics)
-13. [Open questions for the owner](#13-open-questions-for-the-owner)
+13. [Decisions locked & what is still open](#13-decisions-locked-and-what-is-still-open)
 
 ---
 
 ## 1. What this is
 
-A **free, beautiful, offline-capable web app (later Android app)** that lets anyone:
+A **free, beautiful, offline-capable website — later an Android and iOS app** — where anyone can:
 
 - Build a personal Qur'an memorization plan — **all 30 juz in 2 years, 3 years, 5 years, or any target they choose**
 - **Lock that commitment.** You may shorten the deadline. You may never extend it.
@@ -43,6 +43,8 @@ A **free, beautiful, offline-capable web app (later Android app)** that lets any
 - **Mark progress** page by page, ayah by ayah — and watch a 604-tile mushaf mosaic fill up
 - **See everything**: strength heatmaps, pace pressure, streaks, weak spots, forecast of khatm date
 - Study **together** — halaqah circles, a teacher who verifies recitations, friendly accountability
+
+Interface in **Uzbek (default), English and Russian** from day one. Responsive website first, then Android, then iOS — one codebase.
 
 Not another checkbox tracker. A system that models how hifz actually works and refuses to let you drift.
 
@@ -232,11 +234,42 @@ From this the app derives:
 - Ramadan mode: intensified plan + khatm tracker
 - Daily ayah + a short reflection
 
+### 🔐 Accounts & security
+- **Every user has an account.** Sign-up is **email + password**, with the **email typed twice** and the **password typed twice**, followed by a **verification link** sent to that address. The app stays locked until the email is verified.
+- Argon2id password hashing · rate-limited login · temporary lockout after repeated failures · secure httpOnly session cookies
+- Password reset by signed, single-use, expiring link · changing your email re-verifies both the old and the new address
+- Optional TOTP two-factor (Phase 3) · optional Google / Apple sign-in **in addition to**, never instead of, email + password
+- Active-sessions list with "sign out everywhere" · account deletion that genuinely deletes · one-click data export
+
+### 🌐 The whole surface (sitemap)
+
+**Public — no account needed**
+
+`/` landing: the promise, the covenant mechanic, a live demo of the mosaic · `/how-it-works` · `/features` · `/quran` public mushaf reader · `/about` · `/faq` · `/contact` · `/blog` hifz guidance articles · `/privacy` · `/terms`
+
+**Auth**
+
+`/signup` · `/verify-email` · `/login` · `/forgot-password` · `/reset-password`
+
+**App — account required**
+
+`/app` today's dashboard (sabaq / sabqi / manzil) · `/app/plan` the covenant, pace gauge, amendment history · `/app/plan/new` wizard · `/app/mushaf/[page]` reader · `/app/mosaic` the 604-page grid · `/app/practice` six drill modes · `/app/tests` · `/app/progress` charts and report cards · `/app/weak-spots` · `/app/recordings` · `/app/halaqah` circles · `/app/settings` profile, language, reciter, fonts, reminders, security, export
+
+**Teacher / parent**
+
+`/app/halaqah/[id]/students` · `/app/review-queue` submitted recitations
+
+**Admin**
+
+`/admin` users, reported text errors, content versions, metrics
+
 ### ⚙️ Platform
-- **Full offline mode** — read, drill, and mark progress with no connection; syncs when back
-- PWA install · Android app · dark mode · RTL-aware UI
-- **4-language interface**: Uzbek · English · Russian · Arabic
-- Free, no ads, no paywall on core hifz features. Data is yours and exportable.
+- **Responsive from 320px to ultrawide** — one design that is genuinely good on phone, tablet, laptop and desktop. Phone is the primary target; the mushaf reader gets a purpose-built full-bleed layout at every size, never a squeezed desktop page.
+- **Full offline mode** — read, drill and mark progress with no connection; syncs when you are back
+- Installable PWA · **Android app (Phase 4)** · **iOS app (Phase 5)** — all from one Capacitor codebase
+- **Trilingual at launch: Uzbek (default), English, Russian.** Arabic UI with full RTL follows in Phase 2. Language is offered on first visit and switchable from anywhere.
+- Dark mode by default, plus light and sepia · keyboard shortcuts on desktop
+- Free, no ads, no paywall on core hifz features. Your data is yours and exportable.
 
 ---
 
@@ -258,6 +291,7 @@ From this the app derives:
 - **Motif:** subtle girih & khatam geometry as texture — 3–5% opacity, never decoration for its own sake
 - **Dark mode is the default.** People memorize at Fajr and after Isha.
 - **Accessibility:** WCAG 2.2 AA, 48px tap targets, full keyboard nav, screen-reader labelled Arabic, generous font scaling (hifz users zoom *a lot*)
+- **Responsive:** designed mobile-first at 320px, then 640 / 768 / 1024 / 1280 / 1536. Every screen is drawn twice — once for a phone held one-handed at Fajr, once for a desktop — and the mushaf reader is a distinct layout per class
 - **Never:** confetti on completing a juz, streak-guilt popups, dark patterns, ads near the mushaf
 
 ---
@@ -273,7 +307,7 @@ From this the app derives:
 | Animation | **Framer Motion** | Restrained, physics-based transitions |
 | Database | **Postgres (Neon or Supabase)** | Relational fits the plan/review model; serverless-friendly |
 | ORM | **Drizzle** | Typed schema, SQL-first, easy migrations, edge-compatible |
-| Auth | **Auth.js v5** (Google / Apple / email magic link) | Standard, self-hosted, no vendor lock |
+| Auth | **Auth.js v5** credentials provider + **Argon2id** + mandatory email verification (**Resend** for mail) | Owner-mandated email + password accounts; Google / Apple can be added later alongside, not instead |
 | Files | **Supabase Storage or Vercel Blob** | Recitation recordings |
 | Server data | **Server Actions + TanStack Query** | Optimistic marking, offline queue replay |
 | Offline | **Serwist SW + Dexie (IndexedDB)** | Full offline read, drill and progress marking |
@@ -315,7 +349,13 @@ itqan/
 ## 8. Data model
 
 ```
-users ──┬── profiles           locale, reciter, font size, timezone, study time
+users ──┬── (email, email_verified_at, password_hash, role,
+        │    failed_logins, locked_until, created_at)
+        ├── email_verifications  token, expires_at, consumed_at
+        ├── password_resets      token, expires_at, consumed_at
+        ├── sessions             device, ip, user_agent, last_seen
+        ├── profiles           locale (uz|en|ru), reciter, font size,
+        │                      timezone, study time
         │
         ├── plans              scope, start, original_end, current_end,
         │     │                daily_unit, daily_amount, rukhsah_budget/used,
@@ -378,11 +418,11 @@ Rough effort assuming steady part-time work. Each phase ends deployed and usable
 
 ### Phase 0 — Foundation `~1 week`
 
-Monorepo scaffold, design system and tokens, Quran data pipeline producing the 604-page index, DB schema and migrations, auth, CI (typecheck, lint, test, verified-text check).
+Monorepo scaffold, design system and tokens, Quran data pipeline producing the 604-page index, DB schema and migrations, auth foundation (Auth.js credentials + Argon2id + Resend verification mail), trilingual i18n scaffolding (uz / en / ru), CI (typecheck, lint, test, verified-text check).
 
 ### Phase 1 — MVP: The Covenant `~3 weeks` → **first Vercel deploy**
 
-Plan wizard with niyyah and lock, plan generation engine, **one-way deadline rule with a full test suite**, daily dashboard (sabaq / sabqi / manzil), mushaf reader with QCF pages, mark-as-done, Mushaf Mosaic, streaks, pace pressure, redistribution.
+Landing page and the public marketing pages, full email + password sign-up with double-entry and mandatory email verification, plan wizard with niyyah and lock, plan generation engine, **one-way deadline rule with a full test suite**, daily dashboard (sabaq / sabqi / manzil), mushaf reader with QCF pages, mark-as-done, Mushaf Mosaic, streaks, pace pressure, redistribution.
 
 > At the end of Phase 1 a real person can commit to 30 juz in 3 years and use it every day.
 
@@ -398,9 +438,9 @@ Halaqah circles, teacher and parent roles, recitation submission and verificatio
 
 Serwist service worker, Dexie local store, sync outbox and conflict rules, per-juz audio download, Capacitor shell, local notifications, background audio, Play Console listing, policy and data-safety forms.
 
-### Phase 5 — Depth `ongoing`
+### Phase 5 — Depth and iOS `ongoing`
 
-Mutashabihat engine and drills, tajweed colouring, tafsir, Ramadan mode, vocabulary and roots, iOS, printable certificate, and **R&D: on-device recitation checking** — flagged as research only. Accuracy on Quranic Arabic must be proven before it is ever shipped anywhere near hifz feedback.
+Mutashabihat engine and drills, tajweed colouring, tafsir, Ramadan mode, vocabulary and roots, **iOS app** via the same Capacitor codebase, printable certificate, and **R&D: on-device recitation checking** — flagged as research only. Accuracy on Quranic Arabic must be proven before it is ever shipped anywhere near hifz feedback.
 
 ---
 
@@ -443,18 +483,28 @@ We are not optimising for time-in-app. We are optimising for **hifz that survive
 
 ---
 
-## 13. Open questions for the owner
+## 13. Decisions locked (and what is still open)
 
-Answer these and Phase 0 starts immediately. My default is in **bold** if you would rather I just decide.
+**Locked by the owner — build to these:**
 
-1. **Name** — *Itqan* (proposed), or *Manzil*, *Sabaq*, *Khatm*, *Hifz Journey*? → **Itqan**
-2. **Scope reduction** (see 3.5) — allow shrinking 30 juz to 15 juz once while keeping the deadline, or forbid it entirely so the only exit is abandoning the plan? → **allow once, permanently recorded**
-3. **Rukhsah budget** — default 12 days per year, user-settable at creation between 0 and 24? → **yes**
-4. **Manzil cycle** — classic 1 juz/day (khatm every 30 days), or the adaptive weakest-pages-first cycle? → **adaptive, with classic as a toggle**
-5. **Launch language** — Uzbek first or English first? → **English UI first, Uzbek immediately after, still in Phase 1**
-6. **Accounts** — require sign-in, or allow full local-only anonymous use with optional later sync? → **anonymous local use allowed; sign-in only for sync, halaqah and teacher features**
-7. **Teacher verification** (Phase 3) — genuinely needed, or is self-assessment enough for v1?
-8. **Free forever?** — confirm no ads and no paid tier, so we design without upsell hooks. → **free, no ads**
+| # | Decision | Ruling |
+|---|---|---|
+| 1 | Product name | **Itqan** |
+| 2 | Relief valve when badly behind | **Scope reduction allowed once**, permanently recorded in plan history. The deadline still never moves. |
+| 3 | Rukhsah budget | Default **12 days/year**, settable 0–24 at plan creation, fixed forever afterwards |
+| 4 | Manzil cycle | **Adaptive** — weakest pages first — with the classic 1-juz-per-day rotation available as a toggle |
+| 5 | Languages at launch | **Uzbek (default), English and Russian — all three from day one.** Arabic UI with RTL in Phase 2 |
+| 6 | Accounts | **Required.** Email + password, email entered twice, password entered twice, verification link mandatory before the app unlocks |
+| 7 | Platforms | Responsive web first → **Android (Phase 4)** → **iOS (Phase 5)**, one Capacitor codebase |
+| 8 | Business model | **Free forever. No ads, no paid tier, no upsell hooks.** |
+
+**Still open — tell me and I will fold it in:**
+
+1. **Teacher verification** (Phase 3) — genuinely needed, or is self-assessment enough for v1?
+2. **Domain name** — do you already have one, or should I suggest options?
+3. **Public mushaf reader** — should `/quran` be readable without an account as a way in? *(I recommend yes — an account is still required for anything that saves progress.)*
+4. **Support page** — a quiet "support this project" page, or nothing at all?
+5. **Reciters at launch** — which one is the default? (Alafasy, Husary, Minshawi, Sudais…)
 
 ---
 
