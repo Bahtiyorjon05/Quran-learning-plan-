@@ -36,8 +36,11 @@ export function AuthShell({
       {/* ── The reason you are signing up (desktop only) ── */}
       <aside className="relative hidden overflow-hidden bg-[var(--surface-raised)]/40 lg:block">
         <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="animate-breathe absolute start-1/2 top-1/4 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,var(--halo),transparent_62%)] blur-3xl" />
-          <div className="girih absolute inset-0 opacity-[0.04]" />
+          <div className="animate-breathe absolute start-[-6rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,var(--halo),transparent_65%)] blur-3xl" />
+          <div className="absolute end-[-10rem] bottom-[-10rem] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--color-gold-500)_12%,transparent),transparent_68%)] blur-3xl" />
+          <div className="girih absolute inset-0 opacity-[0.05]" />
+          {/* A soft seam into the form column rather than a hard edge. */}
+          <div className="absolute inset-y-0 end-0 w-40 bg-[linear-gradient(to_right,transparent,var(--surface-base))]" />
         </div>
 
         <div className="relative flex h-full flex-col p-10 xl:p-14">
@@ -45,44 +48,51 @@ export function AuthShell({
             <Wordmark size={36} />
           </Link>
 
-          {/* The du'a used to be pinned to the bottom of a justify-between
-              column inside an overflow-hidden panel, so on a laptop-height
-              viewport it was simply clipped away. It now sits at the head of
-              one centred block with everything else, which cannot be pushed
-              out of view, and the block scrolls rather than clipping if a
-              screen is shorter still. */}
-          <div className="flex min-h-0 flex-1 flex-col justify-center gap-7 overflow-y-auto py-8">
-            <p
-              lang="ar"
-              dir="rtl"
-              className="font-arabic shrink-0 text-2xl leading-[1.9] text-gold-ink xl:text-[1.75rem]"
-            >
-              رَبِّ زِدْنِي عِلْمًا
-            </p>
-
-            <blockquote className="max-w-md shrink-0">
-              <p className="font-[family-name:var(--font-display)] text-[1.5rem] leading-[1.4] font-light text-[var(--text-strong)] italic xl:text-[1.875rem]">
-                “{t("quote")}”
+          {/* One centred composition. The du'a used to be pinned to the bottom
+              of a justify-between column inside an overflow-hidden panel, so on
+              a laptop-height viewport it was clipped away entirely — and its
+              dir="rtl" pushed it to the right edge, stranded from everything
+              else. It now opens the block, left-aligned with the quote it
+              belongs to. */}
+          <div className="flex min-h-0 flex-1 flex-col justify-center overflow-y-auto py-10">
+            <div className="max-w-lg">
+              <p
+                lang="ar"
+                className="font-arabic text-[1.75rem] leading-[1.8] text-gold-ink xl:text-[2rem]"
+              >
+                رَبِّ زِدْنِي عِلْمًا
               </p>
-              <footer className="mt-4 text-xs tracking-[0.14em] text-[var(--text-faint)] uppercase">
-                {t("quoteSource")}
-              </footer>
-            </blockquote>
+              <p className="mt-1 text-xs tracking-[0.14em] text-[var(--text-faint)] uppercase">
+                {t("duaSource")}
+              </p>
 
-            <div className="rule-fade max-w-xs shrink-0" />
+              <div
+                aria-hidden
+                className="my-8 h-px w-24 bg-[linear-gradient(90deg,var(--gold),transparent)]"
+              />
 
-            <ul className="max-w-md shrink-0 space-y-3.5">
-              {points.map((point) => (
-                <li key={point} className="flex items-start gap-3">
-                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
-                    <Check className="h-3 w-3 text-[var(--accent)]" strokeWidth={2.5} />
-                  </span>
-                  <span className="text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
-                    {point}
-                  </span>
-                </li>
-              ))}
-            </ul>
+              <blockquote>
+                <p className="font-[family-name:var(--font-display)] text-[1.625rem] leading-[1.4] font-light text-[var(--text-strong)] italic xl:text-[2rem]">
+                  “{t("quote")}”
+                </p>
+                <footer className="mt-4 text-xs tracking-[0.14em] text-[var(--text-faint)] uppercase">
+                  {t("quoteSource")}
+                </footer>
+              </blockquote>
+
+              <ul className="mt-12 space-y-4">
+                {points.map((point) => (
+                  <li key={point} className="flex items-start gap-3.5">
+                    <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
+                      <Check className="h-3 w-3 text-[var(--accent)]" strokeWidth={2.5} />
+                    </span>
+                    <span className="text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+                      {point}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </aside>

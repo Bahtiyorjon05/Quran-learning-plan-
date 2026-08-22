@@ -260,13 +260,13 @@
       "quoteSource": "al-Bukhārī 5033",
       "point1": "A deadline that only ever moves closer",
       "point2": "Sabaq, sabqi and manzil, scheduled for you every day",
-      "point3": "All 604 pages, coloured by how strong they really are"
+      "point3": "All 604 pages, coloured by how strong they really are",
+      "duaSource": "Ta-Ha 20:114"
     },
     "signup": {
       "title": "Begin your covenant",
       "subtitle": "Enter your email and we will send you a six-digit code.",
       "email": "Email",
-      "emailConfirm": "Confirm email",
       "emailPlaceholder": "you@example.com",
       "submit": "Send the code",
       "submitting": "Sending…",

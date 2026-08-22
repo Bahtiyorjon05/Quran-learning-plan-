@@ -82,15 +82,11 @@ function failure(error: unknown): FormState {
    SIGN UP
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const signupSchema = z
-  .object({
-    email: emailField,
-    emailConfirm: z.string().trim().toLowerCase(),
-  })
-  .refine((d) => d.email === d.emailConfirm, {
-    path: ["emailConfirm"],
-    message: "emailMismatch",
-  });
+/* One field. Asking for the address twice was meant to catch a typo, but a
+   typo here is already self-correcting — the code never arrives, and the same
+   screen offers "wrong address?" — while the second field silently blocked
+   submission for anyone who ignored it. */
+const signupSchema = z.object({ email: emailField });
 
 export async function signupAction(
   _prev: FormState,

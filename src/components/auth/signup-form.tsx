@@ -9,13 +9,16 @@ import { IDLE, signupAction } from "@/app/[locale]/(auth)/actions";
 import { SubmitButton } from "./submit-button";
 
 /**
- * An address, twice, and nothing more.
+ * One field: the address.
  *
  * The password used to be here. Asking someone to invent a strong one before
  * they have even proved they own the inbox front-loads the hardest part of
- * sign-up onto the least committed moment — and a typo in the address means the
- * code never arrives and the password was wasted effort. It is chosen after the
- * code comes back instead.
+ * sign-up onto the least committed moment. It is chosen after the code comes
+ * back instead.
+ *
+ * The confirm-address field went too. A mistyped address is already
+ * self-correcting — no code arrives, and the next screen offers a way back —
+ * whereas the second field quietly refused to submit for anyone who skipped it.
  */
 export function SignupForm() {
   const t = useTranslations("auth.signup");
@@ -46,28 +49,6 @@ export function SignupForm() {
           autoFocus
           required
           invalid={!!fieldError("email")}
-        />
-      </Field>
-
-      <Field
-        label={t("emailConfirm")}
-        htmlFor="emailConfirm"
-        error={fieldError("emailConfirm")}
-      >
-        <TextInput
-          id="emailConfirm"
-          name="emailConfirm"
-          type="email"
-          inputMode="email"
-          /* Autofill and paste are both off: filling the confirmation from the
-             first field defeats the only thing it is for, which is catching a
-             typo before the code is sent somewhere unreachable. */
-          autoComplete="off"
-          autoCapitalize="none"
-          spellCheck={false}
-          onPaste={(e) => e.preventDefault()}
-          required
-          invalid={!!fieldError("emailConfirm")}
         />
       </Field>
 

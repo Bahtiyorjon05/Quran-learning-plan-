@@ -260,13 +260,13 @@
       "quoteSource": "Al-Buxoriy 5033",
       "point1": "Faqat yaqinlashadigan muddat",
       "point2": "Sabaq, sabqiy va manzil — har kuni siz uchun rejalashtiriladi",
-      "point3": "Barcha 604 sahifa, haqiqiy mustahkamligi boʻyicha ranglangan"
+      "point3": "Barcha 604 sahifa, haqiqiy mustahkamligi boʻyicha ranglangan",
+      "duaSource": "Toha 20:114"
     },
     "signup": {
       "title": "Ahdingizni boshlang",
       "subtitle": "Pochtangizni kiriting, biz olti xonali kod yuboramiz.",
       "email": "Elektron pochta",
-      "emailConfirm": "Pochtani tasdiqlang",
       "emailPlaceholder": "siz@example.com",
       "submit": "Kod yuborish",
       "submitting": "Yuborilmoqda…",
