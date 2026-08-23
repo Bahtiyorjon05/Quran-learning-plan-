@@ -408,6 +408,12 @@
   }
 }
 
+/* The translation is hidden by a data attribute on the document rather than by
+   unmounting it, so the toggle never re-renders a single ayah of Arabic. */
+:root[data-translation="off"] [data-translation] {
+  display: none;
+}
+
 @utility animate-rise {
   animation: ahd-rise 0.7s var(--ease-settle) both;
 }

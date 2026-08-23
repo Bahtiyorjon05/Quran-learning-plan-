@@ -543,5 +543,41 @@
       "tooFast": "That daily portion is beyond what anyone sustains.",
       "unknown": "Something went wrong. Please try again."
     }
+  },
+  "quran": {
+    "index": {
+      "title": "Read the Qur'an",
+      "subtitle": "All 604 pages, with translation. No account needed.",
+      "surahs": "Surahs",
+      "juz": "Juz",
+      "searchPlaceholder": "Search a surah…",
+      "noResults": "Nothing matches that.",
+      "ayahs": "{count} ayahs",
+      "makkah": "Makkah",
+      "madinah": "Madinah",
+      "page": "Page {page}",
+      "juzNumber": "Juz {number}",
+      "pages": "Pages {from}–{to}",
+      "continue": "Continue reading",
+      "readCount": "{count} of 604 pages marked"
+    },
+    "reader": {
+      "page": "Page {page}",
+      "juz": "Juz {juz}",
+      "prev": "Previous page",
+      "next": "Next page",
+      "index": "All surahs",
+      "settings": "Reading settings",
+      "fontSize": "Arabic size",
+      "translation": "Translation",
+      "showTranslation": "Show translation",
+      "hideTranslation": "Hide translation",
+      "markRead": "Mark this page read",
+      "marked": "Marked read",
+      "markedHint": "Saved on this device. Sign in to keep your progress everywhere.",
+      "translationBy": "Translation: {name}",
+      "sajda": "Prostration",
+      "jumpToPage": "Go to page"
+    }
   }
 }

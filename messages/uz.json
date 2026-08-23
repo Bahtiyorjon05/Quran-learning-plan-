@@ -543,5 +543,41 @@
       "tooFast": "Bu kunlik ulush hech kim uddalay olmaydigan darajada.",
       "unknown": "Nimadir notoʻgʻri ketdi. Qayta urinib koʻring."
     }
+  },
+  "quran": {
+    "index": {
+      "title": "Qurʼonni oʻqish",
+      "subtitle": "Barcha 604 sahifa, tarjimasi bilan. Roʻyxatdan oʻtish shart emas.",
+      "surahs": "Suralar",
+      "juz": "Juzlar",
+      "searchPlaceholder": "Surani qidiring…",
+      "noResults": "Hech narsa topilmadi.",
+      "ayahs": "{count} oyat",
+      "makkah": "Makka",
+      "madinah": "Madina",
+      "page": "{page}-sahifa",
+      "juzNumber": "{number}-juz",
+      "pages": "{from}–{to}-sahifalar",
+      "continue": "Oʻqishni davom ettirish",
+      "readCount": "604 sahifadan {count} tasi belgilangan"
+    },
+    "reader": {
+      "page": "{page}-sahifa",
+      "juz": "{juz}-juz",
+      "prev": "Oldingi sahifa",
+      "next": "Keyingi sahifa",
+      "index": "Barcha suralar",
+      "settings": "Oʻqish sozlamalari",
+      "fontSize": "Arabcha oʻlchami",
+      "translation": "Tarjima",
+      "showTranslation": "Tarjimani koʻrsatish",
+      "hideTranslation": "Tarjimani yashirish",
+      "markRead": "Bu sahifani oʻqilgan deb belgilash",
+      "marked": "Oʻqilgan deb belgilandi",
+      "markedHint": "Shu qurilmada saqlandi. Hamma joyda saqlanishi uchun tizimga kiring.",
+      "translationBy": "Tarjima: {name}",
+      "sajda": "Sajda",
+      "jumpToPage": "Sahifaga oʻtish"
+    }
   }
 }
