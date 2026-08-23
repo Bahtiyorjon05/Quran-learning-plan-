@@ -82,7 +82,7 @@ describe("translations", () => {
       /* Proper nouns, brand strings and the Arabic du'a are legitimately
          identical across locales; anything else being byte-identical to the
          English almost always means a forgotten string. */
-      const allowed = /(^meta\.titleTemplate|^footer\.dua$|^landing\.hadith\.arabic$|^landing\.tracks\.(sabaq|sabqi|manzil)\.name$|^auth\.signup\.emailPlaceholder$)/;
+      const allowed = /(^meta\.titleTemplate|^footer\.dua$|^landing\.hadith\.arabic$|^landing\.tracks\.(sabaq|sabqi|manzil)\.name$|^auth\.signup\.emailPlaceholder$|^pages\.contact\.email$)/;
       const copied = [...flat.en.entries()]
         .filter(([key, value]) => {
           if (allowed.test(key)) return false;

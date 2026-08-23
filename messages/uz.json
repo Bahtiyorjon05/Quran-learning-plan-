@@ -235,7 +235,6 @@
     "quran": "Qurʼon oʻqish",
     "about": "Loyiha haqida",
     "faq": "Savol-javob",
-    "blog": "Blog",
     "contact": "Aloqa",
     "privacy": "Maxfiylik",
     "terms": "Shartlar",
@@ -610,6 +609,208 @@
       "translationBy": "Tarjima: {name}",
       "sajda": "Sajda",
       "jumpToPage": "Sahifaga oʻtish"
+    }
+  },
+  "pages": {
+    "about": {
+      "title": "Ahd nima uchun bor",
+      "lead": "Hifz kamdan-kam yod olishda barbod bo‘ladi. U saqlab qolishda barbod bo‘ladi.",
+      "sections": [
+        {
+          "heading": "Bitta hadis va butun bir dastur",
+          "body": [
+            "Payg‘ambar صلى الله عليه وسلم dedilar: «Bu Qur’onni doimo takrorlab turinglar. Muhammadning joni Uning qo‘lida bo‘lgan Zot bilan qasamki, u tuyaning bo‘ynidagi arqondan bo‘shab ketishidan ham tezroq unutiladi.»",
+            "Butun loyihaning asosi shu. «Tezroq o‘rgan» emas — ushlab qol. Ahd (عهد) — va’da, ahdnoma degani; dastur hadis bizdan so‘ragan narsaning nomi bilan atalgan."
+          ]
+        },
+        {
+          "heading": "Faqat yaqinlashadigan muddat",
+          "body": [
+            "Deyarli har bir reja bir xil yo‘l bilan barbod bo‘ladi: sanasiz maqsad, va har bir o‘tkazib yuborilgan kun jimgina ertaga ko‘chadi. Uch yildan keyin maqsad bir sahifa ham siljimagan bo‘ladi.",
+            "Shuning uchun Ahdda sana bir tomonlama. Uni yaqinlashtira olasiz. Orqaga surish esa — hech qachon, bir kunga ham. Bu qoida o‘chirilgan tugma emas; bu ma’lumotlar bazasi ichidagi cheklov va trigger, shuning uchun dasturda muddatni uzaytiradigan birorta ham yo‘l yo‘q.",
+            "Orqada qolsangiz, ish qolgan kunlarga qayta taqsimlanadi. Reja bo‘shashmaydi, aksincha qisadi."
+          ]
+        },
+        {
+          "heading": "Ruxsat — chunki hayot bor",
+          "body": [
+            "Kasallik va safar haqiqat. Ruxsat kuni ketma-ketligingizni saqlaydi va o‘sha kungi majburiyatni olib tashlaydi — lekin muddatingizni baribir siljitmaydi. Miqdorini ahd tuzayotganda belgilaysiz va keyin hech qachon ko‘paytira olmaysiz.",
+            "Busiz bitta shamollash butun ishni tugatadi. Bu bilan esa qoida mutlaq bo‘lib qolaveradi."
+          ]
+        },
+        {
+          "heading": "Takror ixtiyoriy emas",
+          "body": [
+            "Har kun sizga uchta majburiyat beradi — hifz asrlar davomida shunday o‘rgatilgan: sabaq, yangi ulush; sabqiy, hali mo‘rt bo‘lgan so‘nggi yetti kun; va manzil, qolgan barchasi, eng zaif sahifalaringizni oldinga chiqaradigan aylanma tsiklda.",
+            "Mustahkamlik o‘zidan-o‘zi pasayadi. Qirq kun tegilmagan sahifa endi siz yodlagan sahifa emas — dastur buni yashirmay aytadi."
+          ]
+        },
+        {
+          "heading": "Matn haqida",
+          "body": [
+            "Arabcha matn — Usmoniy xati. Har bir yig‘ishda mus’haf haqidagi muhokamaga o‘rin qoldirmaydigan faktlarga solishtiriladi: 114 sura, 6236 oyat, 604 to‘ldirilgan sahifa — va har kim qo‘lidagi mus’hafdan tekshira oladigan belgilarga. Keyin nazorat summasi qo‘riqlaydi, shuning uchun buzilish jimgina emas, baland ovozda bilinadi.",
+            "Har bir tarjimada tarjimon nomi ko‘rsatiladi. Bu yerdagi hech bir Qur’on matni, tarjimasi yoki tafsiri mashina tomonidan yaratilmagan va hech qachon yaratilmaydi."
+          ]
+        },
+        {
+          "heading": "Kim qildi va qancha turadi",
+          "body": [
+            "Ahd O‘zbekistonda, o‘zbek, ingliz va rus tillarida qurilmoqda. U hech narsa turmaydi, reklama tashimaydi va sizga sotadigan hech nimasi yo‘q. Ma’lumotlaringiz sizniki: istagan payt yuklab olasiz va chinakam o‘chirasiz.",
+            "Bu xizmat niyatida qilingan. Alloh qabul qilsin."
+          ]
+        }
+      ]
+    },
+    "faq": {
+      "title": "Savollar",
+      "lead": "Odamlar ahd tuzishdan oldin haqiqatda so‘raydigan narsalar.",
+      "items": [
+        {
+          "q": "Orqada qolsam muddatni uzaytira olamanmi?",
+          "a": "Yo‘q. Ahd hech qachon qilmaydigan yagona narsa shu — va u ishlashining sababi ham shu. Sanani yaqinlashtira olasiz, kunlik ulush esa qolgan kunlarga qayta hisoblanadi. Agar sur’at chinakam ko‘tarib bo‘lmas holga kelsa, hajmni bir marta kamaytirishingiz mumkin — masalan o‘ttiz juzdan o‘n beshga — sanani saqlagan holda. Hajm kichrayishi mumkin; vaqt esa hech qachon ko‘paymaydi."
+        },
+        {
+          "q": "Kasal bo‘lsam yoki safarga chiqsam nima bo‘ladi?",
+          "a": "Ruxsat kunidan foydalaning. U ketma-ketligingizni saqlaydi va o‘sha kungi majburiyatni muddatni siljitmasdan olib tashlaydi. Miqdorini ahd tuzayotganda tanlaysiz — sukut bo‘yicha yiliga o‘n ikki kun — va keyin uni to‘ldirib bo‘lmaydi."
+        },
+        {
+          "q": "Qur’on o‘qish uchun hisob kerakmi?",
+          "a": "Yo‘q. Butun mus’haf tarjimasi bilan /quran manzilida ro‘yxatdan o‘tmasdan o‘qiladi va sahifalarni o‘z qurilmangizda belgilashingiz mumkin. Hisob faqat qurilmalar orasida sizga ergashishi kerak bo‘lgan narsalar uchun kerak: ahdingiz, taraqqiyotingiz va takror jadvalingiz."
+        },
+        {
+          "q": "Qaysi tarjimalardan foydalanasiz?",
+          "a": "O‘zbekcha uchun Muhammad Sodiq Muhammad Yusuf, ruscha uchun Elmir Quliyev, inglizcha uchun Saheeh International. Har biri o‘zi chiqadigan sahifada nomi bilan ko‘rsatiladi."
+        },
+        {
+          "q": "«Ahd» nima degani?",
+          "a": "عهد — ahd, bog‘lovchi va’da. U Qur’on bilan ahdingizni u sizdan sirg‘alib ketmasidan oldin yangilab turish haqidagi hadisdan olingan."
+        },
+        {
+          "q": "O‘zimga qancha vaqt berishim kerak?",
+          "a": "Butun Qur’on 604 sahifa yoki 9 060 qator. Uch yil taxminan kuniga to‘qqiz qator; ikki yil — o‘n uch. Bugun ta’sirli eshitiladigan sur’atni emas, yomon haftada ham ushlay oladigan sur’atni tanlang."
+        },
+        {
+          "q": "Telefon ilovasi bormi?",
+          "a": "Hozircha yo‘q. Sayt telefonda to‘liq ishlaydi va uni bosh ekranga o‘rnatish mumkin. Android va iOS ilovalari keyinroq, xuddi shu koddan quriladi."
+        },
+        {
+          "q": "Matnda xato topdim.",
+          "a": "Iltimos, darhol xabar bering — bu siz yubora oladigan eng muhim xabar. Aloqa sahifasidan foydalaning, biz tuzatamiz va nima o‘zgarganini aytamiz."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Bog‘lanish",
+      "lead": "Bularning barchasini bitta odam o‘qiydi. Sodda yozing — sodda javob olasiz.",
+      "email": "ahd.al.quran@gmail.com",
+      "options": [
+        {
+          "title": "Qur’on matnidagi xato",
+          "body": "Siz yubora oladigan eng muhim xabar. Sura va oyatni hamda nima noto‘g‘ri ekanini yozing.",
+          "subject": "Matn tuzatish"
+        },
+        {
+          "title": "Biror narsa ishlamayapti",
+          "body": "Nima qilgansiz, nima bo‘ldi va qaysi sahifada edingiz. Havola raqamini ko‘rgan bo‘lsangiz, uni ham qo‘shing.",
+          "subject": "Xato haqida xabar"
+        },
+        {
+          "title": "Fikr yoki savol",
+          "body": "Ayniqsa hifz o‘rgatsangiz. Dastur nima qilishi kerak-u qilmayotgani — biz eshitadigan eng foydali narsa.",
+          "subject": "Fikr-mulohaza"
+        }
+      ],
+      "writeTo": "Yozing"
+    },
+    "privacy": {
+      "title": "Maxfiylik",
+      "lead": "Andozadan ko‘chirib emas, ma’lumotlar bazasi sxemasini o‘qib yozilgan.",
+      "updated": "So‘nggi yangilanish: 2026-yil 23-avgust",
+      "sections": [
+        {
+          "heading": "Nima saqlanadi",
+          "body": [
+            "Pochta manzilingiz. Parolingizning xeshi — Argon2id, hech qachon parolning o‘zi emas. Ismingiz, tilingiz, mavzuingiz, vaqt mintaqangiz, tanlagan qoringiz va o‘qiyman degan vaqtingiz.",
+            "Ahdingiz: hajmi, sanalari, dam kunlari va ruxsat miqdori, hamda unga kiritilgan har bir o‘zgarishning o‘zgarmas tarixi. Taraqqiyotingiz: qaysi sahifalarni yodlagansiz va har biri qanchalik mustahkam.",
+            "Seanslaringiz — qayerda kirganingizni ko‘rib, ularni tugatishingiz uchun: har bir seans tokenining xeshi hamda uni yaratgan brauzer va IP. Kirish hodisalari — parolini topishga urinilayotgan hisobni qulflay olishimiz uchun."
+          ]
+        },
+        {
+          "heading": "Nima saqlanmaydi",
+          "body": [
+            "Reklama identifikatorlari yo‘q. Uchinchi tomon kuzatuv skriptlari yo‘q. Hech narsa sotilmaydi va hech kimga berilmaydi — chunki sotadigan odam ham yo‘q, bunday reja ham yo‘q.",
+            "Hisobsiz Qur’on o‘qish bizning tomonimizda umuman hech narsa saqlamaydi. Belgilagan sahifalaringiz o‘z brauzeringizda qoladi."
+          ]
+        },
+        {
+          "heading": "Qayerda turadi",
+          "body": [
+            "Germaniyaning Frankfurt shahrida Neon xosting qilayotgan PostgreSQL ma’lumotlar bazasida, va xuddi shu shahardan Vercel orqali uzatiladi. Tasdiqlash kodlari Gmail orqali yuboriladi."
+          ]
+        },
+        {
+          "heading": "Qaytarib olish yoki butunlay o‘chirish",
+          "body": [
+            "Hammasini JSON yoki CSV holida yuklab olishingiz mumkin. Hisobingizni o‘chirishingiz mumkin, va o‘chirish — bu chinakam o‘chirish: qatorlar yashirilgan deb belgilanmaydi, olib tashlanadi, ularga bog‘langan hamma narsa bilan birga."
+          ]
+        },
+        {
+          "heading": "Elektron pochta",
+          "body": [
+            "Biz tasdiqlash kodlari, parol tiklash xatlari va — o‘zingiz yoqsangiz — kunlik eslatmalar hamda haftalik hisobotlar yuboramiz. Boshqa hech narsa. Axborot byulleteni ham, reklama ham yo‘q."
+          ]
+        },
+        {
+          "heading": "Bolalar",
+          "body": [
+            "Ahd Qur’on yodlayotgan har kim uchun, shu jumladan ustoz yoki ota-ona bilan o‘qiyotgan bolalar uchun ham. Biz hisobga zarur bo‘lganidan ortiq narsa so‘ramaymiz."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "title": "Shartlar",
+      "lead": "Qisqa, chunki rozilik bildiradigan narsa ko‘p emas.",
+      "updated": "So‘nggi yangilanish: 2026-yil 23-avgust",
+      "sections": [
+        {
+          "heading": "Ahd nima",
+          "body": [
+            "Qur’on yodlashni rejalashtirish va uni saqlab qolish uchun bepul vosita. U ustoz emas va ustoz o‘rnini bosmaydi. Bu yerdagi hech narsa diniy hukm emas."
+          ]
+        },
+        {
+          "heading": "Ahd qoidasi",
+          "body": [
+            "Ahd tuzganingizda siz ataylab o‘zingizga cheklov tanlaysiz. Muddat faqat yaqinlashishi mumkin va bu interfeysda emas, ma’lumotlar bazasida qat’iy. Iltimos, uni uzaytirishni so‘ramang — biz uddalay olmaymiz, va rad javobning o‘zi maqsad.",
+            "Agar reja chinakam imkonsiz bo‘lib qolsa, hajmini bir marta kamaytirishingiz yoki uni tark etib yangidan boshlashingiz mumkin. Tark etilgan reja qayergacha yetganingiz bilan birga tarixingizda halol qoladi."
+          ]
+        },
+        {
+          "heading": "Hisobingiz",
+          "body": [
+            "Parolingizni o‘zingizda saqlang. Hisobingiz ostida sodir bo‘lgan narsalar uchun siz javobgarsiz. Kimdir unga kirgan deb o‘ylasangiz, xabar bering — barcha seanslarni tugatishga yordam beramiz."
+          ]
+        },
+        {
+          "heading": "Qur’on matni",
+          "body": [
+            "Arabcha matn va tarjimalar o‘z manbalaridan olingan va ularniki bo‘lib qoladi. Ular o‘qish va o‘rganish uchun taqdim etiladi. Xato topsangiz, xabar bering — biz buni shoshilinch deb bilamiz."
+          ]
+        },
+        {
+          "heading": "Kafolat yo‘q",
+          "body": [
+            "Ahd qanday bo‘lsa, shundayligicha taqdim etiladi. Uni to‘g‘ri va ishlaydigan holda saqlashga astoydil harakat qilamiz, lekin u hech qachon xato qilmaydi yoki hech qachon o‘chmaydi deb va’da bera olmaymiz. Uni hifzingizning yagona yozuvi sifatida ko‘rmang."
+          ]
+        },
+        {
+          "heading": "O‘zgarishlar",
+          "body": [
+            "Agar bu shartlar ahamiyatli tarzda o‘zgarsa, sizga jimgina emas, dastur ichida aytiladi. Shundan keyin Ahddan foydalanishda davom etishingiz o‘zgarishga rozilik bildirganingizni bildiradi."
+          ]
+        }
+      ]
     }
   }
 }
