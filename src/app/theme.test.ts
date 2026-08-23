@@ -5,16 +5,20 @@ import { describe, expect, it } from "vitest";
 /**
  * The theme must survive a language switch.
  *
- * Choosing English used to throw a light-theme reader into the dark. The cause
- * was one attribute: the locale layout rendered `data-theme="dark"` on <html>,
- * which made React the owner of it — and switching language is a client
- * navigation through the `[locale]` segment, so React re-rendered the layout
- * and reconciled the attribute back to its server value, discarding the
- * reader's choice.
+ * Choosing English threw a light-theme reader into the dark. Removing
+ * `data-theme="dark"` from the server render was the obvious fix and it was not
+ * enough: watching a real browser showed React *removing* the attribute on the
+ * client re-render — the locale is a segment of the root layout, so switching
+ * language re-renders <html>, and React drops attributes it does not own.
  *
- * The attribute now belongs to the inline script and the toggle. React never
- * renders it, so React never resets it. This test reads the source because the
- * bug is a property of what is rendered, not of what any component returns.
+ * So the arrangement has three parts, and all three have to stay: the attribute
+ * is not rendered, an inline script sets it before first paint, and ThemeGuard
+ * puts it back when React takes it away.
+ *
+ * These read the source, because the bug is a property of what is rendered
+ * rather than of what any component returns. The behaviour itself is covered by
+ * scripts/observe-theme.ts, which drives a real browser through every language,
+ * theme and device preference — this file cannot catch a React reconciliation.
  */
 
 const layout = readFileSync(
@@ -50,6 +54,22 @@ describe("the theme", () => {
 
   it("falls back to the system preference rather than to a fixed theme", () => {
     expect(layout).toMatch(/prefers-color-scheme/);
+  });
+
+  it("mounts the guard that restores it after a locale re-render", () => {
+    /* Without this, React removes the attribute when the language changes and
+       nothing puts it back — the reader stays in the wrong theme until they
+       reload. Verified against a real browser in scripts/observe-theme.ts. */
+    expect(layout).toMatch(/<ThemeGuard\s*\/>/);
+    expect(layout).toMatch(/from "@\/components\/site\/theme-guard"/);
+
+    const guard = readFileSync(
+      path.join(process.cwd(), "src/components/site/theme-guard.tsx"),
+      "utf8",
+    );
+    /* Before paint, or the restored theme arrives a frame late and flashes. */
+    expect(guard).toMatch(/useLayoutEffect/);
+    expect(guard).toMatch(/MutationObserver/);
   });
 
   it("has a stylesheet that renders correctly while the attribute is absent", () => {

@@ -23,7 +23,8 @@
     "brand:build": "tsx scripts/build-brand-assets.ts",
     "quran:mutashabihat": "tsx scripts/build-mutashabihat.ts",
     "verify:practice": "tsx scripts/verify-practice.ts",
-    "verify:practice:live": "tsx scripts/verify-practice-live.ts"
+    "verify:practice:live": "tsx scripts/verify-practice-live.ts",
+    "observe:theme": "tsx scripts/observe-theme.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
@@ -57,6 +58,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.2",
     "pg": "^8.16.5",
+    "playwright-core": "^1.62.1",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "sharp": "^0.35.3",

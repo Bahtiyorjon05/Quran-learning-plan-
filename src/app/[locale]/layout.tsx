@@ -4,6 +4,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Amiri, Cormorant_Garamond, Inter } from "next/font/google";
 
+import { ThemeGuard } from "@/components/site/theme-guard";
 import { routing, localeDir, localeTag, type Locale } from "@/i18n/routing";
 import "../globals.css";
 
@@ -111,13 +112,11 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={localeDir[locale]}
-      /* No data-theme here, deliberately.
-         Rendering it server-side made React own the attribute, so every client
-         navigation reconciled it back to "dark" — and switching language is a
-         client navigation, which is why choosing English threw a light-theme
-         reader into the dark. The attribute belongs to the inline script and
-         the toggle; React never renders it, so React never resets it. The CSS
-         falls back to the system preference while it is absent. */
+      /* No data-theme here: it is set by the inline script below, before
+         paint, from what the reader actually chose. React re-renders this
+         element whenever the locale changes and drops attributes it does not
+         own, so ThemeGuard puts it back — see that file for why removing it
+         from the server render was not enough on its own. */
       suppressHydrationWarning
       className={`${inter.variable} ${cormorant.variable} ${amiri.variable}`}
     >
@@ -125,7 +124,10 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-dvh antialiased">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <ThemeGuard />
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );
