@@ -438,6 +438,24 @@
       "hint": "Bu yerda sahifani belgilash ahdingiz taraqqiyotini ham siljitadi.",
       "openPage": "{page}-sahifani ochish",
       "browse": "Koʻrib chiqish"
+    },
+    "today": {
+      "heading": "Bugun",
+      "restDay": "Dam kuni. Hech qanday qarz yo‘q.",
+      "restDayBody": "Bu hafta kunida yod olmaslikni tanlagansiz. Xohlasangiz, takror baribir shu yerda.",
+      "allDone": "Bugun tugallandi.",
+      "allDoneBody": "Uchta majburiyat — hammasi bajarildi. Ertaga qaytib keling.",
+      "streak": "{count} kunlik ketma-ketlik",
+      "markDone": "Bajarildi deb belgilash",
+      "undo": "Qaytarish",
+      "done": "Bajarildi",
+      "openPage": "Ochish",
+      "sabaqRange": "{page}-sahifa · {from}–{to}-qatorlar",
+      "sabaqSpan": "{fromPage}–{toPage}-sahifalar · {lines} qator",
+      "nothingNew": "Yangi narsa qolmadi — hajmingiz tugadi.",
+      "nothingToRevise": "Hozircha takrorlaydigan narsa yo‘q. Bir narsa yodlaganingizdan keyin boshlanadi.",
+      "pageList": "{count} sahifa",
+      "noPlan": "Siz hali ahd tuzmagansiz."
     }
   },
   "onboarding": {

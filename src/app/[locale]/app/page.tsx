@@ -25,7 +25,10 @@ import { buttonStyles } from "@/components/ui/button";
 import { Measure } from "@/components/ui/section";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { logoutAction, logoutEverywhereAction } from "./actions";
+import { logoutEverywhereAction } from "./actions";
+import { loadToday } from "./today";
+import { DailySheet, type TrackView } from "@/components/app/daily-sheet";
+import { describeLineRange, pageOfLine } from "@/core/quran/mushaf";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("nav");
@@ -73,6 +76,74 @@ function describeDevice(userAgent: string | null, fallback: string) {
   return browser ?? platform ?? fallback;
 }
 
+/**
+ * Turns today's sheet into what the three cards need.
+ *
+ * A track with nothing owed is still shown, dimmed, rather than hidden: seeing
+ * that revision is empty because nothing has been memorized yet teaches the
+ * shape of the day better than an absence would.
+ */
+function buildTracks(
+  today: NonNullable<Awaited<ReturnType<typeof loadToday>>>,
+  ta: Awaited<ReturnType<typeof getTranslations>>,
+): TrackView[] {
+  const { sheet, done } = today;
+
+  let sabaqDetail: string | null = null;
+  let sabaqPages: number[] = [];
+  if (sheet.sabaq) {
+    const span = describeLineRange(sheet.sabaq.fromLine, sheet.sabaq.toLine);
+    sabaqPages = [span.fromPage];
+    sabaqDetail = span.singlePage
+      ? ta("today.sabaqRange", {
+          page: span.fromPage,
+          from: span.fromLineOnPage,
+          to: span.toLineOnPage,
+        })
+      : ta("today.sabaqSpan", {
+          fromPage: span.fromPage,
+          toPage: span.toPage,
+          lines: span.lines,
+        });
+  }
+
+  /* A handful of pages read better as their own numbers; a juz-sized list reads
+     better as a count. */
+  const listDetail = (pages: number[]) =>
+    pages.length === 0
+      ? null
+      : pages.length <= 5
+        ? pages.join(", ")
+        : `${pages[0]}–${pages[pages.length - 1]} · ${ta("today.pageList", { count: pages.length })}`;
+
+  return [
+    {
+      id: "sabaq",
+      arabic: "سبق",
+      detail: sabaqDetail,
+      pages: sabaqPages,
+      done: done.sabaq,
+      empty: !sheet.sabaq,
+    },
+    {
+      id: "sabqi",
+      arabic: "سبقي",
+      detail: listDetail(sheet.sabqi),
+      pages: sheet.sabqi,
+      done: done.sabqi,
+      empty: sheet.sabqi.length === 0,
+    },
+    {
+      id: "manzil",
+      arabic: "منزل",
+      detail: listDetail(sheet.manzil),
+      pages: sheet.manzil,
+      done: done.manzil,
+      empty: sheet.manzil.length === 0,
+    },
+  ];
+}
+
 export default async function AppHomePage() {
   const user = await requireOnboardedUser();
   const ta = await getTranslations("app");
@@ -113,6 +184,8 @@ export default async function AppHomePage() {
         studyDaysMask: covenant.studyDaysMask,
       })
     : null;
+
+  const sheet = await loadToday(user.id);
 
   const active = await db
     .select({
@@ -254,37 +327,19 @@ export default async function AppHomePage() {
                   </>
                 )}
 
-                {/* The three tracks. Dimmed until the daily sheet is generated,
-                    so the empty state teaches the layout it will take. */}
-                <ul className="mt-7 space-y-2.5">
-                  {tracks.map(({ ar, name, role, Icon }) => (
-                    <li
-                      key={name}
-                      className="flex items-center gap-3.5 rounded-xl border border-dashed border-[var(--line-strong)] px-3.5 py-3 opacity-55"
-                    >
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-[var(--line-subtle)] bg-[var(--surface-overlay)]">
-                        <Icon
-                          className="h-4 w-4 text-[var(--text-faint)]"
-                          strokeWidth={1.6}
-                        />
-                      </span>
-                      <span className="flex min-w-0 flex-1 items-baseline gap-2">
-                        <span
-                          className="font-arabic text-[0.9375rem] leading-none text-[var(--text-faint)]"
-                          aria-hidden
-                        >
-                          {ar}
-                        </span>
-                        <span className="text-sm font-medium text-[var(--text-default)]">
-                          {name}
-                        </span>
-                      </span>
-                      <span className="shrink-0 text-[0.625rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
-                        {role}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                {covenant && sheet && (
+                  <div className="mt-8 border-t border-[var(--line-subtle)] pt-7">
+                    <DailySheet
+                      tracks={buildTracks(sheet, ta)}
+                      streak={sheet.streak}
+                      complete={
+                        (sheet.sheet.sabaq === null || sheet.done.sabaq) &&
+                        (sheet.sheet.sabqi.length === 0 || sheet.done.sabqi) &&
+                        (sheet.sheet.manzil.length === 0 || sheet.done.manzil)
+                      }
+                    />
+                  </div>
+                )}
               </div>
             </section>
 

@@ -438,6 +438,24 @@
       "hint": "Marking a page here moves your covenant's progress.",
       "openPage": "Open page {page}",
       "browse": "Browse"
+    },
+    "today": {
+      "heading": "Today",
+      "restDay": "A rest day. Nothing is owed.",
+      "restDayBody": "You chose not to memorize on this weekday. Revision is still here if you want it.",
+      "allDone": "Today is complete.",
+      "allDoneBody": "Three obligations, all met. Come back tomorrow.",
+      "streak": "{count} day streak",
+      "markDone": "Mark done",
+      "undo": "Undo",
+      "done": "Done",
+      "openPage": "Open",
+      "sabaqRange": "Page {page} · lines {from}–{to}",
+      "sabaqSpan": "Pages {fromPage}–{toPage} · {lines} lines",
+      "nothingNew": "Nothing new left — your scope is finished.",
+      "nothingToRevise": "Nothing to revise yet. It begins once you have memorized something.",
+      "pageList": "{count} pages",
+      "noPlan": "You have not made a covenant yet."
     }
   },
   "onboarding": {
