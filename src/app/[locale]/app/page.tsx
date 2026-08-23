@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import {
+  ArrowRight,
   BadgeCheck,
   Layers,
   LogOut,
@@ -12,7 +13,10 @@ import {
 } from "lucide-react";
 
 import { db } from "@/db/client";
-import { sessions } from "@/db/schema";
+import { plans, profiles, sessions } from "@/db/schema";
+import { todayIn } from "@/core/date/civil";
+import { computePace } from "@/core/plan/pace";
+import { countStudyDays as countStudyDaysBetween } from "@/core/plan/schedule";
 import { requireOnboardedUser } from "@/auth/guard";
 import { Wordmark } from "@/components/brand/logo";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
@@ -74,6 +78,41 @@ export default async function AppHomePage() {
   const ta = await getTranslations("app");
   const tn = await getTranslations("nav");
   const tt = await getTranslations("landing.tracks");
+  const tp = await getTranslations("app.pace");
+
+  const [covenant] = await db
+    .select()
+    .from(plans)
+    .where(and(eq(plans.userId, user.id), eq(plans.status, "active")))
+    .limit(1);
+
+  const [profile] = await db
+    .select({ timeZone: profiles.timeZone })
+    .from(profiles)
+    .where(eq(profiles.userId, user.id))
+    .limit(1);
+
+  const today = todayIn(profile?.timeZone ?? "Asia/Tashkent");
+
+  const pace = covenant
+    ? computePace({
+        totalLines: covenant.totalLines,
+        completedLines: covenant.completedLines,
+        /* The portion agreed at signing, recovered from the original deadline —
+           it is what pressure is measured against, and it must not drift when
+           the deadline is later pulled closer. */
+        originalDailyLines: Math.max(
+          1,
+          Math.ceil(
+            covenant.totalLines /
+              Math.max(1, countStudyDaysBetween(covenant.startDate, covenant.originalEndDate, covenant.studyDaysMask)),
+          ),
+        ),
+        today,
+        endDate: covenant.currentEndDate,
+        studyDaysMask: covenant.studyDaysMask,
+      })
+    : null;
 
   const active = await db
     .select({
@@ -139,7 +178,7 @@ export default async function AppHomePage() {
           </div>
 
           <div className="mt-10 grid gap-5 lg:grid-cols-[1.35fr_1fr] lg:items-start">
-            {/* ── The covenant, not yet made ── */}
+            {/* ── The covenant ── */}
             <section className="animate-rise relative overflow-hidden rounded-2xl border border-[var(--line-strong)] bg-[linear-gradient(160deg,var(--surface-raised),var(--surface-base))] p-6 [animation-delay:80ms] sm:p-8">
               <div
                 aria-hidden
@@ -151,21 +190,87 @@ export default async function AppHomePage() {
                   <h2 className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--text-strong)]">
                     {ta("covenant.title")}
                   </h2>
-                  <span className="shrink-0 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-1 text-[0.625rem] font-semibold tracking-[0.12em] text-gold-ink uppercase">
-                    {ta("covenant.upcoming")}
-                  </span>
+                  {pace && (
+                    <span
+                      className={cn(
+                        "shrink-0 rounded-full border px-2.5 py-1 text-[0.625rem] font-semibold tracking-[0.12em] uppercase",
+                        pace.band === "ahead" || pace.band === "done"
+                          ? "border-[var(--accent)]/35 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
+                          : pace.band === "onTrack"
+                            ? "border-[var(--line-strong)] text-[var(--text-muted)]"
+                            : pace.band === "tightening"
+                              ? "border-gold-500/35 bg-gold-500/10 text-gold-ink"
+                              : "border-clay-500/40 bg-clay-500/10 text-danger",
+                      )}
+                    >
+                      {tp(pace.band)}
+                    </span>
+                  )}
                 </div>
 
-                <p className="mt-3 text-[0.9375rem] text-[var(--text-default)]">
-                  {ta("covenant.empty")}
-                </p>
-                <p className="mt-2 max-w-prose text-sm leading-relaxed text-[var(--text-muted)]">
-                  {ta("covenant.soon")}
-                </p>
+                {!covenant || !pace ? (
+                  <>
+                    <p className="mt-3 text-[0.9375rem] text-[var(--text-default)]">
+                      {ta("covenant.empty")}
+                    </p>
+                    <p className="mt-2 max-w-prose text-sm leading-relaxed text-[var(--text-muted)]">
+                      {ta("covenant.soon")}
+                    </p>
 
-                {/* The three tracks, dimmed. This is the shape the page takes
-                    once a plan exists, so the empty state teaches the layout
-                    instead of just apologising for being empty. */}
+                    <Link
+                      href="/app/plan/new"
+                      className={buttonStyles({ size: "lg", className: "group mt-7 w-full sm:w-auto" })}
+                    >
+                      {ta("covenant.start")}
+                      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 rtl:rotate-180" />
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-4 text-xs text-[var(--text-muted)]">{tp("finishBy")}</p>
+                    <p className="font-[family-name:var(--font-display)] text-[2rem] leading-none font-light text-[var(--text-strong)]">
+                      {new Intl.DateTimeFormat(user.locale === "uz" ? "uz-UZ" : user.locale === "ru" ? "ru-RU" : "en-US", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        timeZone: "UTC",
+                      }).format(new Date(`${covenant.currentEndDate}T00:00:00Z`))}
+                    </p>
+
+                    <div className="mt-6">
+                      <div className="flex items-baseline justify-between text-xs text-[var(--text-muted)] tabular-nums">
+                        <span>{tp("progress", { percent: Math.round(pace.progress * 100) })}</span>
+                        <span>{tp("remaining", { lines: pace.remainingLines })}</span>
+                      </div>
+                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-strong)_8%,transparent)]">
+                        <div
+                          className="h-full rounded-full bg-[linear-gradient(90deg,var(--color-emerald-600),var(--accent))] transition-[width] duration-700"
+                          style={{ width: `${Math.max(1, Math.round(pace.progress * 100))}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex items-end justify-between gap-4 border-t border-[var(--line-subtle)] pt-5">
+                      <p className="font-[family-name:var(--font-display)] text-xl font-light text-[var(--accent-strong)] tabular-nums">
+                        {tp("requiredNow", { lines: pace.requiredDailyLines })}
+                      </p>
+                      <p className="shrink-0 text-xs text-[var(--text-faint)] tabular-nums">
+                        {pace.daysBanked >= 0
+                          ? tp("banked", { count: pace.daysBanked })
+                          : tp("owed", { count: Math.abs(pace.daysBanked) })}
+                      </p>
+                    </div>
+
+                    {covenant.niyyah && (
+                      <p className="mt-6 border-t border-[var(--line-subtle)] pt-5 text-[0.875rem] leading-relaxed text-[var(--text-muted)] italic">
+                        “{covenant.niyyah}”
+                      </p>
+                    )}
+                  </>
+                )}
+
+                {/* The three tracks. Dimmed until the daily sheet is generated,
+                    so the empty state teaches the layout it will take. */}
                 <ul className="mt-7 space-y-2.5">
                   {tracks.map(({ ar, name, role, Icon }) => (
                     <li

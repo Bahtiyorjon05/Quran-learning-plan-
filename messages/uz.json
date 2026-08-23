@@ -399,7 +399,8 @@
       "title": "Sizning ahdingiz",
       "empty": "Siz hali ahd tuzmagansiz.",
       "soon": "Keyingi navbatda reja ustasi quriladi. U tayyor boʻlganda siz hajm va tugash sanasini tanlaysiz, niyatingizni yozasiz, bu sahifa esa kunlik varaqangizga aylanadi.",
-      "upcoming": "Tez orada"
+      "upcoming": "Tez orada",
+      "start": "Ahdingizni tuzing"
     },
     "account": {
       "title": "Hisob",
@@ -411,6 +412,20 @@
       "unknownDevice": "Nomaʼlum qurilma",
       "signOutEverywhere": "Hamma joydan chiqish",
       "note": "Hamma joydan chiqish barcha seanslarni, shu jumladan shu qurilmani ham tugatadi."
+    },
+    "pace": {
+      "ahead": "Oldinda",
+      "onTrack": "Rejada",
+      "tightening": "Qisilyapti",
+      "atRisk": "Xavf ostida",
+      "done": "Tugallandi",
+      "requiredNow": "Endi kuniga {lines} qator",
+      "remaining": "{lines} qator qoldi",
+      "banked": "{count} kun zaxirada",
+      "owed": "{count} kunni qoplash kerak",
+      "progress": "{percent}% yodlangan",
+      "finishBy": "Tugatish sanasi",
+      "amend": "Sizning ahdingiz"
     }
   },
   "onboarding": {
@@ -435,5 +450,98 @@
     "title": "Bunday sahifa yoʻq",
     "body": "Havola eskirgan yoki manzil notoʻgʻri yozilgan boʻlishi mumkin.",
     "home": "Bosh sahifaga"
+  },
+  "plan": {
+    "new": {
+      "title": "Ahdingizni tuzing",
+      "steps": {
+        "niyyah": "Niyat",
+        "scope": "Hajm",
+        "pace": "Surʼat",
+        "rhythm": "Tartib",
+        "sign": "Ahd"
+      },
+      "back": "Orqaga",
+      "next": "Davom etish",
+      "stepOf": "{total} qadamdan {current}-si"
+    },
+    "niyyah": {
+      "title": "Buni nima uchun qilyapsiz?",
+      "subtitle": "Oʻz soʻzlaringiz bilan yozing. Qiyin tonglarda Ahd buni sizga qaytarib koʻrsatadi.",
+      "label": "Niyatingiz",
+      "placeholder": "Masalan: Qurʼon umrimning oxirigacha men bilan boʻlishi uchun va farzandlarim uni mendan eshitishi uchun.",
+      "hint": "Buni faqat siz oʻqiysiz. Boʻsh qoldirib, keyinroq ham yozishingiz mumkin."
+    },
+    "scope": {
+      "title": "Nimani yod olasiz?",
+      "subtitle": "Buni keyinroq bir marta kamaytirishingiz mumkin. Koʻpaytirish esa — hech qachon.",
+      "full": "Butun Qurʼon",
+      "fullDesc": "Barcha 30 juz, 604 sahifa",
+      "juzRange": "Juzlar oraligʻi",
+      "juzRangeDesc": "Qayerdan boshlab qayergacha ekanini tanlang",
+      "fromJuz": "Qaysi juzdan",
+      "toJuz": "Qaysi juzgacha",
+      "juzAmma": "Faqat 30-juz",
+      "juzAmmaDesc": "Nabaʼdan Nosgacha — koʻpchilik shundan boshlaydi",
+      "firstHalf": "1–15-juzlar",
+      "firstHalfDesc": "Musʼhafning birinchi yarmi",
+      "summary": "{pages} sahifa · {lines} qator"
+    },
+    "pace": {
+      "title": "Qancha vaqt olasiz?",
+      "subtitle": "Yillarni belgilang va kunlik ulushni koʻring, yoki ulushni belgilang va sanani koʻring. Bu bitta tugmaning ikki tomoni.",
+      "byDuration": "Muddat boʻyicha",
+      "byDose": "Kunlik ulush boʻyicha",
+      "duration": "Muddat",
+      "months": "{count} oy",
+      "years": "{count} yil",
+      "yearsAndMonths": "{years} yil {months} oy",
+      "dailyLines": "Kuniga qator",
+      "finishBy": "Tugatish sanangiz",
+      "perDay": "Kuniga {lines} qator",
+      "aboutPages": "taxminan {pages} sahifa",
+      "studyDays": "{count} mashgʻulot kuni",
+      "tooFast": "Bu kuniga 20 sahifadan koʻp. Buni deyarli hech kim uddalay olmaydi.",
+      "gentle": "Yengil",
+      "steady": "Barqaror",
+      "ambitious": "Jasur",
+      "intense": "Shiddatli"
+    },
+    "rhythm": {
+      "title": "Qaysi kunlar va qancha imkon?",
+      "subtitle": "Dam kunlari — halol narsa. Reja shunchaki qolgan kunlarni ogʻirroq qiladi.",
+      "studyDays": "Yod oladigan kunlaringiz",
+      "everyDay": "Har kuni",
+      "noDays": "Kamida bitta kunni tanlang",
+      "rukhsah": "Ruxsat kunlari",
+      "rukhsahValue": "Yiliga {count} kun",
+      "rukhsahNone": "Yoʻq",
+      "rukhsahHint": "Kasallik va safar boʻladi. Ruxsat kuni ketma-ketligingizni saqlaydi va oʻsha kungi majburiyatni olib tashlaydi — lekin muddatingizni baribir siljitmaydi.",
+      "rukhsahFixed": "Buni hozir belgilaysiz. Keyin hech qachon koʻpaytirib boʻlmaydi."
+    },
+    "sign": {
+      "title": "Mana nimaga rozilik bildiryapsiz",
+      "subtitle": "Buni bir marta, diqqat bilan oʻqing. Ahd tuzilgach, sana faqat yaqinlashishi mumkin.",
+      "scope": "Hajm",
+      "starts": "Boshlanishi",
+      "finishBy": "Tugatish sanasi",
+      "daily": "Har mashgʻulot kuni",
+      "days": "Mashgʻulot kunlari",
+      "rukhsah": "Ruxsat kunlari",
+      "niyyah": "Niyatingiz",
+      "noNiyyah": "Siz yozmadingiz.",
+      "warningTitle": "Muddat bir tomonlama",
+      "warningBody": "Ahd tuzgan daqiqadan boshlab bu sanani yaqinlashtira olasiz. Orqaga surish esa — hech qachon, bir kunga ham. Orqada qolsangiz, qolgan ish qolgan kunlarga qayta taqsimlanadi.",
+      "confirm": "Shu ahdni tuzaman",
+      "confirming": "Ahdingiz tuzilmoqda…"
+    },
+    "errors": {
+      "alreadyActive": "Sizda allaqachon faol ahd bor.",
+      "invalidScope": "Bu hajm mantiqqa toʻgʻri kelmaydi.",
+      "invalidDates": "Bu sanalar mantiqqa toʻgʻri kelmaydi.",
+      "noStudyDays": "Haftaning kamida bitta kunini tanlang.",
+      "tooFast": "Bu kunlik ulush hech kim uddalay olmaydigan darajada.",
+      "unknown": "Nimadir notoʻgʻri ketdi. Qayta urinib koʻring."
+    }
   }
 }

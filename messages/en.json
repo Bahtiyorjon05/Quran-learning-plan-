@@ -399,7 +399,8 @@
       "title": "Your covenant",
       "empty": "You have not made a covenant yet.",
       "soon": "The plan wizard is the next thing being built. When it lands you will choose a scope and an end date, write your intention, and this page becomes your daily sheet.",
-      "upcoming": "Coming next"
+      "upcoming": "Coming next",
+      "start": "Make your covenant"
     },
     "account": {
       "title": "Account",
@@ -411,6 +412,20 @@
       "unknownDevice": "Unknown device",
       "signOutEverywhere": "Sign out everywhere",
       "note": "Signing out everywhere ends every session, including this one."
+    },
+    "pace": {
+      "ahead": "Ahead",
+      "onTrack": "On track",
+      "tightening": "Tightening",
+      "atRisk": "At risk",
+      "done": "Complete",
+      "requiredNow": "{lines} lines a day now",
+      "remaining": "{lines} lines left",
+      "banked": "{count} days banked",
+      "owed": "{count} days to make up",
+      "progress": "{percent}% memorized",
+      "finishBy": "Finish by",
+      "amend": "Your covenant"
     }
   },
   "onboarding": {
@@ -435,5 +450,98 @@
     "title": "This page does not exist",
     "body": "The link may be old, or the address mistyped.",
     "home": "Go home"
+  },
+  "plan": {
+    "new": {
+      "title": "Make your covenant",
+      "steps": {
+        "niyyah": "Intention",
+        "scope": "Scope",
+        "pace": "Pace",
+        "rhythm": "Rhythm",
+        "sign": "Sign"
+      },
+      "back": "Back",
+      "next": "Continue",
+      "stepOf": "Step {current} of {total}"
+    },
+    "niyyah": {
+      "title": "Why are you doing this?",
+      "subtitle": "Write it in your own words. On the mornings when it is hard, Ahd will show this back to you.",
+      "label": "Your intention",
+      "placeholder": "For example: so that the Qur'an is with me for the rest of my life, and so my children hear it from me.",
+      "hint": "Only you will ever read this. You can leave it blank and add it later."
+    },
+    "scope": {
+      "title": "What are you memorizing?",
+      "subtitle": "You can shrink this later, once. You can never grow it.",
+      "full": "The whole Qur'an",
+      "fullDesc": "All 30 juz, 604 pages",
+      "juzRange": "A range of juz",
+      "juzRangeDesc": "Pick where to begin and where to stop",
+      "fromJuz": "From juz",
+      "toJuz": "To juz",
+      "juzAmma": "Juz 30 only",
+      "juzAmmaDesc": "An-Naba to An-Nas — where most people begin",
+      "firstHalf": "Juz 1–15",
+      "firstHalfDesc": "The first half of the mushaf",
+      "summary": "{pages} pages · {lines} lines"
+    },
+    "pace": {
+      "title": "How long will you take?",
+      "subtitle": "Set the years and see the daily portion, or set the portion and see the date. They are the same dial.",
+      "byDuration": "By how long",
+      "byDose": "By daily portion",
+      "duration": "Duration",
+      "months": "{count} months",
+      "years": "{count} years",
+      "yearsAndMonths": "{years} years, {months} months",
+      "dailyLines": "Lines a day",
+      "finishBy": "You would finish by",
+      "perDay": "{lines} lines a day",
+      "aboutPages": "about {pages} pages",
+      "studyDays": "{count} study days",
+      "tooFast": "That is more than 20 pages a day. Almost nobody keeps that.",
+      "gentle": "Gentle",
+      "steady": "Steady",
+      "ambitious": "Ambitious",
+      "intense": "Intense"
+    },
+    "rhythm": {
+      "title": "Which days, and how much grace?",
+      "subtitle": "Rest days are honest — the plan simply makes the other days heavier.",
+      "studyDays": "Days you will memorize",
+      "everyDay": "Every day",
+      "noDays": "Choose at least one day",
+      "rukhsah": "Rukhsah days",
+      "rukhsahValue": "{count} days a year",
+      "rukhsahNone": "None",
+      "rukhsahHint": "Illness and travel happen. A rukhsah day protects your streak and lifts that day's obligation — and still does not move your deadline.",
+      "rukhsahFixed": "You are fixing this now. It can never be topped up."
+    },
+    "sign": {
+      "title": "This is what you are agreeing to",
+      "subtitle": "Read it once, properly. After you sign, the date can only ever move closer.",
+      "scope": "Scope",
+      "starts": "Starts",
+      "finishBy": "Finish by",
+      "daily": "Every study day",
+      "days": "Study days",
+      "rukhsah": "Rukhsah days",
+      "niyyah": "Your intention",
+      "noNiyyah": "You did not write one.",
+      "warningTitle": "The deadline is one-directional",
+      "warningBody": "From the moment you sign, you may pull this date closer. You may never push it back — not once, not by a single day. If you fall behind, the remaining work redistributes across the days you have left.",
+      "confirm": "I make this covenant",
+      "confirming": "Making your covenant…"
+    },
+    "errors": {
+      "alreadyActive": "You already have an active covenant.",
+      "invalidScope": "That scope does not make sense.",
+      "invalidDates": "Those dates do not make sense.",
+      "noStudyDays": "Choose at least one day of the week.",
+      "tooFast": "That daily portion is beyond what anyone sustains.",
+      "unknown": "Something went wrong. Please try again."
+    }
   }
 }
