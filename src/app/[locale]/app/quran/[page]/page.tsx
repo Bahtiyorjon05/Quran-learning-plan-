@@ -12,7 +12,6 @@ import { AppHeader } from "@/components/app/app-header";
 import { PageView } from "@/components/quran/page-view";
 import { MemorizeToggle } from "@/components/quran/memorize-toggle";
 import { ReaderControls } from "@/components/quran/reader-controls";
-import { TajweedLegend } from "@/components/quran/tajweed-legend";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -116,14 +115,13 @@ export default async function AppQuranPage({ params }: Params) {
 
       <Measure className="py-6">
         <div className="mx-auto max-w-2xl">
-          {/* The same controls as the public reader, so size, translation and
-              tajweed cannot drift between the two. What is extra here is the
-              marking, which writes to the covenant rather than to this browser. */}
+          {/* The same controls as the public reader, so size and translation
+              cannot drift between the two. What is extra here is the marking,
+              which writes to the covenant rather than to this browser. */}
           <div className="flex flex-wrap items-center justify-end gap-2">
             <ReaderControls page={page} />
             <MemorizeToggle page={page} memorized={Boolean(unit)} />
           </div>
-          <TajweedLegend />
         </div>
       </Measure>
 

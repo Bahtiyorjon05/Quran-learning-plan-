@@ -499,7 +499,25 @@
       "subtitle": "Bu asosiy qori boʻladi. Istagan payt oʻzgartirasiz, har sura uchun boshqasini ham tanlashingiz mumkin."
     },
     "submit": "Yakunlash va boshlash",
-    "submitting": "Saqlanmoqda…"
+    "submitting": "Saqlanmoqda…",
+    "tracks": {
+      "sabaq": {
+        "name": "Sabaq",
+        "arabic": "سبق",
+        "what": "Bugungi yangi ulush — qatorgacha aniq oʻlchangan."
+      },
+      "sabqi": {
+        "name": "Sabqiy",
+        "arabic": "سبقي",
+        "what": "Soʻnggi yetti kun — hali yoʻqotish oson boʻlgan paytda qayta oʻqiladi."
+      },
+      "manzil": {
+        "name": "Manzil",
+        "arabic": "منزل",
+        "what": "Yodlagan hamma narsa — oyiga bir marta, eng zaifidan boshlab."
+      }
+    },
+    "laterNote": "Ikkala javobni ham istagan payt oʻzgartirasiz. Ular ahdning bir qismi emas — ahd keyin tuziladi va uning shartlarini faqat siz belgilaysiz."
   },
   "error": {
     "title": "Nimadir notoʻgʻri ketdi",
@@ -639,37 +657,7 @@
       "markedHint": "Shu qurilmada saqlandi. Hamma joyda saqlanishi uchun tizimga kiring.",
       "translationBy": "Tarjima: {name}",
       "sajda": "Sajda",
-      "jumpToPage": "Sahifaga oʻtish",
-      "tajweed": "Tajvid",
-      "tajweedHint": "Tajvid qoidalarini ranglash"
-    },
-    "tajweedRules": {
-      "heading": "Ranglar nimani bildiradi",
-      "note": "Oʻn yetti qoida emas, olti guruh — yodda tutsa boʻladigan izoh. Ranglash oʻqishga yordam beradi; matn har ikki holatda ham bir xil.",
-      "madd": {
-        "name": "Madd",
-        "what": "Choʻzilib oʻqiladigan unli — ikki, toʻrt yoki olti harakat."
-      },
-      "ghunnah": {
-        "name": "Gʻunna",
-        "what": "Burun orqali chiqadigan tovush — shaddali nun va mimda."
-      },
-      "idgham": {
-        "name": "Idgʻom",
-        "what": "Bir harf keyingi harfga qoʻshilib ketadi."
-      },
-      "ikhfa": {
-        "name": "Ixfo",
-        "what": "Harf na ochiq, na qoʻshilgan — yashirin oʻqiladi."
-      },
-      "qalqalah": {
-        "name": "Qalqala",
-        "what": "Sokin qof, to, bo, jim va dolda yengil aks-sado."
-      },
-      "silent": {
-        "name": "Oʻqilmaydi",
-        "what": "Yozilgan, lekin talaffuz qilinmaydi — vasl hamzasi, quyosh lomi."
-      }
+      "jumpToPage": "Sahifaga oʻtish"
     }
   },
   "pages": {
@@ -955,6 +943,8 @@
     "bank": "Bularni joyiga qoʻying",
     "bankHelp": "Soʻzni bosing — u keyingi boʻshliqqa tushadi. Toʻldirilganini bossangiz, qaytib chiqadi.",
     "slotEmpty": "{number}-boʻshliq",
-    "slotFilled": "Qoʻyildi: {word}. Qaytarish uchun bosing."
+    "slotFilled": "Qoʻyildi: {word}. Qaytarish uchun bosing.",
+    "slotLeftEmpty": "boʻsh qoldirildi",
+    "bankDone": "Barcha boʻshliqlar toʻldirildi — tayyor boʻlsangiz, davom eting."
   }
 }

@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import { buttonStyles } from "@/components/ui/button";
+import { HeroBackdrop } from "./hero-backdrop";
 import { TodayPreview } from "./today-preview";
 import { cn } from "@/lib/utils";
 
@@ -18,13 +19,7 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden pt-28 pb-20 sm:pt-36 lg:pt-44 lg:pb-28">
-      {/* ── Ground: a slow emerald dawn behind a girih lattice ── */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="animate-breathe absolute start-1/2 top-[-22rem] h-[46rem] w-[46rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,var(--halo),transparent_62%)] blur-3xl" />
-        <div className="absolute end-[-14rem] top-32 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--color-gold-500)_14%,transparent),transparent_65%)] blur-3xl" />
-        <div className="girih absolute inset-0 opacity-[0.035]" />
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-[linear-gradient(to_bottom,transparent,var(--surface-base))]" />
-      </div>
+      <HeroBackdrop />
 
       <div className="measure grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
         {/* ── Words ── */}

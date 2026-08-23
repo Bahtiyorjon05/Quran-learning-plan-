@@ -414,80 +414,186 @@
   display: none;
 }
 
-/* ── Tajweed ───────────────────────────────────────────────────────────────
-   Rule spans are always in the markup; only the colour is switched. Seventeen
-   rules are grouped into six families, because a legend a reader cannot hold in
-   mind is decoration rather than help.
-
-   Colour alone never carries the meaning: every span keeps a data-rule
-   attribute the legend names in words, and the text is legible unstyled — which
-   is also what someone with colour-blindness or a monochrome screen sees. */
-:root {
-  --tj-madd: oklch(0.55 0.16 255); /* elongation — blue */
-  --tj-ghunnah: oklch(0.56 0.15 315); /* nasalisation — violet */
-  --tj-idgham: oklch(0.52 0.15 150); /* merging — green */
-  --tj-ikhfa: oklch(0.58 0.15 45); /* concealment — amber */
-  --tj-qalqalah: oklch(0.55 0.19 25); /* echo — red */
-  --tj-silent: oklch(0.62 0.02 260); /* written, not sounded — grey */
+/* The signed-in tab bar is fixed to the bottom on phones, so the page needs
+   room under its last row. Done with :has() rather than a spacer element,
+   because the bar is rendered near the top of the tree and a spacer there
+   would open a gap in the wrong place. */
+body:has([data-app-tabbar]) {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --tj-madd: oklch(0.74 0.14 255);
-    --tj-ghunnah: oklch(0.76 0.13 315);
-    --tj-idgham: oklch(0.74 0.14 150);
-    --tj-ikhfa: oklch(0.79 0.13 65);
-    --tj-qalqalah: oklch(0.72 0.16 25);
-    --tj-silent: oklch(0.56 0.02 260);
+@media (min-width: 64rem) {
+  body:has([data-app-tabbar]) {
+    padding-bottom: 0;
   }
 }
 
-:root[data-theme="dark"] {
-  --tj-madd: oklch(0.74 0.14 255);
-  --tj-ghunnah: oklch(0.76 0.13 315);
-  --tj-idgham: oklch(0.74 0.14 150);
-  --tj-ikhfa: oklch(0.79 0.13 65);
-  --tj-qalqalah: oklch(0.72 0.16 25);
-  --tj-silent: oklch(0.56 0.02 260);
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE HERO GROUND
+   Four layers behind the first screen. See components/landing/hero-backdrop.
+   Every animation here is decorative, so every one of them stops under
+   prefers-reduced-motion at the end of this block.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Aurora ──
+   Three lights on different periods, deliberately coprime-ish (23s, 31s, 41s)
+   so the composition never visibly repeats. Animating `translate` rather than
+   `left`/`top` keeps it on the compositor. */
+.ahd-aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform;
 }
 
-:root[data-tajweed="on"] [data-tj="madd"] {
-  color: var(--tj-madd);
-}
-:root[data-tajweed="on"] [data-tj="ghunnah"] {
-  color: var(--tj-ghunnah);
-}
-:root[data-tajweed="on"] [data-tj="idgham"] {
-  color: var(--tj-idgham);
-}
-:root[data-tajweed="on"] [data-tj="ikhfa"] {
-  color: var(--tj-ikhfa);
-}
-:root[data-tajweed="on"] [data-tj="qalqalah"] {
-  color: var(--tj-qalqalah);
-}
-:root[data-tajweed="on"] [data-tj="silent"] {
-  color: var(--tj-silent);
+.ahd-aurora-a {
+  inset-block-start: -18rem;
+  inset-inline-start: 50%;
+  height: 44rem;
+  width: 44rem;
+  margin-inline-start: -22rem;
+  background: radial-gradient(circle, var(--halo), transparent 62%);
+  animation: ahd-drift-a 23s ease-in-out infinite alternate;
 }
 
-/* The legend's swatches show their colour whatever the reader has chosen. */
-[data-tj-swatch="madd"] {
-  background-color: var(--tj-madd);
+.ahd-aurora-b {
+  inset-block-start: 4rem;
+  inset-inline-end: -16rem;
+  height: 32rem;
+  width: 32rem;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-gold-500) 16%, transparent),
+    transparent 66%
+  );
+  animation: ahd-drift-b 31s ease-in-out infinite alternate;
 }
-[data-tj-swatch="ghunnah"] {
-  background-color: var(--tj-ghunnah);
+
+.ahd-aurora-c {
+  inset-block-start: 16rem;
+  inset-inline-start: -14rem;
+  height: 30rem;
+  width: 30rem;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-emerald-400) 12%, transparent),
+    transparent 68%
+  );
+  animation: ahd-drift-c 41s ease-in-out infinite alternate;
 }
-[data-tj-swatch="idgham"] {
-  background-color: var(--tj-idgham);
+
+@keyframes ahd-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2.5rem, 2rem, 0) scale(1.08);
+  }
 }
-[data-tj-swatch="ikhfa"] {
-  background-color: var(--tj-ikhfa);
+
+@keyframes ahd-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-3rem, 3rem, 0) scale(1.12);
+  }
 }
-[data-tj-swatch="qalqalah"] {
-  background-color: var(--tj-qalqalah);
+
+@keyframes ahd-drift-c {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(3rem, -2rem, 0) scale(1.06);
+  }
 }
-[data-tj-swatch="silent"] {
-  background-color: var(--tj-silent);
+
+/* ── The lattice ──
+   Drawn once. `stroke-dasharray` on a <pattern> tile animates every repeat at
+   the same time, which is the effect wanted: the whole field appears at once
+   rather than a single tile crawling. It settles and never runs again. */
+.ahd-lattice {
+  animation: ahd-lattice-in 2.6s var(--ease-settle) both;
+}
+
+.ahd-lattice path,
+.ahd-lattice circle {
+  stroke-dasharray: 160;
+  stroke-dashoffset: 160;
+  animation: ahd-draw 2.4s var(--ease-settle) 0.15s both;
+}
+
+@keyframes ahd-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes ahd-lattice-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* ── Light from above ──
+   A fan of very soft beams. Conic rather than linear so the rays converge,
+   which is what makes it read as light rather than as stripes. */
+.ahd-rays {
+  background: conic-gradient(
+    from 200deg at 50% -12%,
+    transparent 0deg,
+    color-mix(in oklab, var(--color-gold-500) 5%, transparent) 24deg,
+    transparent 42deg,
+    color-mix(in oklab, var(--color-emerald-400) 4%, transparent) 62deg,
+    transparent 84deg,
+    color-mix(in oklab, var(--color-gold-500) 4%, transparent) 108deg,
+    transparent 130deg
+  );
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 88%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 88%);
+  animation: ahd-rays-sway 37s ease-in-out infinite alternate;
+}
+
+@keyframes ahd-rays-sway {
+  from {
+    opacity: 0.75;
+    transform: rotate(-1.2deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(1.2deg);
+  }
+}
+
+/* ── Grain ──
+   Fractal noise at low opacity. This is what stops a 40rem gradient from
+   banding into visible steps on an eight-bit panel, and it is the difference
+   between the page looking like paper and looking like CSS. */
+.ahd-grain {
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Decoration only: none of it carries meaning, so all of it stops. */
+@media (prefers-reduced-motion: reduce) {
+  .ahd-aurora,
+  .ahd-rays,
+  .ahd-lattice {
+    animation: none;
+  }
+
+  .ahd-lattice path,
+  .ahd-lattice circle {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
 }
 
 @utility animate-rise {

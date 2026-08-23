@@ -499,7 +499,25 @@
       "subtitle": "This becomes your default. You can change it any time, and pick a different one per surah."
     },
     "submit": "Finish and begin",
-    "submitting": "Saving…"
+    "submitting": "Saving…",
+    "tracks": {
+      "sabaq": {
+        "name": "Sabaq",
+        "arabic": "سبق",
+        "what": "Today's new portion, measured to the line."
+      },
+      "sabqi": {
+        "name": "Sabqi",
+        "arabic": "سبقي",
+        "what": "The last seven days, recited again while they are still fragile."
+      },
+      "manzil": {
+        "name": "Manzil",
+        "arabic": "منزل",
+        "what": "Everything you hold, cycled once a month, weakest first."
+      }
+    },
+    "laterNote": "Both answers can be changed whenever you like. Neither is part of the covenant — that comes next, and only you set its terms."
   },
   "error": {
     "title": "Something went wrong",
@@ -639,37 +657,7 @@
       "markedHint": "Saved on this device. Sign in to keep your progress everywhere.",
       "translationBy": "Translation: {name}",
       "sajda": "Prostration",
-      "jumpToPage": "Go to page",
-      "tajweed": "Tajweed",
-      "tajweedHint": "Colour the recitation rules"
-    },
-    "tajweedRules": {
-      "heading": "What the colours mean",
-      "note": "Six families rather than seventeen separate rules — a legend you can hold in mind. Colouring is a study aid; the text is the same either way.",
-      "madd": {
-        "name": "Madd",
-        "what": "A vowel held longer — two, four or six counts."
-      },
-      "ghunnah": {
-        "name": "Ghunnah",
-        "what": "Sounded through the nose, on a doubled nun or mim."
-      },
-      "idgham": {
-        "name": "Idgham",
-        "what": "A letter merged into the one that follows it."
-      },
-      "ikhfa": {
-        "name": "Ikhfa",
-        "what": "A letter neither clear nor merged, but concealed."
-      },
-      "qalqalah": {
-        "name": "Qalqalah",
-        "what": "A slight echo on a resting qaf, ta, ba, jim or dal."
-      },
-      "silent": {
-        "name": "Not sounded",
-        "what": "Written but not pronounced — the joining hamza, the sun lam."
-      }
+      "jumpToPage": "Go to page"
     }
   },
   "pages": {
@@ -955,6 +943,8 @@
     "bank": "Tap these into place",
     "bankHelp": "Tap a word to fill the next gap. Tap a filled gap to take it back.",
     "slotEmpty": "Gap {number}",
-    "slotFilled": "Placed: {word}. Tap to take it back."
+    "slotFilled": "Placed: {word}. Tap to take it back.",
+    "slotLeftEmpty": "left empty",
+    "bankDone": "All gaps filled — go on when you are ready."
   }
 }

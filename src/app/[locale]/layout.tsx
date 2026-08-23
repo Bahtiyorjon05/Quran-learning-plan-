@@ -111,7 +111,13 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={localeDir[locale]}
-      data-theme="dark"
+      /* No data-theme here, deliberately.
+         Rendering it server-side made React own the attribute, so every client
+         navigation reconciled it back to "dark" — and switching language is a
+         client navigation, which is why choosing English threw a light-theme
+         reader into the dark. The attribute belongs to the inline script and
+         the toggle; React never renders it, so React never resets it. The CSS
+         falls back to the system preference while it is absent. */
       suppressHydrationWarning
       className={`${inter.variable} ${cormorant.variable} ${amiri.variable}`}
     >

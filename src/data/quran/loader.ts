@@ -30,8 +30,6 @@ export type Ayah = {
   p: number;
   /** Uthmani text */
   t: string;
-  /** The same text with inline tajweed markup, parsed only when colouring is on. */
-  tj: string;
   sajda: boolean;
   uz: string;
   ru: string;
