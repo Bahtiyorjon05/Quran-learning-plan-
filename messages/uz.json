@@ -886,11 +886,6 @@
     },
     "questionOf": "{total} dan {current}",
     "questionNumber": "{number}-savol",
-    "next": {
-      "name": "Keyingisi nima",
-      "title": "Qaysi oyat keladi?",
-      "about": "Notoʻgʻri javoblar tasodifiy emas. Ular siz haqiqatan ham adashib ketadigan joylar."
-    },
     "back": "Orqaga",
     "finish": "Yakunlash",
     "marking": "Tekshirilmoqda…",
@@ -907,44 +902,52 @@
     "relearning": "Ikki marta unutildi. Bu sahifa uch kun ketma-ket mustahkam boʻlgunicha kunlik mashqqa qaytadi.",
     "saveFailed": "Saqlanmadi. Hech narsa yozilmadi — yana yakunlab koʻring.",
     "notHeld": "Bu sahifa yodlangan deb belgilanmagan, shuning uchun baholash uchun asos yoʻq.",
-    "hide": {
-      "name": "Bosqichma-bosqich yashirish",
-      "title": "Yetishmayotganini toʻldiring",
-      "about": "Hifz shunday oʻrgatiladi: avval qarab, keyin sahifaning yarmi yopiq holda, soʻng yopib. Har bosqichda koʻproq olinadi, siz esa joyiga qaytarasiz.",
-      "harder": "Shu sahifa, qiyinroq"
-    },
-    "gap": {
-      "name": "Boʻshliqni toʻldirish",
-      "title": "Bitta soʻz yetishmayapti",
-      "about": "Har oyatdan bitta soʻz olinadi — hech qachon yuklama emas, doim maʼno tashuvchi soʻz. Chalgʻituvchilar — siz adashib tanlashingiz mumkin boʻlgan soʻzlar."
-    },
-    "firstWord": {
-      "name": "Birinchi soʻz",
-      "title": "Shu yerdan davom eting",
-      "about": "Boshi beriladi, davomini soʻzma-soʻz siz tiklaysiz. Oltitasining eng qiyini: javobdan ekranda hech narsa yoʻq."
-    },
-    "shuffle": {
-      "name": "Oyatlarni tartiblash",
-      "title": "Bularni tartibga soling",
-      "hint": "Kelish tartibida bosing.",
-      "pool": "Qolganlari",
-      "empty": "Boʻsh",
-      "undo": "Oxirgisini bekor qilish",
-      "allPlaced": "Hammasi joylashtirildi.",
-      "shouldBe": "{ref} boʻlishi kerak"
-    },
-    "mutashabihat": {
-      "name": "Mutashabihot",
-      "title": "Bu qayerdan?",
-      "hint": "Bu parcha bir necha joyda uchraydi. Toʻgʻrisini ayting.",
-      "about": "Turli suralardagi deyarli bir xil parchalar — hifzdagi eng qiyin narsa va deyarli hech qayerda mashq qilinmaydigani."
-    },
     "notHeldYet": "Siz bu sahifani yodlangan deb belgilamagansiz, shuning uchun bu mashq mustahkamlikni oʻzgartirmaydi. Bemalol mashq qiling.",
     "bank": "Bularni joyiga qoʻying",
     "bankHelp": "Soʻzni bosing — u keyingi boʻshliqqa tushadi. Toʻldirilganini bossangiz, qaytib chiqadi.",
     "slotEmpty": "{number}-boʻshliq",
     "slotFilled": "Qoʻyildi: {word}. Qaytarish uchun bosing.",
     "slotLeftEmpty": "boʻsh qoldirildi",
-    "bankDone": "Barcha boʻshliqlar toʻldirildi — tayyor boʻlsangiz, davom eting."
+    "bankDone": "Barcha boʻshliqlar toʻldirildi — tayyor boʻlsangiz, davom eting.",
+    "modes": {
+      "hide": {
+        "name": "Bosqichma-bosqich yashirish",
+        "title": "Yetishmayotganini toʻldiring",
+        "about": "Hifz shunday oʻrgatiladi: avval qarab, keyin sahifaning yarmi yopiq holda, soʻng yopib. Har bosqichda koʻproq olinadi, siz esa joyiga qaytarasiz.",
+        "harder": "Shu sahifa, qiyinroq"
+      },
+      "gap": {
+        "name": "Boʻshliqni toʻldirish",
+        "title": "Bitta soʻz yetishmayapti",
+        "about": "Har oyatdan bitta soʻz olinadi — hech qachon yuklama emas, doim maʼno tashuvchi soʻz. Chalgʻituvchilar — siz adashib tanlashingiz mumkin boʻlgan soʻzlar."
+      },
+      "firstWord": {
+        "name": "Birinchi soʻz",
+        "title": "Shu yerdan davom eting",
+        "about": "Boshi beriladi, davomini soʻzma-soʻz siz tiklaysiz. Oltitasining eng qiyini: javobdan ekranda hech narsa yoʻq."
+      },
+      "next": {
+        "name": "Keyingisi nima",
+        "title": "Qaysi oyat keladi?",
+        "about": "Notoʻgʻri javoblar tasodifiy emas. Ular siz haqiqatan ham adashib ketadigan joylar."
+      },
+      "shuffle": {
+        "name": "Oyatlarni tartiblash",
+        "title": "Bularni tartibga soling",
+        "hint": "Kelish tartibida bosing.",
+        "pool": "Qolganlari",
+        "empty": "Boʻsh",
+        "undo": "Oxirgisini bekor qilish",
+        "allPlaced": "Hammasi joylashtirildi.",
+        "shouldBe": "{ref} boʻlishi kerak"
+      },
+      "mutashabihat": {
+        "name": "Mutashabihot",
+        "title": "Bu qayerdan?",
+        "hint": "Bu parcha bir necha joyda uchraydi. Toʻgʻrisini ayting.",
+        "about": "Turli suralardagi deyarli bir xil parchalar — hifzdagi eng qiyin narsa va deyarli hech qayerda mashq qilinmaydigani."
+      }
+    },
+    "next": "Keyingi"
   }
 }

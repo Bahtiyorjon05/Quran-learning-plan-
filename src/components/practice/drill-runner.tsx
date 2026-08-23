@@ -159,13 +159,26 @@ export function DrillRunner({
           {t("back")}
         </button>
 
+        {/* Two separate elements, keyed apart on purpose.
+            Rendered as one conditional <button>, React reconciles them as the
+            same DOM node and mutates `type` from "button" to "submit" while the
+            click that advanced the question is still being handled — so the
+            browser sees a submit button and posts the drill a question early.
+            The last question was never answered and the score was wrong.
+            Distinct keys make React unmount one and mount the other. */}
         {last ? (
-          <button type="submit" disabled={pending} className={buttonStyles({ size: "lg" })}>
+          <button
+            key="finish"
+            type="submit"
+            disabled={pending}
+            className={buttonStyles({ size: "lg" })}
+          >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
             {pending ? t("marking") : t("finish")}
           </button>
         ) : (
           <button
+            key="next"
             type="button"
             onClick={() => setIndex((i) => Math.min(drill.questions.length - 1, i + 1))}
             className={buttonStyles({ size: "lg", className: "group" })}
@@ -196,6 +209,7 @@ function Progress({
         {Array.from({ length: total }, (_, i) => (
           <span
             key={i}
+            data-question-dot
             className={cn(
               "h-1 flex-1 rounded-full transition-colors duration-500",
               i === current

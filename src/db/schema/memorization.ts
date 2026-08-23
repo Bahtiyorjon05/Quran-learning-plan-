@@ -3,6 +3,7 @@ import {
   check,
   index,
   integer,
+  numeric,
   pgEnum,
   pgTable,
   real,
@@ -52,8 +53,14 @@ export const memorizationUnits = pgTable(
     strength: smallint().notNull().default(0),
 
     /* SM-2 style, tuned for hifz: lapses bite harder, and two lapses force a
-       page back into the sabqi track rather than leaving it in manzil. */
-    ease: real().notNull().default(2.5),
+       page back into the sabqi track rather than leaving it in manzil.
+
+       Exact rather than `real`, because float4 cannot hold this column's own
+       floor: 1.3 rounds to 1.2999999523162842, so `1.3::real >= 1.3` is false
+       and the CHECK below rejected rows the scheduler had legitimately clamped.
+       A reciter who kept forgetting a page reached a state where nothing could
+       be saved again. See migration 0003. */
+    ease: numeric({ precision: 3, scale: 2, mode: "number" }).notNull().default(2.5),
     reps: integer().notNull().default(0),
     lapses: integer().notNull().default(0),
     intervalDays: real().notNull().default(0),

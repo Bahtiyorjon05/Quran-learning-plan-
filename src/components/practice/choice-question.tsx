@@ -40,8 +40,8 @@ export function ChoiceQuestion({
   return (
     <div>
       <QuestionHeading
-        title={duel ? t("mutashabihat.title") : t("next.title")}
-        hint={duel ? t("mutashabihat.hint") : refLabel(question.ref, names)}
+        title={duel ? t("modes.mutashabihat.title") : t("modes.next.title")}
+        hint={duel ? t("modes.mutashabihat.hint") : refLabel(question.ref, names)}
       />
 
       <p
@@ -78,6 +78,7 @@ export function ChoiceQuestion({
             <li key={choice.id}>
               <button
                 type="button"
+                data-choice
                 disabled={Boolean(review)}
                 onClick={() => onAnswer({ kind: "choice", choiceId: choice.id })}
                 aria-pressed={selected}

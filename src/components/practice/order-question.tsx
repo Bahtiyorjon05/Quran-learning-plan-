@@ -46,7 +46,7 @@ export function OrderQuestion({
 
   return (
     <div>
-      <QuestionHeading title={t("shuffle.title")} hint={t("shuffle.hint")} />
+      <QuestionHeading title={t("modes.shuffle.title")} hint={t("modes.shuffle.hint")} />
 
       <ol className="mt-8 space-y-2.5">
         {question.answerIds.map((_, position) => {
@@ -99,14 +99,14 @@ export function OrderQuestion({
                     </p>
                     {review && wrong && correctId && (
                       <p className="mt-2 border-t border-danger/20 pt-2 text-[0.75rem] text-[var(--text-muted)]">
-                        {t("shuffle.shouldBe", {
+                        {t("modes.shuffle.shouldBe", {
                           ref: refLabel(byId.get(correctId)?.ref ?? { s: 0, a: 0 }, names),
                         })}
                       </p>
                     )}
                   </>
                 ) : (
-                  <p className="text-[0.8125rem] text-[var(--text-faint)]">{t("shuffle.empty")}</p>
+                  <p className="text-[0.8125rem] text-[var(--text-faint)]">{t("modes.shuffle.empty")}</p>
                 )}
               </div>
             </li>
@@ -118,7 +118,7 @@ export function OrderQuestion({
         <>
           <div className="mt-7 flex items-center justify-between gap-3">
             <p className="text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
-              {t("shuffle.pool")}
+              {t("modes.shuffle.pool")}
             </p>
             {placed.length > 0 && (
               <button
@@ -127,7 +127,7 @@ export function OrderQuestion({
                 className="inline-flex items-center gap-1.5 text-[0.75rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
               >
                 <Undo2 className="h-3.5 w-3.5" />
-                {t("shuffle.undo")}
+                {t("modes.shuffle.undo")}
               </button>
             )}
           </div>
@@ -137,6 +137,7 @@ export function OrderQuestion({
               <li key={choice.id}>
                 <button
                   type="button"
+                  data-pool-item
                   onClick={() => place(choice.id)}
                   className="w-full rounded-2xl border border-[var(--line-strong)] px-4 py-3 text-start transition-[border-color,background-color] duration-300 ease-[var(--ease-calm)] hover:border-[var(--accent)]/60 hover:bg-[var(--surface-overlay)]"
                 >
@@ -152,7 +153,7 @@ export function OrderQuestion({
             ))}
             {remaining.length === 0 && (
               <li className="rounded-2xl border border-dashed border-[var(--line-strong)] px-4 py-5 text-center text-[0.8125rem] text-[var(--text-faint)]">
-                {t("shuffle.allPlaced")}
+                {t("modes.shuffle.allPlaced")}
               </li>
             )}
           </ul>

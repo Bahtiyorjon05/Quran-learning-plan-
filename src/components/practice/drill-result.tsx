@@ -50,10 +50,13 @@ export function DrillResult({
     <div className="animate-rise">
       <div className="rounded-3xl border border-[var(--line-strong)] bg-[var(--surface-overlay)] p-6 text-center sm:p-8">
         <p className="text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
-          {t(`${drill.mode}.name`)}
+          {t(`modes.${drill.mode}.name`)}
         </p>
 
-        <p className="font-[family-name:var(--font-display)] mt-3 text-[3.5rem] leading-none font-light text-[var(--text-strong)] tabular-nums">
+        <p
+          data-drill-score
+          className="font-[family-name:var(--font-display)] mt-3 text-[3.5rem] leading-none font-light text-[var(--text-strong)] tabular-nums"
+        >
           {percent}
           <span className="text-[1.5rem] text-[var(--text-faint)]">%</span>
         </p>
@@ -150,7 +153,7 @@ export function DrillResult({
             href={`/app/practice/${drill.page}?mode=hide&level=${nextLevel}`}
             className={buttonStyles({ size: "lg", className: "group" })}
           >
-            {t("hide.harder")}
+            {t("modes.hide.harder")}
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 rtl:rotate-180" />
           </Link>
         ) : (

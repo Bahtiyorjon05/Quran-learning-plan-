@@ -109,13 +109,13 @@ export default async function PracticeSessionPage({ params, searchParams }: Para
                     : "border-[var(--line-strong)] text-[var(--text-muted)] hover:border-[var(--text-faint)] hover:text-[var(--text-strong)]",
                 )}
               >
-                {t(`${option}.name`)}
+                {t(`modes.${option}.name`)}
               </Link>
             ))}
           </nav>
 
           <p className="mt-4 text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
-            {t(`${session.drill.mode}.about`)}
+            {t(`modes.${session.drill.mode}.about`)}
           </p>
 
           {/* Said before the first question, not after the last one. Only a

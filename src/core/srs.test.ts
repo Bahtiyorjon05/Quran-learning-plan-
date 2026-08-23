@@ -223,3 +223,44 @@ describe("choosing what to revise", () => {
     expect(items).toEqual(copy);
   });
 });
+
+describe("what the database will accept", () => {
+  /**
+   * The floor of `ease` has to be storable.
+   *
+   * It was not. The column was `real`, and float4 cannot hold 1.3 — it stores
+   * 1.2999999523162842, so the column's own CHECK (`ease between 1.3 and 3.0`)
+   * rejected the value the scheduler had just clamped to the floor. A reciter
+   * who kept forgetting a page reached a point where no further review could be
+   * saved, permanently. Migration 0003 makes the column exact.
+   */
+  it("drives ease to the floor and lands on a value that is exactly 1.3", () => {
+    let unit: UnitState = FRESH;
+    for (let i = 0; i < 60; i++) unit = review(unit, 0, 1);
+
+    expect(unit.ease).toBe(MIN_EASE);
+    /* Exactly representable in two decimal places, which is what the column
+       now stores. Anything with a longer tail would not survive the round trip. */
+    expect(unit.ease.toFixed(2)).toBe("1.30");
+    expect(Number(unit.ease.toFixed(2))).toBe(unit.ease);
+  });
+
+  it("drives ease to the ceiling and lands on a storable value", () => {
+    let unit: UnitState = FRESH;
+    for (let i = 0; i < 60; i++) unit = review(unit, 5, 1);
+
+    expect(unit.ease).toBeLessThanOrEqual(MAX_EASE);
+    expect(Number(unit.ease.toFixed(2))).toBe(unit.ease);
+  });
+
+  it("never produces an ease with more than two decimal places", () => {
+    /* numeric(3,2) rounds anything longer, and a rounded value that lands
+       outside the range would fail the CHECK on the way in. */
+    let unit: UnitState = FRESH;
+    const grades: Quality[] = [5, 2, 4, 0, 3, 1];
+    for (let i = 0; i < 300; i++) {
+      unit = review(unit, grades[i % grades.length], i % 7);
+      expect(Number(unit.ease.toFixed(2)), `after ${i} reviews`).toBe(unit.ease);
+    }
+  });
+});

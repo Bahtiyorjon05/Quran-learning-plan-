@@ -116,10 +116,10 @@ export function AssembleQuestion({
 
   const heading =
     question.mode === "gap"
-      ? t("gap.title")
+      ? t("modes.gap.title")
       : question.mode === "firstWord"
-        ? t("firstWord.title")
-        : t("hide.title");
+        ? t("modes.firstWord.title")
+        : t("modes.hide.title");
 
   return (
     <div>
@@ -182,6 +182,7 @@ export function AssembleQuestion({
             <button
               key={wordIndex}
               type="button"
+              data-slot
               disabled={id === null}
               onClick={() => clearSlot(slot)}
               aria-label={
@@ -238,7 +239,7 @@ export function AssembleQuestion({
                 className="inline-flex items-center gap-1.5 text-[0.75rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
               >
                 <Undo2 className="h-3.5 w-3.5" />
-                {t("shuffle.undo")}
+                {t("modes.shuffle.undo")}
               </button>
             )}
           </div>
@@ -251,6 +252,7 @@ export function AssembleQuestion({
                 <button
                   key={word.id}
                   type="button"
+                  data-bank-word
                   disabled={spent || done}
                   onClick={() => place(word.id)}
                   className={cn(
