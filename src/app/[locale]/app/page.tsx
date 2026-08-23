@@ -239,7 +239,17 @@ export default async function AppHomePage() {
 
                     <div className="mt-6">
                       <div className="flex items-baseline justify-between text-xs text-[var(--text-muted)] tabular-nums">
-                        <span>{tp("progress", { percent: Math.round(pace.progress * 100) })}</span>
+                        <span>
+                          {/* Below one per cent, rounding to a whole number
+                              reports 0% to someone who has genuinely memorized
+                              pages. One decimal until it stops mattering. */}
+                          {tp("progress", {
+                            percent:
+                              pace.progress > 0 && pace.progress < 0.01
+                                ? (pace.progress * 100).toFixed(1)
+                                : Math.round(pace.progress * 100),
+                          })}
+                        </span>
                         <span>{tp("remaining", { lines: pace.remainingLines })}</span>
                       </div>
                       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-strong)_8%,transparent)]">

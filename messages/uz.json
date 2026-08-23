@@ -426,6 +426,19 @@
       "progress": "{percent}% yodlangan",
       "finishBy": "Tugatish sanasi",
       "amend": "Sizning ahdingiz"
+    },
+    "mushaf": {
+      "title": "Sizning musʼhafingiz",
+      "subtitle": "Har bir sahifa, qanchalik mustahkam ushlaganingizga qarab ranglangan.",
+      "memorized": "Yodlangan",
+      "markMemorized": "Yodlandi deb belgilash",
+      "unmark": "Hali yodlanmagan",
+      "pagesHeld": "604 sahifadan {count} tasi",
+      "strength": "Oʻrtacha mustahkamlik",
+      "started": "Boshlangan sahifalar",
+      "hint": "Bu yerda sahifani belgilash ahdingiz taraqqiyotini ham siljitadi.",
+      "openPage": "{page}-sahifani ochish",
+      "browse": "Koʻrib chiqish"
     }
   },
   "onboarding": {

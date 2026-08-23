@@ -426,6 +426,19 @@
       "progress": "{percent}% memorized",
       "finishBy": "Finish by",
       "amend": "Your covenant"
+    },
+    "mushaf": {
+      "title": "Your mushaf",
+      "subtitle": "Every page, coloured by how strongly you hold it.",
+      "memorized": "Memorized",
+      "markMemorized": "Mark memorized",
+      "unmark": "Not yet memorized",
+      "pagesHeld": "{count} of 604 pages",
+      "strength": "Average strength",
+      "started": "Pages started",
+      "hint": "Marking a page here moves your covenant's progress.",
+      "openPage": "Open page {page}",
+      "browse": "Browse"
     }
   },
   "onboarding": {

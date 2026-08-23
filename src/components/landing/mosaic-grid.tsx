@@ -81,20 +81,27 @@ export function MosaicLegend({
 
 export function MosaicGrid({
   memorizedPages = 214,
+  strengths: given,
   interactive = false,
   className,
   tileClassName,
   onHoverPage,
+  onSelectPage,
 }: {
   memorizedPages?: number;
+  /** Real strengths, 604 entries, 0 meaning not started. The landing page has
+   *  none and falls back to the seeded demo. */
+  strengths?: number[];
   interactive?: boolean;
   className?: string;
   tileClassName?: string;
   onHoverPage?: (page: number | null) => void;
+  /** Given, each tile becomes a button that opens its page. */
+  onSelectPage?: (page: number) => void;
 }) {
   const [revealed, setRevealed] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const strengths = demoStrengths(memorizedPages);
+  const strengths = given ?? demoStrengths(memorizedPages);
 
   useEffect(() => {
     const el = ref.current;
@@ -129,11 +136,16 @@ export function MosaicGrid({
       {strengths.map((s, i) => {
         const page = i + 1;
         const band = bandOf(s);
+        const Tile = onSelectPage ? "button" : "div";
         return (
-          <div
+          <Tile
             key={page}
+            type={onSelectPage ? "button" : undefined}
             data-page={page}
             title={interactive ? `${page}` : undefined}
+            aria-label={onSelectPage ? String(page) : undefined}
+            onClick={onSelectPage ? () => onSelectPage(page) : undefined}
+            onFocus={interactive ? () => onHoverPage?.(page) : undefined}
             onMouseEnter={interactive ? () => onHoverPage?.(page) : undefined}
             style={{
               transitionDelay: revealed ? `${(i % 160) * 5}ms` : "0ms",
@@ -144,6 +156,7 @@ export function MosaicGrid({
               revealed ? "scale-100 opacity-100" : "scale-75 opacity-0",
               interactive &&
                 "hover:!scale-[1.55] hover:!opacity-100 hover:ring-1 hover:ring-gold-300 hover:transition-none",
+              onSelectPage && "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]",
               tileClassName,
             )}
           />

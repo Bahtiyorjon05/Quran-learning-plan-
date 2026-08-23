@@ -21,9 +21,12 @@ import { cn } from "@/lib/utils";
 export function SurahIndex({
   surahs,
   juzStartPages,
+  basePath = "/quran",
 }: {
   surahs: Surah[];
   juzStartPages: { juz: number; from: number; to: number }[];
+  /** "/quran" in public, "/app/quran" for a signed-in reader. */
+  basePath?: string;
 }) {
   const t = useTranslations("quran.index");
   const [tab, setTab] = useState<"surahs" | "juz">("surahs");
@@ -86,7 +89,7 @@ export function SurahIndex({
             {filtered.map((s) => (
               <li key={s.number}>
                 <Link
-                  href={`/quran/${s.startPage}`}
+                  href={`${basePath}/${s.startPage}`}
                   className="group flex items-center gap-3.5 rounded-xl border border-[var(--line-subtle)] p-3.5 transition-[border-color,background-color] duration-300 hover:border-[var(--line-strong)] hover:bg-[var(--surface-raised)]/60"
                 >
                   {/* The number in a rotated square, the way a mushaf marks it. */}
@@ -127,7 +130,7 @@ export function SurahIndex({
           {juzStartPages.map((j) => (
             <li key={j.juz}>
               <Link
-                href={`/quran/${j.from}`}
+                href={`${basePath}/${j.from}`}
                 className="flex items-center justify-between gap-3 rounded-xl border border-[var(--line-subtle)] p-3.5 transition-[border-color,background-color] duration-300 hover:border-[var(--line-strong)] hover:bg-[var(--surface-raised)]/60"
               >
                 <span className="text-sm font-medium text-[var(--text-strong)]">
