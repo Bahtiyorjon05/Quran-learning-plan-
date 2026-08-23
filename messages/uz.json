@@ -429,15 +429,34 @@
     }
   },
   "onboarding": {
-    "title": "Mashqingizni sozlang",
-    "subtitle": "Ikkita qisqa javob — va Ahd sizniki.",
-    "studyTime": "Odatda qachon oʻqiysiz?",
-    "studyTimeHint": "Kunlik eslatma shu vaqtda keladi.",
-    "reciter": "Qaysi qorini tinglaysiz?",
-    "reciterHint": "Buni istagan payt oʻzgartirasiz, har sura uchun boshqasini tanlashingiz ham mumkin.",
+    "welcome": "Assalomu alaykum, {name}",
+    "intro": "Ikkita savol — va Ahd sizniki.",
+    "step": "{total} dan {current}",
+    "back": "Orqaga",
+    "next": "Davom etish",
+    "when": {
+      "title": "Qachon oʻqiysiz?",
+      "subtitle": "Kunlik eslatma oʻsha payt keladi. Koʻpchilik uni soatga emas, namozga bogʻlaydi.",
+      "afterFajr": "Bomdoddan keyin",
+      "afterFajrWhy": "Eng tinch soat — koʻp hofizlar shuni tanlaydi",
+      "morning": "Ertalab",
+      "morningWhy": "Kun oʻz holiga olib ketmasidan oldin",
+      "afternoon": "Tushdan keyin",
+      "afternoonWhy": "Ishlar orasidagi barqaror payt",
+      "afterAsr": "Asrdan keyin",
+      "afterAsrWhy": "Yorugʻlik yumshoq, uy tinch",
+      "afterIsha": "Xuftondan keyin",
+      "afterIshaWhy": "Kun tugadi, hech qanday qarz qolmadi",
+      "custom": "Aniq vaqt",
+      "customWhy": "Oʻzingiz tanlang",
+      "approximate": "Taxminiy — istagan payt oʻzgartirasiz."
+    },
+    "reciter": {
+      "title": "Kimning qiroatini tinglaysiz?",
+      "subtitle": "Bu asosiy qori boʻladi. Istagan payt oʻzgartirasiz, har sura uchun boshqasini ham tanlashingiz mumkin."
+    },
     "submit": "Yakunlash va boshlash",
-    "submitting": "Saqlanmoqda…",
-    "skip": "Buni keyinroq sozlayman"
+    "submitting": "Saqlanmoqda…"
   },
   "error": {
     "title": "Nimadir notoʻgʻri ketdi",

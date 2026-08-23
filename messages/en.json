@@ -429,15 +429,34 @@
     }
   },
   "onboarding": {
-    "title": "Set up your practice",
-    "subtitle": "Two quick answers, and Ahd is yours.",
-    "studyTime": "When do you usually study?",
-    "studyTimeHint": "Your daily reminder arrives at this time.",
-    "reciter": "Which reciter do you listen to?",
-    "reciterHint": "You can change this any time, and pick a different one per surah.",
+    "welcome": "As-salamu alaykum, {name}",
+    "intro": "Two questions, and Ahd is yours.",
+    "step": "{current} of {total}",
+    "back": "Back",
+    "next": "Continue",
+    "when": {
+      "title": "When do you study?",
+      "subtitle": "Your daily reminder arrives then. Most people anchor it to a prayer rather than a clock.",
+      "afterFajr": "After Fajr",
+      "afterFajrWhy": "The quietest hour, and the one most huffaz swear by",
+      "morning": "Mid-morning",
+      "morningWhy": "Before the day takes over",
+      "afternoon": "Afternoon",
+      "afternoonWhy": "A steady slot between obligations",
+      "afterAsr": "After Asr",
+      "afterAsrWhy": "The light is soft and the house is calm",
+      "afterIsha": "After Isha",
+      "afterIshaWhy": "The day is done and nothing is owed",
+      "custom": "A specific time",
+      "customWhy": "Choose it yourself",
+      "approximate": "Approximate — you can change it any time."
+    },
+    "reciter": {
+      "title": "Whose recitation do you listen to?",
+      "subtitle": "This becomes your default. You can change it any time, and pick a different one per surah."
+    },
     "submit": "Finish and begin",
-    "submitting": "Saving…",
-    "skip": "Set this up later"
+    "submitting": "Saving…"
   },
   "error": {
     "title": "Something went wrong",

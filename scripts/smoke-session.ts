@@ -6,8 +6,12 @@
  * because verification stopped at pages that only ever redirect. This makes the
  * signed-in half of the app as easy to check as the public half.
  *
- *   npx tsx scripts/smoke-session.ts            # create and print
- *   npx tsx scripts/smoke-session.ts --clean    # remove every smoke account
+ *   npx tsx scripts/smoke-session.ts             # a finished account
+ *   npx tsx scripts/smoke-session.ts --pending   # verified, but not onboarded
+ *   npx tsx scripts/smoke-session.ts --clean     # remove every smoke account
+ *
+ * --pending exists because the guards send a finished account straight past
+ * onboarding, so the page could never be checked with an ordinary one.
  */
 import { createHash, randomBytes } from "node:crypto";
 import { config } from "dotenv";
@@ -27,6 +31,7 @@ async function main() {
     return;
   }
 
+  const pending = process.argv.includes("--pending");
   const email = `smoke-${Date.now()}${SMOKE_DOMAIN}`;
   const [user] = (await sql`
     insert into users (email, email_verified_at, password_hash, display_name)
@@ -36,7 +41,7 @@ async function main() {
 
   await sql`
     insert into profiles (user_id, locale, onboarded_at)
-    values (${user.id}, 'uz', now())
+    values (${user.id}, 'uz', ${pending ? null : new Date()})
   `;
 
   const token = randomBytes(32).toString("base64url");
@@ -47,6 +52,7 @@ async function main() {
 
   console.log(`email=${email}`);
   console.log(`userId=${user.id}`);
+  console.log(`onboarded=${!pending}`);
   console.log(`cookie=ahd_session=${token}`);
 }
 
