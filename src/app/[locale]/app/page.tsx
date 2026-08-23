@@ -4,12 +4,8 @@ import { and, desc, eq } from "drizzle-orm";
 import {
   ArrowRight,
   BadgeCheck,
-  Layers,
-  LogOut,
   Monitor,
-  RefreshCw,
   Smartphone,
-  Sprout,
 } from "lucide-react";
 
 import { db } from "@/db/client";
@@ -19,8 +15,6 @@ import { computePace } from "@/core/plan/pace";
 import { countStudyDays as countStudyDaysBetween } from "@/core/plan/schedule";
 import { requireOnboardedUser } from "@/auth/guard";
 import { AppHeader } from "@/components/app/app-header";
-import { LanguageSwitcher } from "@/components/site/language-switcher";
-import { ThemeToggle } from "@/components/site/theme-toggle";
 import { buttonStyles } from "@/components/ui/button";
 import { Measure } from "@/components/ui/section";
 import { Link } from "@/i18n/navigation";
@@ -28,7 +22,7 @@ import { cn } from "@/lib/utils";
 import { logoutEverywhereAction } from "./actions";
 import { loadToday } from "./today";
 import { DailySheet, type TrackView } from "@/components/app/daily-sheet";
-import { describeLineRange, pageOfLine } from "@/core/quran/mushaf";
+import { describeLineRange } from "@/core/quran/mushaf";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("nav");
@@ -147,8 +141,6 @@ function buildTracks(
 export default async function AppHomePage() {
   const user = await requireOnboardedUser();
   const ta = await getTranslations("app");
-  const tn = await getTranslations("nav");
-  const tt = await getTranslations("landing.tracks");
   const tp = await getTranslations("app.pace");
 
   const [covenant] = await db
@@ -199,11 +191,6 @@ export default async function AppHomePage() {
     .orderBy(desc(sessions.lastSeenAt))
     .limit(10);
 
-  const tracks = [
-    { ar: "سبق", name: tt("sabaq.name"), role: tt("roleNew"), Icon: Sprout },
-    { ar: "سبقي", name: tt("sabqi.name"), role: tt("roleRecent"), Icon: RefreshCw },
-    { ar: "منزل", name: tt("manzil.name"), role: tt("roleOld"), Icon: Layers },
-  ];
 
   return (
     <div className="min-h-dvh">

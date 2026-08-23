@@ -1,6 +1,11 @@
 import "server-only";
 
+import { juzOfPage } from "@/core/quran/mushaf";
+
 import meta from "./meta.json";
+/* Eighty kilobytes, server-side only, and consulted on every practice session,
+   so it is imported outright rather than loaded lazily. */
+import confusableTable from "./mutashabihat.json";
 
 /**
  * Access to the Qur'an text.
@@ -127,4 +132,67 @@ export async function loadPage(page: number): Promise<{ meta: PageMeta; ayahs: A
 /** The first page of a surah, for navigation. */
 export function pageOfSurah(number: number): number {
   return surah(number).startPage;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MUTASHABIHAT — the passages that confuse a hafiz
+   Precomputed at build time (scripts/build-mutashabihat.ts), because finding
+   them means comparing every ayah with every other and that is not a thing to
+   do inside a request.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export type Confusable = {
+  k: string;
+  s: number;
+  a: number;
+  p: number;
+  /** 0–1. 1 means the two passages are identical once marks are stripped. */
+  score: number;
+};
+
+
+const CONFUSABLE: Record<string, Confusable[]> = confusableTable;
+
+/** The passages most easily confused with this one, best match first. */
+export function confusableWith(key: string): Confusable[] {
+  return CONFUSABLE[key] ?? [];
+}
+
+/**
+ * Confusable partners for a page, with the partner's own text attached.
+ *
+ * The drill generator needs the text to build a distractor, and the text lives
+ * in whichever juz the partner belongs to — which is rarely the page's own.
+ */
+export async function confusableOnPage(ayahs: readonly Ayah[]) {
+  const table: Record<string, (Confusable & { t: string })[]> = {};
+
+  const wanted = new Map<number, Set<string>>();
+  for (const ayah of ayahs) {
+    for (const partner of confusableWith(ayah.k)) {
+      const juz = juzOfPage(partner.p);
+      const set = wanted.get(juz);
+      if (set) set.add(partner.k);
+      else wanted.set(juz, new Set([partner.k]));
+    }
+  }
+
+  const texts = new Map<string, string>();
+  await Promise.all(
+    [...wanted.keys()].map(async (juz) => {
+      const file = await loadJuz(juz);
+      for (const ayah of file.ayahs) {
+        if (wanted.get(juz)!.has(ayah.k)) texts.set(ayah.k, ayah.t);
+      }
+    }),
+  );
+
+  for (const ayah of ayahs) {
+    const partners = confusableWith(ayah.k)
+      .map((partner) => ({ ...partner, t: texts.get(partner.k) ?? "" }))
+      .filter((partner) => partner.t.length > 0);
+    if (partners.length > 0) table[ayah.k] = partners;
+  }
+
+  return table;
 }

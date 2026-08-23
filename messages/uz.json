@@ -830,5 +830,84 @@
         }
       ]
     }
+  },
+  "practice": {
+    "title": "Mashq",
+    "subtitle": "Sahifani qayta oʻqish takrorlashga oʻxshaydi, lekin u emas. Bu yerdagi har bir mashq bir narsani olib qoʻyadi va sizdan qaytarib soʻraydi.",
+    "pageTitle": "Mashq · {page}-sahifa",
+    "pageNumber": "{page}-sahifa",
+    "juzNumber": "{number}-juz",
+    "allPages": "Barcha sahifalar",
+    "choosePage": "Boshqa sahifa tanlash",
+    "weakestFirst": "Eng zaifi birinchi — siz yodlagan {count} sahifadan.",
+    "daysAgo": "{count, plural, other {# kun oldin}}",
+    "andMore": "Yana {count} ta, roʻyxatning quyi qismida.",
+    "empty": {
+      "title": "Hozircha mashq qiladigan narsa yoʻq.",
+      "body": "Mushafda sahifani yodlangan deb belgilang — u shu yerda, eng zaifidan boshlab paydo boʻladi.",
+      "action": "Mushafni ochish"
+    },
+    "questionOf": "{total} dan {current}",
+    "questionNumber": "{number}-savol",
+    "next": {
+      "name": "Keyingisi nima",
+      "title": "Qaysi oyat keladi?",
+      "about": "Notoʻgʻri javoblar tasodifiy emas. Ular siz haqiqatan ham adashib ketadigan joylar."
+    },
+    "back": "Orqaga",
+    "finish": "Yakunlash",
+    "marking": "Tekshirilmoqda…",
+    "again": "Yana bir mashq",
+    "hint": "Ishora",
+    "blank": "boʻsh qoldirildi",
+    "blankNumber": "{number}-boʻshliq",
+    "allRight": "Hammasi toʻgʻri",
+    "missedCount": "{count, plural, other {# ta xato}}",
+    "openInMushaf": "Mushafda koʻrish",
+    "review": "Savolma-savol",
+    "scoreLine": "{total} tadan {correct} tasi toʻgʻri",
+    "hintsUsed": "{count, plural, other {# ta ishora}}",
+    "strength": "Mustahkamlik",
+    "lapsed": "Bu unutilgan deb hisoblanadi. Bu sahifa bir necha hafta emas, ertaga qaytadi.",
+    "relearning": "Ikki marta unutildi. Bu sahifa uch kun ketma-ket mustahkam boʻlgunicha kunlik mashqqa qaytadi.",
+    "youRecited": "Siz yozganingiz",
+    "theAyah": "Oyat",
+    "saveFailed": "Saqlanmadi. Hech narsa yozilmadi — yana yakunlab koʻring.",
+    "notHeld": "Bu sahifa yodlangan deb belgilanmagan, shuning uchun baholash uchun asos yoʻq.",
+    "hide": {
+      "name": "Bosqichma-bosqich yashirish",
+      "title": "Yetishmayotganini toʻldiring",
+      "about": "Hifz shunday oʻrgatiladi: avval qarab, keyin sahifaning yarmi yopiq holda, soʻng yopib. Har bosqichda koʻproq yashiriladi.",
+      "harder": "Shu sahifa, qiyinroq"
+    },
+    "gap": {
+      "name": "Boʻshliqni toʻldirish",
+      "title": "Bitta soʻz yetishmayapti",
+      "about": "Har oyatdan bitta soʻz olib tashlanadi — hech qachon yuklama emas, doim maʼno tashuvchi soʻz."
+    },
+    "firstWord": {
+      "name": "Birinchi soʻz",
+      "title": "Shu yerdan davom eting",
+      "about": "Boshi beriladi, qolgani sizdan. Oltitasining eng qiyini va haqiqiy qiroatga eng yaqini.",
+      "placeholder": "Oyatning qolganini yozing…",
+      "forgiving": "Harakatlar shart emas, bitta yuklama tushib qolsa ham xato hisoblanmaydi."
+    },
+    "shuffle": {
+      "name": "Oyatlarni tartiblash",
+      "title": "Bularni tartibga soling",
+      "hint": "Kelish tartibida bosing.",
+      "pool": "Qolganlari",
+      "empty": "Boʻsh",
+      "undo": "Oxirgisini bekor qilish",
+      "allPlaced": "Hammasi joylashtirildi.",
+      "shouldBe": "{ref} boʻlishi kerak"
+    },
+    "mutashabihat": {
+      "name": "Mutashabihot",
+      "title": "Bu qayerdan?",
+      "hint": "Bu parcha bir necha joyda uchraydi. Toʻgʻrisini ayting.",
+      "about": "Turli suralardagi deyarli bir xil parchalar — hifzdagi eng qiyin narsa va deyarli hech qayerda mashq qilinmaydigani."
+    },
+    "notHeldYet": "Siz bu sahifani yodlangan deb belgilamagansiz, shuning uchun bu mashq mustahkamlikni oʻzgartirmaydi. Bemalol mashq qiling."
   }
 }

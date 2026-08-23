@@ -20,7 +20,10 @@
     "db:reset": "tsx scripts/db-reset.ts",
     "db:clean": "tsx scripts/db-clean-tests.ts",
     "quran:build": "tsx scripts/build-quran-index.ts",
-    "brand:build": "tsx scripts/build-brand-assets.ts"
+    "brand:build": "tsx scripts/build-brand-assets.ts",
+    "quran:mutashabihat": "tsx scripts/build-mutashabihat.ts",
+    "verify:practice": "tsx scripts/verify-practice.ts",
+    "verify:practice:live": "tsx scripts/verify-practice-live.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",

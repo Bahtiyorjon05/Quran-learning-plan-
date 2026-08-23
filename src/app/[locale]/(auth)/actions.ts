@@ -5,7 +5,7 @@ import { getLocale } from "next-intl/server";
 
 import { redirectTo } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { type AuthErrorCode, toAuthError } from "@/auth/errors";
+import { toAuthError } from "@/auth/errors";
 import {
   login,
   requestPasswordReset,

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { BookOpen, LayoutDashboard, LogOut } from "lucide-react";
+import { BookOpen, Dumbbell, LayoutDashboard, LogOut } from "lucide-react";
 
 import { Wordmark } from "@/components/brand/logo";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
@@ -12,6 +12,7 @@ import { logoutAction } from "@/app/[locale]/app/actions";
 /** The bar every signed-in page shares. */
 export async function AppHeader() {
   const tn = await getTranslations("nav");
+  const tpr = await getTranslations("practice");
   const tm = await getTranslations("app.mushaf");
 
   return (
@@ -29,6 +30,13 @@ export async function AppHeader() {
             >
               <LayoutDashboard className="h-4 w-4" />
               <span className="max-sm:sr-only">{tn("dashboard")}</span>
+            </Link>
+            <Link
+              href="/app/practice"
+              className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm text-[var(--text-muted)] transition-colors hover:bg-[color-mix(in_oklab,var(--text-strong)_6%,transparent)] hover:text-[var(--text-strong)]"
+            >
+              <Dumbbell className="h-4 w-4" />
+              <span className="max-sm:sr-only">{tpr("title")}</span>
             </Link>
             <Link
               href="/app/quran"

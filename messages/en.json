@@ -830,5 +830,84 @@
         }
       ]
     }
+  },
+  "practice": {
+    "title": "Practice",
+    "subtitle": "Reading a page again feels like revision and is not. Every drill here takes something away and asks you for it back.",
+    "pageTitle": "Practice · page {page}",
+    "pageNumber": "page {page}",
+    "juzNumber": "juz {number}",
+    "allPages": "All pages",
+    "choosePage": "Choose another page",
+    "weakestFirst": "Weakest first, of {count} pages you hold.",
+    "daysAgo": "{count, plural, one {# day ago} other {# days ago}}",
+    "andMore": "{count} more, further down the list.",
+    "empty": {
+      "title": "Nothing to practise yet.",
+      "body": "Mark a page memorized in the mushaf and it will appear here, weakest first.",
+      "action": "Open the mushaf"
+    },
+    "questionOf": "{current} of {total}",
+    "questionNumber": "Question {number}",
+    "next": {
+      "name": "What comes next",
+      "title": "Which ayah follows?",
+      "about": "The wrong answers are not random. They are the passages you would actually slip into."
+    },
+    "back": "Back",
+    "finish": "Finish",
+    "marking": "Marking…",
+    "again": "Another drill",
+    "hint": "Hint",
+    "blank": "left blank",
+    "blankNumber": "Blank {number}",
+    "allRight": "All correct",
+    "missedCount": "{count, plural, one {# missed} other {# missed}}",
+    "openInMushaf": "See it in the mushaf",
+    "review": "Question by question",
+    "scoreLine": "{correct} of {total} correct",
+    "hintsUsed": "{count, plural, one {# hint} other {# hints}}",
+    "strength": "Strength",
+    "lapsed": "That counts as forgotten. This page returns tomorrow rather than in a few weeks.",
+    "relearning": "Twice forgotten. This page goes back to the daily track until you hold it three days running.",
+    "youRecited": "What you wrote",
+    "theAyah": "The ayah",
+    "saveFailed": "That could not be saved. Nothing was recorded — try finishing again.",
+    "notHeld": "This page is not marked memorized, so there was nothing to score it against.",
+    "hide": {
+      "name": "Progressive hide",
+      "title": "Fill in what is missing",
+      "about": "The way hifz is taught: recite while looking, then with the page half covered, then closed. Each round hides more.",
+      "harder": "Same page, harder"
+    },
+    "gap": {
+      "name": "Fill the gap",
+      "title": "One word is missing",
+      "about": "A single word removed from each ayah — never a particle, always a word that carries it."
+    },
+    "firstWord": {
+      "name": "First word",
+      "title": "Continue from here",
+      "about": "The opening is given and the rest is yours. The hardest of the six, and the closest to actually reciting.",
+      "placeholder": "Write the rest of the ayah…",
+      "forgiving": "Harakat are not required, and a missing particle will not fail you."
+    },
+    "shuffle": {
+      "name": "Ayah shuffle",
+      "title": "Put these back in order",
+      "hint": "Tap them in the order they come.",
+      "pool": "Remaining",
+      "empty": "Empty",
+      "undo": "Undo last",
+      "allPlaced": "All placed.",
+      "shouldBe": "Should be {ref}"
+    },
+    "mutashabihat": {
+      "name": "Mutashabihat",
+      "title": "Where is this from?",
+      "hint": "This passage appears in more than one place. Name the right one.",
+      "about": "Near-identical passages in different surahs — the hardest thing in hifz, and the thing almost nothing else drills."
+    },
+    "notHeldYet": "You have not marked this page memorized, so this drill will not change any strength. Practise freely."
   }
 }
