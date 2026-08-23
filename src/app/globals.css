@@ -414,6 +414,82 @@
   display: none;
 }
 
+/* ── Tajweed ───────────────────────────────────────────────────────────────
+   Rule spans are always in the markup; only the colour is switched. Seventeen
+   rules are grouped into six families, because a legend a reader cannot hold in
+   mind is decoration rather than help.
+
+   Colour alone never carries the meaning: every span keeps a data-rule
+   attribute the legend names in words, and the text is legible unstyled — which
+   is also what someone with colour-blindness or a monochrome screen sees. */
+:root {
+  --tj-madd: oklch(0.55 0.16 255); /* elongation — blue */
+  --tj-ghunnah: oklch(0.56 0.15 315); /* nasalisation — violet */
+  --tj-idgham: oklch(0.52 0.15 150); /* merging — green */
+  --tj-ikhfa: oklch(0.58 0.15 45); /* concealment — amber */
+  --tj-qalqalah: oklch(0.55 0.19 25); /* echo — red */
+  --tj-silent: oklch(0.62 0.02 260); /* written, not sounded — grey */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --tj-madd: oklch(0.74 0.14 255);
+    --tj-ghunnah: oklch(0.76 0.13 315);
+    --tj-idgham: oklch(0.74 0.14 150);
+    --tj-ikhfa: oklch(0.79 0.13 65);
+    --tj-qalqalah: oklch(0.72 0.16 25);
+    --tj-silent: oklch(0.56 0.02 260);
+  }
+}
+
+:root[data-theme="dark"] {
+  --tj-madd: oklch(0.74 0.14 255);
+  --tj-ghunnah: oklch(0.76 0.13 315);
+  --tj-idgham: oklch(0.74 0.14 150);
+  --tj-ikhfa: oklch(0.79 0.13 65);
+  --tj-qalqalah: oklch(0.72 0.16 25);
+  --tj-silent: oklch(0.56 0.02 260);
+}
+
+:root[data-tajweed="on"] [data-tj="madd"] {
+  color: var(--tj-madd);
+}
+:root[data-tajweed="on"] [data-tj="ghunnah"] {
+  color: var(--tj-ghunnah);
+}
+:root[data-tajweed="on"] [data-tj="idgham"] {
+  color: var(--tj-idgham);
+}
+:root[data-tajweed="on"] [data-tj="ikhfa"] {
+  color: var(--tj-ikhfa);
+}
+:root[data-tajweed="on"] [data-tj="qalqalah"] {
+  color: var(--tj-qalqalah);
+}
+:root[data-tajweed="on"] [data-tj="silent"] {
+  color: var(--tj-silent);
+}
+
+/* The legend's swatches show their colour whatever the reader has chosen. */
+[data-tj-swatch="madd"] {
+  background-color: var(--tj-madd);
+}
+[data-tj-swatch="ghunnah"] {
+  background-color: var(--tj-ghunnah);
+}
+[data-tj-swatch="idgham"] {
+  background-color: var(--tj-idgham);
+}
+[data-tj-swatch="ikhfa"] {
+  background-color: var(--tj-ikhfa);
+}
+[data-tj-swatch="qalqalah"] {
+  background-color: var(--tj-qalqalah);
+}
+[data-tj-swatch="silent"] {
+  background-color: var(--tj-silent);
+}
+
 @utility animate-rise {
   animation: ahd-rise 0.7s var(--ease-settle) both;
 }

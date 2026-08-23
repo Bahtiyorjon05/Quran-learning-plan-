@@ -424,7 +424,13 @@
       "owed": "{count} kunni qoplash kerak",
       "progress": "{percent}% yodlangan",
       "finishBy": "Tugatish sanasi",
-      "amend": "Sizning ahdingiz"
+      "amend": "Sizning ahdingiz",
+      "memorised": "yodlangan",
+      "statDaily": "kunlik satr",
+      "statHeld": "yodlangan sahifa",
+      "statDays": "qolgan mashgʻulot kuni",
+      "statBanked": "zaxira kun",
+      "statOwed": "qoplash kerak"
     },
     "mushaf": {
       "title": "Sizning musʼhafingiz",
@@ -437,7 +443,8 @@
       "started": "Boshlangan sahifalar",
       "hint": "Bu yerda sahifani belgilash ahdingiz taraqqiyotini ham siljitadi.",
       "openPage": "{page}-sahifani ochish",
-      "browse": "Koʻrib chiqish"
+      "browse": "Koʻrib chiqish",
+      "heldSummary": "{held} sahifa yodlangan · oʻrtacha mustahkamlik {average}%"
     },
     "today": {
       "heading": "Bugun",
@@ -456,6 +463,12 @@
       "nothingToRevise": "Hozircha takrorlaydigan narsa yo‘q. Bir narsa yodlaganingizdan keyin boshlanadi.",
       "pageList": "{count} sahifa",
       "noPlan": "Siz hali ahd tuzmagansiz."
+    },
+    "practiceInvite": {
+      "title": "Oʻzingizni sinang",
+      "body": "Nimani haqiqatan yodlaganingizni bilishning olti yoʻli.",
+      "fragile": "{count, plural, other {# sahifa qoʻldan ketyapti}}",
+      "weakest": "{name}, {page}-sahifa — mustahkamligi {strength}%"
     }
   },
   "onboarding": {
@@ -626,7 +639,37 @@
       "markedHint": "Shu qurilmada saqlandi. Hamma joyda saqlanishi uchun tizimga kiring.",
       "translationBy": "Tarjima: {name}",
       "sajda": "Sajda",
-      "jumpToPage": "Sahifaga oʻtish"
+      "jumpToPage": "Sahifaga oʻtish",
+      "tajweed": "Tajvid",
+      "tajweedHint": "Tajvid qoidalarini ranglash"
+    },
+    "tajweedRules": {
+      "heading": "Ranglar nimani bildiradi",
+      "note": "Oʻn yetti qoida emas, olti guruh — yodda tutsa boʻladigan izoh. Ranglash oʻqishga yordam beradi; matn har ikki holatda ham bir xil.",
+      "madd": {
+        "name": "Madd",
+        "what": "Choʻzilib oʻqiladigan unli — ikki, toʻrt yoki olti harakat."
+      },
+      "ghunnah": {
+        "name": "Gʻunna",
+        "what": "Burun orqali chiqadigan tovush — shaddali nun va mimda."
+      },
+      "idgham": {
+        "name": "Idgʻom",
+        "what": "Bir harf keyingi harfga qoʻshilib ketadi."
+      },
+      "ikhfa": {
+        "name": "Ixfo",
+        "what": "Harf na ochiq, na qoʻshilgan — yashirin oʻqiladi."
+      },
+      "qalqalah": {
+        "name": "Qalqala",
+        "what": "Sokin qof, to, bo, jim va dolda yengil aks-sado."
+      },
+      "silent": {
+        "name": "Oʻqilmaydi",
+        "what": "Yozilgan, lekin talaffuz qilinmaydi — vasl hamzasi, quyosh lomi."
+      }
     }
   },
   "pages": {
@@ -738,7 +781,13 @@
           "subject": "Fikr-mulohaza"
         }
       ],
-      "writeTo": "Yozing"
+      "writeTo": "Yozing",
+      "directly": "Yoki toʻgʻridan-toʻgʻri bogʻlaning",
+      "directlyBody": "Ahd bir kishi tomonidan yozilgan va yuritiladi. Eng tez javob — Telegram orqali.",
+      "telegramLabel": "Telegram",
+      "phoneLabel": "Telefon",
+      "telegram": "Bahtiyorjon05",
+      "phone": "010 3307 7877"
     },
     "privacy": {
       "title": "Maxfiylik",
@@ -859,8 +908,6 @@
     "marking": "Tekshirilmoqda…",
     "again": "Yana bir mashq",
     "hint": "Ishora",
-    "blank": "boʻsh qoldirildi",
-    "blankNumber": "{number}-boʻshliq",
     "allRight": "Hammasi toʻgʻri",
     "missedCount": "{count, plural, other {# ta xato}}",
     "openInMushaf": "Mushafda koʻrish",
@@ -870,27 +917,23 @@
     "strength": "Mustahkamlik",
     "lapsed": "Bu unutilgan deb hisoblanadi. Bu sahifa bir necha hafta emas, ertaga qaytadi.",
     "relearning": "Ikki marta unutildi. Bu sahifa uch kun ketma-ket mustahkam boʻlgunicha kunlik mashqqa qaytadi.",
-    "youRecited": "Siz yozganingiz",
-    "theAyah": "Oyat",
     "saveFailed": "Saqlanmadi. Hech narsa yozilmadi — yana yakunlab koʻring.",
     "notHeld": "Bu sahifa yodlangan deb belgilanmagan, shuning uchun baholash uchun asos yoʻq.",
     "hide": {
       "name": "Bosqichma-bosqich yashirish",
       "title": "Yetishmayotganini toʻldiring",
-      "about": "Hifz shunday oʻrgatiladi: avval qarab, keyin sahifaning yarmi yopiq holda, soʻng yopib. Har bosqichda koʻproq yashiriladi.",
+      "about": "Hifz shunday oʻrgatiladi: avval qarab, keyin sahifaning yarmi yopiq holda, soʻng yopib. Har bosqichda koʻproq olinadi, siz esa joyiga qaytarasiz.",
       "harder": "Shu sahifa, qiyinroq"
     },
     "gap": {
       "name": "Boʻshliqni toʻldirish",
       "title": "Bitta soʻz yetishmayapti",
-      "about": "Har oyatdan bitta soʻz olib tashlanadi — hech qachon yuklama emas, doim maʼno tashuvchi soʻz."
+      "about": "Har oyatdan bitta soʻz olinadi — hech qachon yuklama emas, doim maʼno tashuvchi soʻz. Chalgʻituvchilar — siz adashib tanlashingiz mumkin boʻlgan soʻzlar."
     },
     "firstWord": {
       "name": "Birinchi soʻz",
       "title": "Shu yerdan davom eting",
-      "about": "Boshi beriladi, qolgani sizdan. Oltitasining eng qiyini va haqiqiy qiroatga eng yaqini.",
-      "placeholder": "Oyatning qolganini yozing…",
-      "forgiving": "Harakatlar shart emas, bitta yuklama tushib qolsa ham xato hisoblanmaydi."
+      "about": "Boshi beriladi, davomini soʻzma-soʻz siz tiklaysiz. Oltitasining eng qiyini: javobdan ekranda hech narsa yoʻq."
     },
     "shuffle": {
       "name": "Oyatlarni tartiblash",
@@ -908,6 +951,10 @@
       "hint": "Bu parcha bir necha joyda uchraydi. Toʻgʻrisini ayting.",
       "about": "Turli suralardagi deyarli bir xil parchalar — hifzdagi eng qiyin narsa va deyarli hech qayerda mashq qilinmaydigani."
     },
-    "notHeldYet": "Siz bu sahifani yodlangan deb belgilamagansiz, shuning uchun bu mashq mustahkamlikni oʻzgartirmaydi. Bemalol mashq qiling."
+    "notHeldYet": "Siz bu sahifani yodlangan deb belgilamagansiz, shuning uchun bu mashq mustahkamlikni oʻzgartirmaydi. Bemalol mashq qiling.",
+    "bank": "Bularni joyiga qoʻying",
+    "bankHelp": "Soʻzni bosing — u keyingi boʻshliqqa tushadi. Toʻldirilganini bossangiz, qaytib chiqadi.",
+    "slotEmpty": "{number}-boʻshliq",
+    "slotFilled": "Qoʻyildi: {word}. Qaytarish uchun bosing."
   }
 }

@@ -2,9 +2,15 @@ import { describe, expect, it } from "vitest";
 
 import { normalizeArabic } from "./quran/arabic";
 import { generateDrill, availableModes, MAX_QUESTIONS } from "./drill/generate";
-import { markDrill, markQuestion, missedRefs, RECALL_THRESHOLD } from "./drill/grade";
+import { markDrill, markQuestion, missedRefs, type Answer } from "./drill/grade";
 import { rngFrom, sampleIndices, seedFrom, shuffle } from "./drill/random";
-import { DRILL_MODES, questionCount, type DrillMode, type SourceAyah } from "./drill/types";
+import {
+  DRILL_MODES,
+  questionCount,
+  type DrillMode,
+  type Question,
+  type SourceAyah,
+} from "./drill/types";
 
 /* Real text, because a fixture of invented Arabic would not exercise the
    normalisation this whole module depends on. Al-Baqara 1–5, page 2. */
@@ -54,6 +60,30 @@ const CONFUSABLE = {
 };
 
 const base = { page: 2, ayahs: PAGE, confusable: CONFUSABLE, seed: seedFrom("test") };
+
+/** Answer every question exactly right, the way a reciter who knows it would. */
+function perfect(questions: readonly Question[]): Answer[] {
+  return questions.map((question) => {
+    switch (question.kind) {
+      case "assemble": {
+        const spent = new Set<string>();
+        return {
+          kind: "assemble",
+          placed: question.blanks.map((wordIndex) => {
+            const wanted = question.words[wordIndex].text;
+            const word = question.bank.find((w) => w.text === wanted && !spent.has(w.id));
+            if (word) spent.add(word.id);
+            return word?.id ?? null;
+          }),
+        };
+      }
+      case "choice":
+        return { kind: "choice", choiceId: question.answerId };
+      case "order":
+        return { kind: "order", choiceIds: question.answerIds };
+    }
+  });
+}
 
 describe("seeded randomness", () => {
   it("gives the same sequence for the same seed", () => {
@@ -142,7 +172,7 @@ describe("generating a drill", () => {
        from the Qur'an on someone's screen. */
     const drill = generateDrill("hide", base);
     for (const question of drill.questions) {
-      if (question.kind !== "reveal") continue;
+      if (question.kind !== "assemble") continue;
       const rebuilt = question.words.map((w) => w.text).join(" ");
       const original = PAGE.find((a) => a.k === question.ref.k)!.t;
       expect(rebuilt).toBe(original.split(/\s+/).filter(Boolean).join(" "));
@@ -154,7 +184,7 @@ describe("progressive hide", () => {
   it("hides more as the level rises", () => {
     const hidden = (level: number) =>
       generateDrill("hide", { ...base, level }).questions.reduce(
-        (n, q) => n + (q.kind === "reveal" ? q.blanks.length : 0),
+        (n, q) => n + (q.kind === "assemble" ? q.blanks.length : 0),
         0,
       );
     expect(hidden(1)).toBeGreaterThan(hidden(0));
@@ -163,7 +193,7 @@ describe("progressive hide", () => {
   it("always leaves something visible and always asks for something", () => {
     for (const level of [0, 0.25, 0.5, 0.75, 1, 2, -1]) {
       for (const question of generateDrill("hide", { ...base, level }).questions) {
-        if (question.kind !== "reveal") continue;
+        if (question.kind !== "assemble") continue;
         expect(question.blanks.length).toBeGreaterThan(0);
         expect(question.blanks.length).toBeLessThan(question.words.length);
       }
@@ -177,7 +207,7 @@ describe("progressive hide", () => {
        Walking all 604 pages found this; the five-ayah fixture alone did not. */
     for (const level of [0, 0.5, 1]) {
       for (const question of generateDrill("hide", { ...base, level }).questions) {
-        if (question.kind !== "reveal") continue;
+        if (question.kind !== "assemble") continue;
         for (const blank of question.blanks) {
           expect(normalizeArabic(question.words[blank].text).length).toBeGreaterThan(0);
         }
@@ -188,7 +218,7 @@ describe("progressive hide", () => {
   it("skips ayahs too short to hide anything in", () => {
     // 2:1 is الٓمٓ — one word, nothing to remove.
     const refs = generateDrill("hide", base).questions.map((q) =>
-      q.kind === "reveal" ? q.ref.k : "",
+      q.kind === "assemble" ? q.ref.k : "",
     );
     expect(refs).not.toContain("2:1");
   });
@@ -197,8 +227,8 @@ describe("progressive hide", () => {
 describe("fill the gap", () => {
   it("removes exactly one word", () => {
     for (const question of generateDrill("gap", base).questions) {
-      expect(question.kind).toBe("reveal");
-      if (question.kind !== "reveal") continue;
+      expect(question.kind).toBe("assemble");
+      if (question.kind !== "assemble") continue;
       expect(question.blanks).toHaveLength(1);
       expect(question.words.filter((w) => w.hidden)).toHaveLength(1);
     }
@@ -207,7 +237,7 @@ describe("fill the gap", () => {
   it("prefers a word that carries the ayah over a particle", () => {
     /* Blanking "min" or "wa" tests nothing. */
     for (const question of generateDrill("gap", base).questions) {
-      if (question.kind !== "reveal") continue;
+      if (question.kind !== "assemble") continue;
       const word = question.words[question.blanks[0]].text;
       expect(normalizeArabic(word).length).toBeGreaterThanOrEqual(4);
     }
@@ -216,20 +246,44 @@ describe("fill the gap", () => {
 
 describe("first word", () => {
   it("gives a real prompt even when the ayah opens with a particle", () => {
-    /* 2:4 begins with wa-alladhina; a one-letter prompt is no prompt. */
+    /* 2:4 begins with wa-alladhina; a one-word prompt there is no prompt. */
     const question = generateDrill("firstWord", base).questions.find(
-      (q) => q.kind === "recall" && q.ref.k === "2:4",
+      (q) => q.kind === "assemble" && q.ref.k === "2:4",
     );
-    expect(question?.kind).toBe("recall");
-    if (question?.kind !== "recall") return;
-    expect(normalizeArabic(question.prompt).length).toBeGreaterThan(2);
-    expect(question.answer.length).toBeGreaterThan(0);
+    if (question?.kind !== "assemble") throw new Error("expected an assemble question");
+
+    const shown = question.words.filter((_, i) => !question.blanks.includes(i));
+    expect(normalizeArabic(shown.map((w) => w.text).join(" ")).length).toBeGreaterThan(2);
+    expect(question.blanks.length).toBeGreaterThan(0);
   });
 
-  it("never leaves the answer empty for a one-word ayah", () => {
-    const question = generateDrill("firstWord", { ...base, ayahs: [PAGE[0]] }).questions[0];
-    if (question.kind !== "recall") throw new Error("expected recall");
-    expect(question.answer.trim().length).toBeGreaterThan(0);
+  it("asks for a bounded continuation rather than a whole long ayah", () => {
+    /* Forty taps is stamina, not hifz. */
+    for (const question of generateDrill("firstWord", base).questions) {
+      if (question.kind !== "assemble") continue;
+      expect(question.blanks.length).toBeLessThanOrEqual(8);
+    }
+  });
+
+  it("elides whatever it did not ask for, rather than showing the ending", () => {
+    for (const question of generateDrill("firstWord", base).questions) {
+      if (question.kind !== "assemble") continue;
+      const source = PAGE.find((a) => a.k === question.ref.k)!;
+      const total = source.t.split(/\s+/).filter(Boolean).length;
+      if (question.words.length < total) expect(question.truncated).toBe(true);
+      /* The last word shown is always one the question asks for, so nothing
+         beyond the final blank is given away. */
+      expect(question.blanks).toContain(question.words.length - 1);
+    }
+  });
+
+  it("skips an ayah with nothing to continue into", () => {
+    // 2:1 is الٓمٓ — one word, so there is no continuation to ask for.
+    const refs = generateDrill("firstWord", base).questions.map((q) =>
+      q.kind === "assemble" ? q.ref.k : "",
+    );
+    expect(refs).not.toContain("2:1");
+    expect(availableModes({ ...base, ayahs: [PAGE[0]] })).not.toContain("firstWord");
   });
 });
 
@@ -320,20 +374,50 @@ describe("the mutashabihat duel", () => {
 
 describe("marking", () => {
   const gap = generateDrill("gap", base).questions[0];
-  if (gap.kind !== "reveal") throw new Error("expected reveal");
-  const missingWord = gap.words[gap.blanks[0]].text;
+  if (gap.kind !== "assemble") throw new Error("expected an assemble question");
 
-  it("accepts the word without its Uthmani marks", () => {
-    /* A phone keyboard will not produce them, and their absence is not a
-       mistake in hifz. */
-    const bare = normalizeArabic(missingWord);
-    expect(bare).not.toBe(missingWord);
-    expect(markQuestion(gap, { kind: "reveal", words: [bare] }).correct).toBe(1);
+  const missingWord = gap.words[gap.blanks[0]].text;
+  const rightId = gap.bank.find((w) => w.text === missingWord)!.id;
+  const wrongId = gap.bank.find((w) => w.text !== missingWord)!.id;
+
+  it("accepts the word that was asked for", () => {
+    expect(markQuestion(gap, { kind: "assemble", placed: [rightId] }).correct).toBe(1);
   });
 
-  it("rejects an empty answer even though it normalises to nothing", () => {
-    expect(markQuestion(gap, { kind: "reveal", words: [""] }).correct).toBe(0);
-    expect(markQuestion(gap, { kind: "reveal", words: ["   "] }).correct).toBe(0);
+  it("rejects a decoy", () => {
+    const mark = markQuestion(gap, { kind: "assemble", placed: [wrongId] });
+    expect(mark.correct).toBe(0);
+    expect(mark.wrongAt).toEqual([0]);
+  });
+
+  it("rejects an empty slot", () => {
+    expect(markQuestion(gap, { kind: "assemble", placed: [null] }).correct).toBe(0);
+  });
+
+  it("judges by the word, not by which token was tapped", () => {
+    /* An ayah can say the same word twice, and the bank then holds two entries
+       for it. Tapping either into either slot is right; marking by id would
+       fail a reciter who was correct. */
+    const twice: SourceAyah = {
+      k: "9:9", s: 9, a: 9, p: 9,
+      t: "قُلْ هُوَ ٱللَّهُ أَحَدٌ ٱللَّهُ ٱلصَّمَدُ",
+    };
+    const drill = generateDrill("hide", {
+      ...base, ayahs: [twice], confusable: {}, level: 1,
+    });
+    const question = drill.questions[0];
+    if (question.kind !== "assemble") throw new Error("expected an assemble question");
+
+    /* Place the *last* matching bank entry into each slot rather than the
+       first, so ids deliberately do not line up. */
+    const placed = question.blanks.map((i) => {
+      const wanted = question.words[i].text;
+      const matches = question.bank.filter((w) => w.text === wanted);
+      return matches[matches.length - 1].id;
+    });
+
+    const mark = markQuestion(question, { kind: "assemble", placed });
+    expect(mark.correct).toBe(mark.total);
   });
 
   it("marks a missing answer wrong rather than throwing", () => {
@@ -346,28 +430,8 @@ describe("marking", () => {
     expect(markQuestion(gap, { kind: "choice", choiceId: "2:3" }).correct).toBe(0);
   });
 
-  it("passes a recitation that is close enough and fails one that is not", () => {
-    const question = generateDrill("firstWord", base).questions.find(
-      (q) => q.kind === "recall" && q.ref.k === "2:3",
-    );
-    if (question?.kind !== "recall") throw new Error("expected recall");
-
-    expect(markQuestion(question, { kind: "recall", text: question.answer }).correct).toBe(1);
-    expect(markQuestion(question, { kind: "recall", text: "الحمد لله رب العالمين" }).correct).toBe(
-      0,
-    );
-  });
-
-  it("does not fail a recitation for one missing particle", () => {
-    const question = generateDrill("firstWord", base).questions.find(
-      (q) => q.kind === "recall" && q.ref.k === "2:4",
-    );
-    if (question?.kind !== "recall") throw new Error("expected recall");
-
-    const words = question.answer.split(" ");
-    const dropped = words.filter((_, i) => i !== 2).join(" ");
-    const mark = markQuestion(question, { kind: "recall", text: dropped });
-    expect(mark.correct).toBe(1);
+  it("ignores an id that is not in the bank", () => {
+    expect(markQuestion(gap, { kind: "assemble", placed: ["nonsense"] }).correct).toBe(0);
   });
 
   it("marks an ordering position by position", () => {
@@ -386,17 +450,21 @@ describe("marking", () => {
   });
 
   it("never lets hints exceed what was asked", () => {
-    const mark = markQuestion(gap, { kind: "reveal", words: [missingWord], hints: 99 });
+    const mark = markQuestion(gap, { kind: "assemble", placed: [rightId], hints: 99 });
     expect(mark.hints).toBeLessThanOrEqual(mark.total);
   });
 
   it("totals a whole drill and reports where it went wrong", () => {
     const drill = generateDrill("gap", base);
-    const answers = drill.questions.map((question, i) => {
-      if (question.kind !== "reveal") return null;
-      const word = question.words[question.blanks[0]].text;
+    const answers = perfect(drill.questions).map((answer, i) => {
       // Get the first one wrong on purpose.
-      return { kind: "reveal" as const, words: [i === 0 ? "خطأ" : word] };
+      if (i !== 0) return answer;
+      const question = drill.questions[0];
+      if (question.kind !== "assemble") return answer;
+      const decoy = question.bank.find(
+        (w) => w.text !== question.words[question.blanks[0]].text,
+      )!;
+      return { kind: "assemble" as const, placed: [decoy.id] };
     });
 
     const result = markDrill(drill.questions, answers);
@@ -406,7 +474,9 @@ describe("marking", () => {
 
     const missed = missedRefs(drill.questions, result.marks);
     expect(missed).toHaveLength(1);
-    expect(missed[0].k).toBe(drill.questions[0].kind === "reveal" ? drill.questions[0].ref.k : "");
+    expect(missed[0].k).toBe(
+      drill.questions[0].kind === "assemble" ? drill.questions[0].ref.k : "",
+    );
     expect(missed[0].wordIndex).not.toBeNull();
   });
 
@@ -415,20 +485,7 @@ describe("marking", () => {
        can score less than full, some question is unanswerable. */
     for (const mode of DRILL_MODES) {
       const drill = generateDrill(mode, base);
-      const perfect = drill.questions.map((question) => {
-        switch (question.kind) {
-          case "reveal":
-            return { kind: "reveal" as const, words: question.blanks.map((i) => question.words[i].text) };
-          case "recall":
-            return { kind: "recall" as const, text: question.answer };
-          case "choice":
-            return { kind: "choice" as const, choiceId: question.answerId };
-          case "order":
-            return { kind: "order" as const, choiceIds: question.answerIds };
-        }
-      });
-
-      const result = markDrill(drill.questions, perfect);
+      const result = markDrill(drill.questions, perfect(drill.questions));
       expect(`${mode}: ${result.correct}/${result.total}`).toBe(
         `${mode}: ${result.total}/${result.total}`,
       );
@@ -451,8 +508,16 @@ describe("marking", () => {
     }
   });
 
-  it("holds the recall threshold below a perfect match", () => {
-    expect(RECALL_THRESHOLD).toBeGreaterThan(0.5);
-    expect(RECALL_THRESHOLD).toBeLessThan(1);
+  it("never asks anyone to type Arabic", () => {
+    /* The point of the rework: every answer is a tap. If a question shape ever
+       needs free text again, this fails and says so. */
+    for (const mode of DRILL_MODES) {
+      for (const question of generateDrill(mode, base).questions) {
+        expect(["assemble", "choice", "order"]).toContain(question.kind);
+        if (question.kind === "assemble") {
+          expect(question.bank.length).toBeGreaterThanOrEqual(question.blanks.length);
+        }
+      }
+    }
   });
 });

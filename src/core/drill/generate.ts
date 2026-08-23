@@ -13,7 +13,15 @@
 import { displayWords, normalizeArabic } from "@/core/quran/arabic";
 
 import { pick, rngFrom, sampleIndices, shuffle, type Rng } from "./random";
-import type { AyahRef, Choice, Drill, DrillMode, Question, SourceAyah } from "./types";
+import type {
+  AyahRef,
+  BankWord,
+  Choice,
+  Drill,
+  DrillMode,
+  Question,
+  SourceAyah,
+} from "./types";
 
 /** Ayahs shorter than this have nothing to hide. */
 const MIN_WORDS_FOR_HIDING = 3;
@@ -73,7 +81,7 @@ export function generateDrill(mode: DrillMode, input: GenerateInput): Drill {
       : mode === "gap"
         ? gapQuestions(input, rng)
         : mode === "firstWord"
-          ? firstWordQuestions(input)
+          ? firstWordQuestions(input, rng)
           : mode === "next"
             ? nextQuestions(input, rng)
             : mode === "shuffle"
@@ -95,11 +103,100 @@ export function availableModes(input: GenerateInput): DrillMode[] {
   const longEnough = input.ayahs.filter(canHide);
 
   if (longEnough.length > 0) modes.push("hide", "gap");
-  if (input.ayahs.length > 0) modes.push("firstWord");
+  if (input.ayahs.some((a) => continuationOf(a) !== null)) modes.push("firstWord");
   if (input.ayahs.length >= 2) modes.push("next", "shuffle");
   if (confusablePairs(input).length > 0) modes.push("mutashabihat");
 
   return modes;
+}
+
+/* ── assembling an ayah from its words ────────────────────────────────────── */
+
+/**
+ * How many decoys sit in the bank alongside the real words.
+ *
+ * Three. Fewer and a bank of only the right words becomes a pure ordering
+ * puzzle solvable by elimination; many more and the drill turns into visual
+ * search, which is a different skill from hifz.
+ */
+const DECOYS = 3;
+
+/** The first-word prompt asks for a bounded continuation, not a whole page. */
+const MAX_CONTINUATION = 8;
+
+/**
+ * Build an assemble question: the ayah with some words lifted out, and a bank
+ * to tap them back from.
+ *
+ * The bank is shuffled, so the order the words are given in says nothing.
+ */
+function assemble(
+  ayah: SourceAyah,
+  mode: "hide" | "gap" | "firstWord",
+  words: string[],
+  blanks: number[],
+  input: GenerateInput,
+  rng: Rng,
+  truncated = false,
+): Question {
+  const missing = blanks.map((i) => words[i]);
+  const bank: BankWord[] = missing.map((text, i) => ({ id: `w${i}`, text }));
+
+  for (const [i, text] of decoysFor(ayah, missing, words, input, rng).entries()) {
+    bank.push({ id: `d${i}`, text });
+  }
+
+  return {
+    kind: "assemble",
+    mode,
+    ref: refOf(ayah),
+    words: words.map((text, i) => ({ text, hidden: blanks.includes(i) })),
+    blanks,
+    bank: shuffle(bank, rng),
+    truncated,
+  };
+}
+
+/**
+ * Plausible wrong words.
+ *
+ * Drawn first from the passage this one is confused with, because that is the
+ * mistake actually waiting to be made, then from the ayah's own visible words
+ * and its neighbours on the page. Anything matching a word the question is
+ * asking for is skipped — a decoy that is secretly a right answer makes the
+ * bank incoherent to look at.
+ */
+function decoysFor(
+  ayah: SourceAyah,
+  missing: string[],
+  own: string[],
+  input: GenerateInput,
+  rng: Rng,
+): string[] {
+  const forbidden = new Set(missing.map(normalizeArabic));
+  const chosen: string[] = [];
+  const seen = new Set<string>();
+
+  const consider = (word: string) => {
+    if (chosen.length >= DECOYS) return;
+    const key = normalizeArabic(word);
+    if (key.length < 2 || forbidden.has(key) || seen.has(key)) return;
+    seen.add(key);
+    chosen.push(word);
+  };
+
+  for (const partner of input.confusable?.[ayah.k] ?? []) {
+    if (partner.t) for (const word of shuffle(displayWords(partner.t), rng)) consider(word);
+  }
+
+  for (const word of shuffle(own, rng)) consider(word);
+
+  for (const other of shuffle(input.ayahs, rng)) {
+    if (other.k === ayah.k) continue;
+    for (const word of shuffle(displayWords(other.t), rng)) consider(word);
+  }
+
+  return chosen;
 }
 
 /* ── progressive hide ─────────────────────────────────────────────────────── */
@@ -131,13 +228,7 @@ function hideQuestions(input: GenerateInput, rng: Rng): Question[] {
       );
       const blanks = sampleIndices(askable.length, count, rng).map((i) => askable[i]);
 
-      return {
-        kind: "reveal" as const,
-        mode: "hide" as const,
-        ref: refOf(ayah),
-        words: words.map((text, i) => ({ text, hidden: blanks.includes(i) })),
-        blanks,
-      };
+      return assemble(ayah, "hide", words, blanks, input, rng);
     });
 }
 
@@ -166,34 +257,63 @@ function gapQuestions(input: GenerateInput, rng: Rng): Question[] {
       const candidates = substantial.length > 0 ? substantial : blankableIndices(words);
       const index = pick(candidates, rng);
 
-      return {
-        kind: "reveal" as const,
-        mode: "gap" as const,
-        ref: refOf(ayah),
-        words: words.map((text, i) => ({ text, hidden: i === index })),
-        blanks: [index],
-      };
+      return assemble(ayah, "gap", words, [index], input, rng);
     });
 }
 
 /* ── first word ───────────────────────────────────────────────────────────── */
 
-/** The opening is given; the rest is recited from memory. */
-function firstWordQuestions(input: GenerateInput): Question[] {
-  return input.ayahs.slice(0, MAX_QUESTIONS).map((ayah) => {
-    const words = displayWords(ayah.t);
-    /* Two words when the first is a single particle, which on its own is no
-       prompt at all — a great many ayahs begin with "wa". */
-    const lead = normalizeArabic(words[0] ?? "").length <= 2 ? 2 : 1;
+/**
+ * The opening is given; the continuation is rebuilt word by word.
+ *
+ * The hardest of the modes, because nothing of the answer is on screen — only
+ * where it starts. Bounded to a handful of words so a long ayah does not turn
+ * into forty taps; the point is whether the thread is held, not stamina.
+ */
+function firstWordQuestions(input: GenerateInput, rng: Rng): Question[] {
+  const out: Question[] = [];
 
-    return {
-      kind: "recall" as const,
-      mode: "firstWord" as const,
-      ref: refOf(ayah),
-      prompt: words.slice(0, lead).join(" "),
-      answer: words.slice(lead).join(" ") || ayah.t,
-    };
-  });
+  for (const ayah of input.ayahs) {
+    if (out.length >= MAX_QUESTIONS) break;
+
+    const plan = continuationOf(ayah);
+    if (!plan) continue;
+
+    /* Everything past the last asked-for word is elided rather than shown, so
+       the ayah does not give away its own ending. */
+    const last = plan.asked[plan.asked.length - 1];
+    const words = plan.all.slice(0, last + 1);
+
+    out.push(
+      assemble(ayah, "firstWord", words, plan.asked, input, rng, last < plan.all.length - 1),
+    );
+  }
+
+  return out;
+}
+
+/**
+ * What to show and what to ask for, or null if the ayah is too short to ask.
+ *
+ * The lead is normally one word, or two when the first is a bare particle —
+ * "wa" alone is no prompt at all. But a two-word ayah like عَمَّ يَتَسَآءَلُونَ
+ * opens with exactly such a particle, and taking two words there leaves nothing
+ * to ask for. Walking the mushaf found four of them; the lead now yields rather
+ * than swallowing the whole ayah.
+ */
+function continuationOf(ayah: SourceAyah) {
+  const all = displayWords(ayah.t);
+  const askable = blankableIndices(all);
+  if (askable.length < 2) return null;
+
+  const wanted = normalizeArabic(all[0] ?? "").length <= 2 ? 2 : 1;
+
+  for (const lead of wanted === 2 ? [2, 1] : [1]) {
+    const asked = askable.filter((i) => i >= lead).slice(0, MAX_CONTINUATION);
+    if (asked.length > 0) return { all, asked };
+  }
+
+  return null;
 }
 
 /* ── what comes next ──────────────────────────────────────────────────────── */

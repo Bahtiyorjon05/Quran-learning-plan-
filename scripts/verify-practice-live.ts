@@ -97,7 +97,8 @@ async function main() {
 
   const html = await page.text();
   for (const [what, present] of [
-    ["an Arabic blank input", html.includes('dir="rtl"')],
+    ["the ayah in Arabic", html.includes('dir="rtl"')],
+    ["a word bank to tap from", html.includes("bankHelp") || html.includes("Tanlang")],
     ["the mode navigation", html.includes("Mutashabihot") || html.includes("Boʻshliq")],
   ] as const) {
     console.log(`  ${present ? "✓" : "✗"} ${what}`);
@@ -115,11 +116,19 @@ async function main() {
   });
   if (!drill) throw new Error("could not rebuild the drill");
 
-  const answers = drill.questions.map((question) =>
-    question.kind === "reveal"
-      ? { kind: "reveal", words: question.blanks.map((i) => question.words[i].text) }
-      : null,
-  );
+  const answers = drill.questions.map((question) => {
+    if (question.kind !== "assemble") return null;
+    const spent = new Set<string>();
+    return {
+      kind: "assemble",
+      placed: question.blanks.map((wordIndex) => {
+        const wanted = question.words[wordIndex].text;
+        const word = question.bank.find((w) => w.text === wanted && !spent.has(w.id));
+        if (word) spent.add(word.id);
+        return word?.id ?? null;
+      }),
+    };
+  });
 
   const id = await actionId("app/practice/actions", "submitDrill");
 
@@ -203,9 +212,17 @@ async function main() {
   /* ── the same drill, answered wrongly ── */
   console.log("\n─── now the same page, answered wrongly ───");
 
-  const wrongAnswers = drill.questions.map((question) =>
-    question.kind === "reveal" ? { kind: "reveal", words: question.blanks.map(() => "خطأ") } : null,
-  );
+  const wrongAnswers = drill.questions.map((question) => {
+    if (question.kind !== "assemble") return null;
+    /* Place a decoy in every slot: the bank always carries some. */
+    return {
+      kind: "assemble",
+      placed: question.blanks.map((wordIndex) => {
+        const wanted = question.words[wordIndex].text;
+        return question.bank.find((w) => w.text !== wanted)?.id ?? null;
+      }),
+    };
+  });
 
   const badForm = new FormData();
   badForm.set("page", String(PAGE));

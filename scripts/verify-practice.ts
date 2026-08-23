@@ -77,16 +77,33 @@ async function main() {
 
       for (const question of shown.questions) {
         /* Displayed text must be the Qur'an, untouched. */
-        if (question.kind === "reveal") {
+        if (question.kind === "assemble") {
           const source = input.ayahs.find((a) => a.k === question.ref.k);
           check(Boolean(source), page, mode, `unknown ayah ${question.ref.k}`);
+          const visible = question.words.map((w) => w.text).join(" ");
+          const whole = source!.t.split(/\s+/).filter(Boolean).join(" ");
+          /* The first-word prompt deliberately shows only as far as it asks,
+             so it is a prefix rather than the whole ayah — but every character
+             it does show must be the Qur'an's. */
           check(
-            question.words.map((w) => w.text).join(" ") ===
-              source!.t.split(/\s+/).filter(Boolean).join(" "),
+            question.truncated ? whole.startsWith(visible) : visible === whole,
             page,
             mode,
             `text altered in ${question.ref.k}`,
           );
+
+          /* Every blank must be fillable from the bank, or the question cannot
+             be answered correctly by anyone. */
+          const supply = new Map<string, number>();
+          for (const word of question.bank) {
+            supply.set(word.text, (supply.get(word.text) ?? 0) + 1);
+          }
+          for (const index of question.blanks) {
+            const wanted = question.words[index].text;
+            const left = supply.get(wanted) ?? 0;
+            check(left > 0, page, mode, `no bank word for blank ${index} of ${question.ref.k}`);
+            supply.set(wanted, left - 1);
+          }
           check(question.blanks.length > 0, page, mode, `nothing hidden in ${question.ref.k}`);
           check(
             question.blanks.length < question.words.length,
@@ -118,24 +135,24 @@ async function main() {
             "presented already in order",
           );
         }
-
-        if (question.kind === "recall") {
-          check(question.prompt.trim().length > 0, page, mode, "empty prompt");
-          check(question.answer.trim().length > 0, page, mode, "empty answer");
-        }
       }
 
       /* A perfect attempt must score full marks, and an empty one zero. Any
          disagreement here means the grader and the generator have drifted. */
       const perfect = shown.questions.map((question): Answer | null => {
         switch (question.kind) {
-          case "reveal":
+          case "assemble": {
+            const spent = new Set<string>();
             return {
-              kind: "reveal",
-              words: question.blanks.map((i) => question.words[i].text),
+              kind: "assemble",
+              placed: question.blanks.map((wordIndex) => {
+                const wanted = question.words[wordIndex].text;
+                const word = question.bank.find((w) => w.text === wanted && !spent.has(w.id));
+                if (word) spent.add(word.id);
+                return word?.id ?? null;
+              }),
             };
-          case "recall":
-            return { kind: "recall", text: question.answer };
+          }
           case "choice":
             return { kind: "choice", choiceId: question.answerId };
           case "order":

@@ -424,7 +424,13 @@
       "owed": "{count} days to make up",
       "progress": "{percent}% memorized",
       "finishBy": "Finish by",
-      "amend": "Your covenant"
+      "amend": "Your covenant",
+      "memorised": "memorised",
+      "statDaily": "lines a day",
+      "statHeld": "pages held",
+      "statDays": "study days left",
+      "statBanked": "days banked",
+      "statOwed": "days to make up"
     },
     "mushaf": {
       "title": "Your mushaf",
@@ -437,7 +443,8 @@
       "started": "Pages started",
       "hint": "Marking a page here moves your covenant's progress.",
       "openPage": "Open page {page}",
-      "browse": "Browse"
+      "browse": "Browse",
+      "heldSummary": "{held} pages held · {average}% average strength"
     },
     "today": {
       "heading": "Today",
@@ -456,6 +463,12 @@
       "nothingToRevise": "Nothing to revise yet. It begins once you have memorized something.",
       "pageList": "{count} pages",
       "noPlan": "You have not made a covenant yet."
+    },
+    "practiceInvite": {
+      "title": "Test yourself",
+      "body": "Six ways to find out what you actually hold.",
+      "fragile": "{count, plural, one {# page is slipping} other {# pages are slipping}}",
+      "weakest": "{name}, page {page} — held at {strength}%"
     }
   },
   "onboarding": {
@@ -626,7 +639,37 @@
       "markedHint": "Saved on this device. Sign in to keep your progress everywhere.",
       "translationBy": "Translation: {name}",
       "sajda": "Prostration",
-      "jumpToPage": "Go to page"
+      "jumpToPage": "Go to page",
+      "tajweed": "Tajweed",
+      "tajweedHint": "Colour the recitation rules"
+    },
+    "tajweedRules": {
+      "heading": "What the colours mean",
+      "note": "Six families rather than seventeen separate rules — a legend you can hold in mind. Colouring is a study aid; the text is the same either way.",
+      "madd": {
+        "name": "Madd",
+        "what": "A vowel held longer — two, four or six counts."
+      },
+      "ghunnah": {
+        "name": "Ghunnah",
+        "what": "Sounded through the nose, on a doubled nun or mim."
+      },
+      "idgham": {
+        "name": "Idgham",
+        "what": "A letter merged into the one that follows it."
+      },
+      "ikhfa": {
+        "name": "Ikhfa",
+        "what": "A letter neither clear nor merged, but concealed."
+      },
+      "qalqalah": {
+        "name": "Qalqalah",
+        "what": "A slight echo on a resting qaf, ta, ba, jim or dal."
+      },
+      "silent": {
+        "name": "Not sounded",
+        "what": "Written but not pronounced — the joining hamza, the sun lam."
+      }
     }
   },
   "pages": {
@@ -738,7 +781,13 @@
           "subject": "Feedback"
         }
       ],
-      "writeTo": "Write to"
+      "writeTo": "Write to",
+      "directly": "Or reach me directly",
+      "directlyBody": "Ahd is built and maintained by one person. Telegram is the fastest way to get an answer.",
+      "telegramLabel": "Telegram",
+      "phoneLabel": "Phone",
+      "telegram": "Bahtiyorjon05",
+      "phone": "010 3307 7877"
     },
     "privacy": {
       "title": "Privacy",
@@ -859,8 +908,6 @@
     "marking": "Marking…",
     "again": "Another drill",
     "hint": "Hint",
-    "blank": "left blank",
-    "blankNumber": "Blank {number}",
     "allRight": "All correct",
     "missedCount": "{count, plural, one {# missed} other {# missed}}",
     "openInMushaf": "See it in the mushaf",
@@ -870,27 +917,23 @@
     "strength": "Strength",
     "lapsed": "That counts as forgotten. This page returns tomorrow rather than in a few weeks.",
     "relearning": "Twice forgotten. This page goes back to the daily track until you hold it three days running.",
-    "youRecited": "What you wrote",
-    "theAyah": "The ayah",
     "saveFailed": "That could not be saved. Nothing was recorded — try finishing again.",
     "notHeld": "This page is not marked memorized, so there was nothing to score it against.",
     "hide": {
       "name": "Progressive hide",
       "title": "Fill in what is missing",
-      "about": "The way hifz is taught: recite while looking, then with the page half covered, then closed. Each round hides more.",
+      "about": "The way hifz is taught: recite while looking, then with the page half covered, then closed. Each round takes away more, and you put it back.",
       "harder": "Same page, harder"
     },
     "gap": {
       "name": "Fill the gap",
       "title": "One word is missing",
-      "about": "A single word removed from each ayah — never a particle, always a word that carries it."
+      "about": "One word lifted out of each ayah — never a particle, always a word that carries it. The decoys are words you could plausibly reach for."
     },
     "firstWord": {
       "name": "First word",
       "title": "Continue from here",
-      "about": "The opening is given and the rest is yours. The hardest of the six, and the closest to actually reciting.",
-      "placeholder": "Write the rest of the ayah…",
-      "forgiving": "Harakat are not required, and a missing particle will not fail you."
+      "about": "The opening is given and the continuation is yours to rebuild, word by word. The hardest of the six: nothing of the answer is on screen."
     },
     "shuffle": {
       "name": "Ayah shuffle",
@@ -908,6 +951,10 @@
       "hint": "This passage appears in more than one place. Name the right one.",
       "about": "Near-identical passages in different surahs — the hardest thing in hifz, and the thing almost nothing else drills."
     },
-    "notHeldYet": "You have not marked this page memorized, so this drill will not change any strength. Practise freely."
+    "notHeldYet": "You have not marked this page memorized, so this drill will not change any strength. Practise freely.",
+    "bank": "Tap these into place",
+    "bankHelp": "Tap a word to fill the next gap. Tap a filled gap to take it back.",
+    "slotEmpty": "Gap {number}",
+    "slotFilled": "Placed: {word}. Tap to take it back."
   }
 }

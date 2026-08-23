@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Languages, Minus, Plus } from "lucide-react";
+import { Check, Languages, Minus, Palette, Plus } from "lucide-react";
 
 import { useLocalValue, writeLocal } from "@/lib/client-store";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const SIZE_KEY = "ahd-arabic-size";
 const TRANSLATION_KEY = "ahd-show-translation";
 const READ_KEY = "ahd-pages-read";
+const TAJWEED_KEY = "ahd-tajweed";
 
 const MIN_SIZE = 80;
 const MAX_SIZE = 200;
@@ -45,6 +46,10 @@ export function ReaderControls({ page }: { page: number }) {
   const storedTranslation = useLocalValue(TRANSLATION_KEY);
   const showTranslation = storedTranslation !== "false";
 
+  /* Off by default: colouring is a study aid, and someone opening the reader to
+     read should get a plain mushaf until they ask for it. */
+  const tajweed = useLocalValue(TAJWEED_KEY) === "true";
+
   const rawRead = useLocalValue(READ_KEY);
   const read = useMemo(() => new Set(parsePages(rawRead)), [rawRead]);
   const isRead = read.has(page);
@@ -56,6 +61,10 @@ export function ReaderControls({ page }: { page: number }) {
   useEffect(() => {
     document.documentElement.dataset.translation = showTranslation ? "on" : "off";
   }, [showTranslation]);
+
+  useEffect(() => {
+    document.documentElement.dataset.tajweed = tajweed ? "on" : "off";
+  }, [tajweed]);
 
   function setSize(next: number) {
     writeLocal(SIZE_KEY, String(Math.max(MIN_SIZE, Math.min(MAX_SIZE, next))));
@@ -108,6 +117,22 @@ export function ReaderControls({ page }: { page: number }) {
       >
         <Languages className="h-3.5 w-3.5" />
         <span className="max-sm:sr-only">{t("translation")}</span>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => writeLocal(TAJWEED_KEY, String(!tajweed))}
+        aria-pressed={tajweed}
+        title={t("tajweedHint")}
+        className={cn(
+          "inline-flex h-9 items-center gap-2 rounded-full border px-3 text-xs transition-colors",
+          tajweed
+            ? "border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
+            : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
+        )}
+      >
+        <Palette className="h-3.5 w-3.5" />
+        <span className="max-sm:sr-only">{t("tajweed")}</span>
       </button>
 
       <button

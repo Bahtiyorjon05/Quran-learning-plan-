@@ -4,6 +4,11 @@
  * Kept separate from the generators so the UI can import these types without
  * pulling in the generation logic, and so a question can travel from server to
  * client as plain data.
+ *
+ * Nothing here asks anyone to type Arabic. An Arabic keyboard is not something
+ * most people have, and on a phone it turns a thirty-second drill into a
+ * five-minute fight with an input method — so every question is answered by
+ * tapping: choosing a word, choosing a passage, or putting things in order.
  */
 
 export const DRILL_MODES = [
@@ -28,15 +33,21 @@ export type AyahRef = {
 /** An ayah with its text, as the generators receive it. */
 export type SourceAyah = AyahRef & { t: string };
 
-/** One word of a displayed ayah, and whether the drill has covered it. */
+/** One word of a displayed ayah, and whether the drill has taken it away. */
 export type DrillWord = {
   text: string;
   hidden: boolean;
 };
 
+/** A tappable word. The id is positional so identical words stay distinct. */
+export type BankWord = {
+  id: string;
+  text: string;
+};
+
 export type Choice = {
   id: string;
-  /** Arabic for a passage, or a reference like "Al-Baqara 2:255". */
+  /** Arabic for a passage, or empty when the choice is a bare reference. */
   text: string;
   /** Present when the choice is an ayah, so a wrong answer can be explained. */
   ref?: AyahRef;
@@ -45,26 +56,24 @@ export type Choice = {
 /**
  * A single thing to answer.
  *
- * Four shapes cover all six modes: two are about recalling text with parts of
- * it removed, one is multiple choice, one is putting ayahs back in order.
+ * Three shapes cover all six modes: putting words back into an ayah, choosing
+ * between passages, and putting ayahs back in order.
  */
 export type Question =
-  /* Progressive hide and fill-the-gap: the ayah is shown with words removed. */
+  /* Progressive hide, fill-the-gap and the first-word prompt. Words have been
+     lifted out of the ayah and must be tapped back into place. */
   | {
-      kind: "reveal";
-      mode: Extract<DrillMode, "hide" | "gap">;
+      kind: "assemble";
+      mode: Extract<DrillMode, "hide" | "gap" | "firstWord">;
       ref: AyahRef;
+      /** The ayah as displayed; hidden words render as empty slots. */
       words: DrillWord[];
-      /** Indices the reciter has to supply. Never empty. */
+      /** Indices into `words` that must be supplied, in reading order. */
       blanks: number[];
-    }
-  /* First-word prompt: an opening is given, the rest is recited from memory. */
-  | {
-      kind: "recall";
-      mode: Extract<DrillMode, "firstWord">;
-      ref: AyahRef;
-      prompt: string;
-      answer: string;
+      /** The missing words plus plausible decoys, shuffled. */
+      bank: BankWord[];
+      /** Whether the ayah continues past what this question asks for. */
+      truncated: boolean;
     }
   /* What-comes-next and the mutashabihat duel. */
   | {
@@ -93,11 +102,11 @@ export type Drill = {
   questions: Question[];
 };
 
-/** How many questions the reciter has to get right for a full drill. */
+/** How many things the reciter has to get right for a full drill. */
 export function questionCount(drill: Drill): number {
   return drill.questions.reduce((total, question) => {
     switch (question.kind) {
-      case "reveal":
+      case "assemble":
         return total + question.blanks.length;
       case "order":
         return total + question.answerIds.length;

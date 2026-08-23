@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { BASMALA, surah as surahMeta, type Ayah } from "@/data/quran/loader";
+import { TajweedText } from "./tajweed-text";
 import type { Locale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
@@ -111,7 +112,7 @@ export async function PageView({
                 lang="ar"
                 className="font-arabic text-[calc(1.5rem*var(--arabic-scale,1))] leading-[2.1] text-[var(--text-strong)] sm:text-[calc(1.75rem*var(--arabic-scale,1))]"
               >
-                {ayah.t}
+                <TajweedText text={ayah.t} marked={ayah.tj} />
                 <AyahMarker number={ayah.a} />
               </p>
 

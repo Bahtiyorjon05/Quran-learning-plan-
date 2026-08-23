@@ -26,18 +26,28 @@ import type { PracticeState } from "./state";
 
 const answerSchema = z.discriminatedUnion("kind", [
   z.object({
-    kind: z.literal("reveal"),
-    words: z.array(z.string().max(200)).max(64),
+    kind: z.literal("assemble"),
+    /* Bank word ids, one per blank. Never free text: nothing in a drill is
+       typed, so anything arriving here is an id the server itself minted. */
+    placed: z.array(z.string().max(16).nullable()).max(64),
     hints: z.number().int().min(0).max(64).optional(),
-  }),
-  z.object({
-    kind: z.literal("recall"),
-    text: z.string().max(4000),
-    hints: z.number().int().min(0).max(8).optional(),
   }),
   z.object({ kind: z.literal("choice"), choiceId: z.string().max(16).nullable() }),
   z.object({ kind: z.literal("order"), choiceIds: z.array(z.string().max(16)).max(16) }),
 ]);
+
+/**
+ * The schema and the type it validates must not drift apart.
+ *
+ * They did: the drills changed from typed words to tapped ones and this schema
+ * kept validating the old shape, so every submission failed silently and wrote
+ * nothing. Asserting both directions makes that a compile error instead — the
+ * schema must accept nothing an Answer cannot be, and reject nothing it can.
+ */
+type Assert<T extends true> = T;
+type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- the check is the point
+type _AnswerSchemaMatches = Assert<Same<z.infer<typeof answerSchema>, Answer>>;
 
 const schema = z.object({
   page: z.coerce.number().int().min(1).max(TOTAL_PAGES),

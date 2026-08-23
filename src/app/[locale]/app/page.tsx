@@ -3,7 +3,9 @@ import { getTranslations } from "next-intl/server";
 import { and, desc, eq } from "drizzle-orm";
 import {
   ArrowRight,
-  BadgeCheck,
+  BookOpen,
+  ChevronDown,
+  Flame,
   Monitor,
   Smartphone,
 } from "lucide-react";
@@ -21,6 +23,11 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { logoutEverywhereAction } from "./actions";
 import { loadToday } from "./today";
+import { practicablePages } from "./practice/session";
+import { CovenantArc, Stat } from "@/components/app/covenant-arc";
+import { PracticeInvite } from "@/components/app/practice-invite";
+import { MushafMosaic } from "@/components/app/mushaf-mosaic";
+import { TOTAL_PAGES } from "@/core/quran/mushaf";
 import { DailySheet, type TrackView } from "@/components/app/daily-sheet";
 import { describeLineRange } from "@/core/quran/mushaf";
 
@@ -179,7 +186,11 @@ export default async function AppHomePage() {
 
   const sheet = await loadToday(user.id);
 
-  const active = await db
+  /* The mosaic and the practice invitation both come from what is held, so
+     the pages are fetched once and shaped twice. */
+  const [pages, active] = await Promise.all([
+    practicablePages(user.id),
+    db
     .select({
       id: sessions.id,
       userAgent: sessions.userAgent,
@@ -189,7 +200,22 @@ export default async function AppHomePage() {
     .from(sessions)
     .where(eq(sessions.userId, user.id))
     .orderBy(desc(sessions.lastSeenAt))
-    .limit(10);
+    .limit(10),
+  ]);
+
+  const strengths = new Array<number>(TOTAL_PAGES).fill(0);
+  for (const item of pages) strengths[item.page - 1] = item.strength;
+
+  const held = pages.length;
+  const averageStrength = held
+    ? Math.round(pages.reduce((sum, p) => sum + p.strength, 0) / held)
+    : 0;
+  const fragile = pages.filter((p) => p.fragile).length;
+
+  const dateFormat = new Intl.DateTimeFormat(
+    user.locale === "uz" ? "uz-UZ" : user.locale === "ru" ? "ru-RU" : "en-US",
+    { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" },
+  );
 
 
   return (
@@ -197,146 +223,194 @@ export default async function AppHomePage() {
       <AppHeader />
 
       <main>
-        <Measure className="py-10 sm:py-14">
-          {/* ── Greeting ── */}
-          <div className="animate-rise">
-            <p className="font-arabic text-lg text-gold-ink/80" dir="rtl" aria-hidden>
-              السلام عليكم
-            </p>
-            <h1 className="mt-2 font-[family-name:var(--font-display)] text-[2.25rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.75rem]">
-              {user.displayName || ta("welcome")}
-            </h1>
-            <p className="mt-2 flex items-center gap-2 text-sm text-[var(--text-muted)]">
-              <BadgeCheck className="h-4 w-4 shrink-0 text-[var(--accent)]" />
-              <span className="truncate">{user.email}</span>
-            </p>
+        <Measure className="py-8 sm:py-12">
+          {/* Greeting. The email used to sit here: it is a fact about the
+              account, not about today, and a screen opened every morning should
+              not spend its best line on it. */}
+          <div className="animate-rise flex flex-wrap items-end justify-between gap-4">
+            <div className="min-w-0">
+              <p className="font-arabic text-lg text-gold-ink/80" dir="rtl" aria-hidden>
+                السلام عليكم
+              </p>
+              <h1 className="mt-1.5 font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
+                {user.displayName || ta("welcome")}
+              </h1>
+            </div>
+
+            {sheet && sheet.streak > 0 && (
+              <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-gold-500/30 bg-gold-500/10 px-3.5 py-1.5 text-[0.8125rem] font-medium text-gold-ink">
+                <Flame className="h-4 w-4" />
+                {ta("today.streak", { count: sheet.streak })}
+              </span>
+            )}
           </div>
 
-          <div className="mt-10 grid gap-5 lg:grid-cols-[1.35fr_1fr] lg:items-start">
-            {/* ── The covenant ── */}
-            <section className="animate-rise relative overflow-hidden rounded-2xl border border-[var(--line-strong)] bg-[linear-gradient(160deg,var(--surface-raised),var(--surface-base))] p-6 [animation-delay:80ms] sm:p-8">
-              <div
-                aria-hidden
-                className="girih pointer-events-none absolute inset-0 opacity-[0.03]"
-              />
+          {/* The covenant, given the whole width. It is the promise everything
+              else exists to keep, and it was sharing a row with a list of
+              logged-in devices. */}
+          <section className="animate-rise relative mt-8 overflow-hidden rounded-3xl border border-[var(--line-strong)] bg-[linear-gradient(160deg,var(--surface-raised),var(--surface-base))] [animation-delay:80ms]">
+            <div aria-hidden className="girih pointer-events-none absolute inset-0 opacity-[0.035]" />
 
-              <div className="relative">
-                <div className="flex items-center justify-between gap-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--text-strong)]">
-                    {ta("covenant.title")}
-                  </h2>
-                  {pace && (
-                    <span
-                      className={cn(
-                        "shrink-0 rounded-full border px-2.5 py-1 text-[0.625rem] font-semibold tracking-[0.12em] uppercase",
-                        pace.band === "ahead" || pace.band === "done"
-                          ? "border-[var(--accent)]/35 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
-                          : pace.band === "onTrack"
-                            ? "border-[var(--line-strong)] text-[var(--text-muted)]"
-                            : pace.band === "tightening"
-                              ? "border-gold-500/35 bg-gold-500/10 text-gold-ink"
-                              : "border-clay-500/40 bg-clay-500/10 text-danger",
-                      )}
-                    >
-                      {tp(pace.band)}
-                    </span>
-                  )}
+            {!covenant || !pace ? (
+              <div className="relative px-6 py-12 text-center sm:px-8">
+                <h2 className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--text-strong)]">
+                  {ta("covenant.title")}
+                </h2>
+                <p className="mx-auto mt-3 max-w-md text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+                  {ta("covenant.soon")}
+                </p>
+                <Link
+                  href="/app/plan/new"
+                  className={buttonStyles({ size: "lg", className: "group mt-7" })}
+                >
+                  {ta("covenant.start")}
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 rtl:rotate-180" />
+                </Link>
+              </div>
+            ) : (
+              <div className="relative p-6 sm:p-8">
+                <div className="flex flex-col items-center gap-8 sm:flex-row sm:gap-10">
+                  <CovenantArc
+                    pace={pace}
+                    label={`${
+                      pace.progress > 0 && pace.progress < 0.01
+                        ? (pace.progress * 100).toFixed(1)
+                        : Math.round(pace.progress * 100)
+                    }%`}
+                    caption={tp("memorised")}
+                  />
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h2 className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--text-strong)]">
+                        {ta("covenant.title")}
+                      </h2>
+                      <span
+                        className={cn(
+                          "shrink-0 rounded-full border px-2.5 py-1 text-[0.625rem] font-semibold tracking-[0.12em] uppercase",
+                          pace.band === "ahead" || pace.band === "done"
+                            ? "border-[var(--accent)]/35 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
+                            : pace.band === "onTrack"
+                              ? "border-[var(--line-strong)] text-[var(--text-muted)]"
+                              : pace.band === "tightening"
+                                ? "border-gold-500/35 bg-gold-500/10 text-gold-ink"
+                                : "border-clay-500/40 bg-clay-500/10 text-danger",
+                        )}
+                      >
+                        {tp(pace.band)}
+                      </span>
+                    </div>
+
+                    <p className="mt-2 text-[0.9375rem] text-[var(--text-muted)]">
+                      {tp("finishBy")}{" "}
+                      <span className="font-medium text-[var(--text-strong)]">
+                        {dateFormat.format(new Date(`${covenant.currentEndDate}T00:00:00Z`))}
+                      </span>
+                    </p>
+
+                    <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
+                      <Stat
+                        value={String(pace.requiredDailyLines)}
+                        label={tp("statDaily")}
+                        tone={pace.pressure > 1.15 ? "warn" : "plain"}
+                      />
+                      <Stat value={String(held)} label={tp("statHeld")} />
+                      <Stat value={String(pace.remainingStudyDays)} label={tp("statDays")} />
+                      <Stat
+                        value={pace.daysBanked >= 0 ? `+${pace.daysBanked}` : String(pace.daysBanked)}
+                        label={pace.daysBanked >= 0 ? tp("statBanked") : tp("statOwed")}
+                        tone={pace.daysBanked >= 0 ? "good" : "warn"}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                {!covenant || !pace ? (
-                  <>
-                    <p className="mt-3 text-[0.9375rem] text-[var(--text-default)]">
-                      {ta("covenant.empty")}
-                    </p>
-                    <p className="mt-2 max-w-prose text-sm leading-relaxed text-[var(--text-muted)]">
-                      {ta("covenant.soon")}
-                    </p>
+                <div className="mt-8 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-strong)_8%,transparent)]">
+                  <div
+                    className="h-full rounded-full bg-[linear-gradient(90deg,var(--color-emerald-600),var(--accent))] transition-[width] duration-1000 ease-[var(--ease-calm)]"
+                    style={{ width: `${Math.max(0.5, pace.progress * 100)}%` }}
+                  />
+                </div>
 
-                    <Link
-                      href="/app/plan/new"
-                      className={buttonStyles({ size: "lg", className: "group mt-7 w-full sm:w-auto" })}
-                    >
-                      {ta("covenant.start")}
-                      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 rtl:rotate-180" />
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <p className="mt-4 text-xs text-[var(--text-muted)]">{tp("finishBy")}</p>
-                    <p className="font-[family-name:var(--font-display)] text-[2rem] leading-none font-light text-[var(--text-strong)]">
-                      {new Intl.DateTimeFormat(user.locale === "uz" ? "uz-UZ" : user.locale === "ru" ? "ru-RU" : "en-US", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                        timeZone: "UTC",
-                      }).format(new Date(`${covenant.currentEndDate}T00:00:00Z`))}
-                    </p>
-
-                    <div className="mt-6">
-                      <div className="flex items-baseline justify-between text-xs text-[var(--text-muted)] tabular-nums">
-                        <span>
-                          {/* Below one per cent, rounding to a whole number
-                              reports 0% to someone who has genuinely memorized
-                              pages. One decimal until it stops mattering. */}
-                          {tp("progress", {
-                            percent:
-                              pace.progress > 0 && pace.progress < 0.01
-                                ? (pace.progress * 100).toFixed(1)
-                                : Math.round(pace.progress * 100),
-                          })}
-                        </span>
-                        <span>{tp("remaining", { lines: pace.remainingLines })}</span>
-                      </div>
-                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-strong)_8%,transparent)]">
-                        <div
-                          className="h-full rounded-full bg-[linear-gradient(90deg,var(--color-emerald-600),var(--accent))] transition-[width] duration-700"
-                          style={{ width: `${Math.max(1, Math.round(pace.progress * 100))}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-6 flex items-end justify-between gap-4 border-t border-[var(--line-subtle)] pt-5">
-                      <p className="font-[family-name:var(--font-display)] text-xl font-light text-[var(--accent-strong)] tabular-nums">
-                        {tp("requiredNow", { lines: pace.requiredDailyLines })}
-                      </p>
-                      <p className="shrink-0 text-xs text-[var(--text-faint)] tabular-nums">
-                        {pace.daysBanked >= 0
-                          ? tp("banked", { count: pace.daysBanked })
-                          : tp("owed", { count: Math.abs(pace.daysBanked) })}
-                      </p>
-                    </div>
-
-                    {covenant.niyyah && (
-                      <p className="mt-6 border-t border-[var(--line-subtle)] pt-5 text-[0.875rem] leading-relaxed text-[var(--text-muted)] italic">
-                        “{covenant.niyyah}”
-                      </p>
-                    )}
-                  </>
-                )}
-
-                {covenant && sheet && (
-                  <div className="mt-8 border-t border-[var(--line-subtle)] pt-7">
-                    <DailySheet
-                      tracks={buildTracks(sheet, ta)}
-                      streak={sheet.streak}
-                      complete={
-                        (sheet.sheet.sabaq === null || sheet.done.sabaq) &&
-                        (sheet.sheet.sabqi.length === 0 || sheet.done.sabqi) &&
-                        (sheet.sheet.manzil.length === 0 || sheet.done.manzil)
-                      }
-                    />
-                  </div>
+                {covenant.niyyah && (
+                  <p className="mt-6 border-t border-[var(--line-subtle)] pt-5 text-center text-[0.875rem] leading-relaxed text-[var(--text-muted)] italic">
+                    &ldquo;{covenant.niyyah}&rdquo;
+                  </p>
                 )}
               </div>
-            </section>
+            )}
+          </section>
 
-            {/* ── Sessions ── */}
-            <section className="animate-rise rounded-2xl border border-[var(--line-subtle)] bg-[var(--surface-raised)]/60 p-6 [animation-delay:160ms] sm:p-7">
-              <h2 className="text-sm font-semibold text-[var(--text-strong)]">
-                {ta("sessions.title")}
-              </h2>
+          {/* Today, and what to drill. */}
+          {covenant && sheet && (
+            <div className="animate-rise mt-6 grid gap-5 [animation-delay:140ms] lg:grid-cols-[1.4fr_1fr] lg:items-start">
+              <section className="rounded-3xl border border-[var(--line-strong)] p-6 sm:p-7">
+                <DailySheet
+                  tracks={buildTracks(sheet, ta)}
+                  /* The streak is already in the greeting; showing it twice on
+                     one screen makes it look like two different numbers. */
+                  streak={0}
+                  complete={
+                    (sheet.sheet.sabaq === null || sheet.done.sabaq) &&
+                    (sheet.sheet.sabqi.length === 0 || sheet.done.sabqi) &&
+                    (sheet.sheet.manzil.length === 0 || sheet.done.manzil)
+                  }
+                />
+              </section>
 
-              <ul className="mt-4 space-y-1">
+              <div className="space-y-5">
+                <PracticeInvite weakest={pages[0] ?? null} fragileCount={fragile} held={held} />
+
+                {held > 0 && (
+                  <Link
+                    href="/app/quran"
+                    className="group flex items-center gap-4 rounded-2xl border border-[var(--line-strong)] p-5 transition-[border-color,background-color] duration-300 ease-[var(--ease-calm)] hover:border-[var(--accent)]/50 sm:p-6"
+                  >
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[var(--line-subtle)] bg-[var(--surface-overlay)]">
+                      <BookOpen className="h-4.5 w-4.5 text-[var(--accent)]" strokeWidth={1.6} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
+                        {ta("mushaf.title")}
+                      </span>
+                      <span className="mt-1 block text-[0.8125rem] text-[var(--text-muted)]">
+                        {ta("mushaf.heldSummary", { held, average: averageStrength })}
+                      </span>
+                    </span>
+                    <ArrowRight className="h-4 w-4 shrink-0 text-[var(--text-faint)] transition-transform duration-300 group-hover:translate-x-0.5 rtl:rotate-180" />
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* The mushaf as a shape: 604 tiles is the one view that makes a
+              three-year covenant feel finite. */}
+          {held > 0 && (
+            <div className="animate-rise [animation-delay:200ms]">
+              <MushafMosaic
+                strengths={strengths}
+                held={held}
+                averageStrength={averageStrength}
+                basePath="/app/quran"
+              />
+            </div>
+          )}
+
+          {/* Devices, folded away. It matters when it matters, and never on the
+              morning of an ordinary day. */}
+          <details className="animate-rise group mt-10 rounded-2xl border border-[var(--line-subtle)] [animation-delay:260ms]">
+            <summary className="flex cursor-pointer items-center gap-3 px-5 py-4 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]">
+              <Monitor className="h-4 w-4 shrink-0" strokeWidth={1.6} />
+              <span className="flex-1">{ta("sessions.title")}</span>
+              <span className="text-[0.75rem] text-[var(--text-faint)] tabular-nums">
+                {active.length}
+              </span>
+              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-300 group-open:rotate-180" />
+            </summary>
+
+            <div className="border-t border-[var(--line-subtle)] px-5 py-4">
+              <ul className="space-y-1">
                 {active.map((session) => {
                   const current = session.id === user.sessionId;
                   const DeviceIcon = isPhone(session.userAgent) ? Smartphone : Monitor;
@@ -366,7 +440,7 @@ export default async function AppHomePage() {
                         )}
                       </span>
                       <span className="shrink-0 font-mono text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
-                        {session.ip ?? "—"}
+                        {session.ip ?? "\u2014"}
                       </span>
                     </li>
                   );
@@ -375,24 +449,17 @@ export default async function AppHomePage() {
 
               <form
                 action={logoutEverywhereAction}
-                className="mt-5 border-t border-[var(--line-subtle)] pt-5"
+                className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line-subtle)] pt-5"
               >
-                <button
-                  type="submit"
-                  className={buttonStyles({
-                    variant: "outline",
-                    size: "sm",
-                    className: "w-full",
-                  })}
-                >
-                  {ta("sessions.signOutEverywhere")}
-                </button>
-                <p className="mt-3 text-xs leading-relaxed text-[var(--text-faint)]">
+                <p className="min-w-0 flex-1 text-xs leading-relaxed text-[var(--text-faint)]">
                   {ta("sessions.note")}
                 </p>
+                <button type="submit" className={buttonStyles({ variant: "outline", size: "sm" })}>
+                  {ta("sessions.signOutEverywhere")}
+                </button>
               </form>
-            </section>
-          </div>
+            </div>
+          </details>
         </Measure>
       </main>
     </div>

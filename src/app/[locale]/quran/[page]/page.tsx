@@ -13,6 +13,7 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { PageView } from "@/components/quran/page-view";
 import { ReaderControls } from "@/components/quran/reader-controls";
+import { TajweedLegend } from "@/components/quran/tajweed-legend";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -96,8 +97,11 @@ export default async function QuranPage({ params }: Params) {
         </div>
 
         <Measure className="py-6">
-          <div className="mx-auto flex max-w-2xl justify-end">
-            <ReaderControls page={page} />
+          <div className="mx-auto max-w-2xl">
+            <div className="flex justify-end">
+              <ReaderControls page={page} />
+            </div>
+            <TajweedLegend />
           </div>
         </Measure>
 

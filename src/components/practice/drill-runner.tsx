@@ -12,10 +12,9 @@ import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
+import { AssembleQuestion } from "./assemble-question";
 import { OrderQuestion } from "./order-question";
-import { RevealQuestion } from "./reveal-question";
 import { ChoiceQuestion } from "./choice-question";
-import { RecallQuestion } from "./recall-question";
 import { DrillResult } from "./drill-result";
 
 /**
@@ -82,9 +81,7 @@ export function DrillRunner({
     return JSON.stringify(
       answers.map((answer, i) => {
         if (!answer) return null;
-        if (answer.kind === "reveal" || answer.kind === "recall") {
-          return { ...answer, hints: hints[i] };
-        }
+        if (answer.kind === "assemble") return { ...answer, hints: hints[i] };
         return answer;
       }),
     );
@@ -236,23 +233,11 @@ export function QuestionView({
   review?: { wrongAt: number[] };
 }) {
   switch (question.kind) {
-    case "reveal":
+    case "assemble":
       return (
-        <RevealQuestion
+        <AssembleQuestion
           question={question}
-          answer={answer?.kind === "reveal" ? answer : null}
-          onAnswer={onAnswer}
-          hints={hints}
-          onHint={onHint}
-          names={names}
-          review={review}
-        />
-      );
-    case "recall":
-      return (
-        <RecallQuestion
-          question={question}
-          answer={answer?.kind === "recall" ? answer : null}
+          answer={answer?.kind === "assemble" ? answer : null}
           onAnswer={onAnswer}
           hints={hints}
           onHint={onHint}
@@ -357,8 +342,7 @@ function elapsedSeconds(startedAt: number | null): number {
 
 function isEmpty(answer: Answer | null): boolean {
   if (!answer) return true;
-  if (answer.kind === "reveal") return answer.words.every((word) => word.trim() === "");
-  if (answer.kind === "recall") return answer.text.trim() === "";
+  if (answer.kind === "assemble") return answer.placed.every((id) => id === null);
   if (answer.kind === "choice") return answer.choiceId === null;
   return answer.choiceIds.length === 0;
 }

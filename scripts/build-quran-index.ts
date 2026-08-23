@@ -24,6 +24,10 @@ const EDITIONS = {
   uz: { id: "uz.sodik", label: "Muhammad Sodik Muhammad Yusuf", licence: "alquran.cloud" },
   ru: { id: "ru.kuliev", label: "Elmir Kuliev", licence: "alquran.cloud" },
   en: { id: "en.sahih", label: "Saheeh International", licence: "alquran.cloud" },
+  /* The same Uthmani text carrying inline rule markup — [rule[text] — so the
+     reader can colour tajweed without a second source of truth for the Qur'an
+     itself. Verified below to be the same text once the marks are stripped. */
+  tajweed: { id: "quran-tajweed", label: "Tajweed (coloured)", licence: "alquran.cloud" },
 } as const;
 
 /* ── Facts the data must satisfy ────────────────────────────────────────── */
@@ -119,6 +123,64 @@ async function fetchEdition(id: string): Promise<ApiAyah[]> {
   return ayahs;
 }
 
+/**
+ * The text without its rule markup.
+ *
+ * `[h:4[ٱ]لْعَ` → `ٱلْعَ`. Only the brackets go; every letter and mark inside
+ * them is kept exactly.
+ *
+ * A span can also be unlabelled — 32:3 contains `ٱفْتَرَ[ٮٰ]هُ`, a bracket pair
+ * with no rule name — so the bare brackets are removed too rather than left in
+ * the text as stray punctuation.
+ */
+function stripTajweed(text: string): string {
+  return text.replace(/\[[a-z]+(?::\d+)?\[/g, "").replace(/[[\]]/g, "");
+}
+
+/**
+ * The bare consonantal skeleton, for proving two editions carry the same words.
+ *
+ * The two sources spell the same Qur'an differently in about one ayah in
+ * eleven, and every difference is orthographic rather than textual:
+ *
+ *   ٱلْءَاخِرَة  ٱلْأَخِرَة    the seat the hamza sits on
+ *   ٱشْتَرَىٰهُ   ٱشْتَرَٮٰهُ     alef maqsura written as a dotless beh
+ *   ٱلْكِتَٰبُ   ٱلْكِتَـٰبُ     a dagger alef, with and without tatweel
+ *   ٱصْطَفَىٰكِ  ٱصْطَفَـٰكِ     which letter the dagger alef rides on
+ *   قَلِيلًۭا    قَلِيلاً       tanwin before the alef or after it
+ *
+ * So this folds the whole alef and hamza family to a single letter, collapses
+ * the doubling that folding ءا produces, and keeps only letters. What survives
+ * is coarse — ماء and ما reduce alike — and that is the right trade: the
+ * question this answers is whether ayah 2:4 of one edition is ayah 2:4 of the
+ * other, and two genuinely different ayahs differ in far more than a seat.
+ */
+function skeleton(text: string): string {
+  const folded = text
+    /* A dagger alef rides on a carrier that is not itself pronounced, and the
+       two editions choose different carriers: ٱصْطَفَىٰكِ writes it on a ya,
+       ٱصْطَفَـٰكِ on a tatweel, ٱلتَّوْرَٮٰةِ on a dotless beh. The carrier goes;
+       the alef stays. */
+    .replace(/[ـىيٮ]ٰ/g, "ٰ")
+    /* Every alef, every hamza, and every seat a hamza sits on. */
+    .replace(/[ءآأإٰٱٲٳٵ]/g, "ا")
+    .replace(/ؤ/g, "و")
+    .replace(/[ئىٮ]/g, "ي")
+    .replace(/ة/g, "ه");
+
+  let out = "";
+  for (const char of folded) {
+    const code = char.codePointAt(0)!;
+    /* 0x640 is the tatweel, a kashida with no sound, and it sits inside the
+       letter range rather than with the marks. */
+    if (code >= 0x0621 && code <= 0x064a && code !== 0x0640) out += char;
+  }
+
+  /* Folding ءا leaves اا, which the other edition writes as one letter.
+     Arabic has no genuine double alef, so collapsing is safe. */
+  return out.replace(/ا{2,}/g, "ا");
+}
+
 function fail(message: string): never {
   console.error(`\n✗ ${message}`);
   console.error("  Nothing was written.");
@@ -127,11 +189,12 @@ function fail(message: string): never {
 
 async function main() {
   console.log("Fetching editions:");
-  const [uthmani, uz, ru, en] = await Promise.all([
+  const [uthmani, uz, ru, en, tajweed] = await Promise.all([
     fetchEdition(EDITIONS.uthmani.id),
     fetchEdition(EDITIONS.uz.id),
     fetchEdition(EDITIONS.ru.id),
     fetchEdition(EDITIONS.en.id),
+    fetchEdition(EDITIONS.tajweed.id),
   ]);
 
   /* ── Verify before writing ─────────────────────────────────────────────── */
@@ -142,6 +205,7 @@ async function main() {
     ["uz", uz],
     ["ru", ru],
     ["en", en],
+    ["tajweed", tajweed],
   ] as const) {
     if (list.length !== TOTAL_AYAHS) fail(`${name} has ${list.length} ayahs, expected ${TOTAL_AYAHS}`);
   }
@@ -234,6 +298,95 @@ async function main() {
   if (baqara.text.includes(BASMALA)) fail("2:1 still contains the basmala");
   console.log(`  ✓ basmala detached from ${detached} opening ayahs; 1:1 and 9:1 correct`);
 
+  /* ── The tajweed edition ───────────────────────────────────────────────────
+     Same text, carrying inline rule markup.
+
+     Unlike quran-uthmani it does *not* glue the basmala onto opening ayahs —
+     its 2:1 is a bare alif-lam-mim — so nothing needs detaching here. The
+     defensive pass below stays anyway: if the source ever changes, the
+     alignment check that follows would fail loudly at 2:1 rather than shipping
+     a mushaf whose two texts disagree. */
+  const tajweedByKey = new Map(
+    tajweed.map((a) => [`${a.surah.number}:${a.numberInSurah}`, a]),
+  );
+  const TAJWEED_BASMALA = tajweedByKey.get("1:1")!.text;
+
+  let tajweedDetached = 0;
+  for (const ayah of tajweed) {
+    if (ayah.numberInSurah !== 1 || ayah.surah.number === 1) continue;
+    if (!ayah.text.startsWith(TAJWEED_BASMALA)) continue;
+    ayah.text = ayah.text.slice(TAJWEED_BASMALA.length).trim();
+    tajweedDetached++;
+  }
+
+  /* The markup must describe the text we already ship, not a different one.
+     The two editions spell some vowels differently — a superscript alef with
+     and without tatweel — so they are compared with the marks stripped, which
+     is exactly the comparison that would catch a genuinely different word, a
+     misaligned ayah, or a basmala on the wrong side of a boundary. */
+  const rules = new Map<string, number>();
+  const mismatches: { key: string; uthmani: string; tajweed: string }[] = [];
+  let compared = 0;
+
+  for (const ayah of uthmani) {
+    const key = `${ayah.surah.number}:${ayah.numberInSurah}`;
+    const marked = tajweedByKey.get(key);
+    if (!marked) fail(`the tajweed edition is missing ${key}`);
+
+    for (const [, rule] of marked.text.matchAll(/\[([a-z]+)(?::\d+)?\[/g)) {
+      rules.set(rule, (rules.get(rule) ?? 0) + 1);
+    }
+
+    const stripped = stripTajweed(marked.text);
+    if (skeleton(stripped) !== skeleton(ayah.text)) {
+      mismatches.push({ key, uthmani: ayah.text, tajweed: stripped });
+    }
+    compared++;
+  }
+
+  if (mismatches.length > 0) {
+    console.error(`
+✗ ${mismatches.length} of ${compared} ayahs differ:`);
+    for (const m of mismatches.slice(0, 12)) {
+      console.error(`  ${m.key}`);
+      console.error(`    uthmani: ${m.uthmani}`);
+      console.error(`    tajweed: ${m.tajweed}`);
+    }
+    fail(`${mismatches.length} ayahs disagree between the two editions`);
+  }
+
+  /* Every span opened must close, or the reader would swallow the rest of an
+     ayah into a coloured one. Two kinds open a span: `[rule[`, which contains
+     two brackets, and a bare `[`, which contains one. */
+  let unlabelled = 0;
+  const unbalanced = tajweed.filter((a) => {
+    const labelled = (a.text.match(/\[[a-z]+(?::\d+)?\[/g) ?? []).length;
+    const brackets = (a.text.match(/\[/g) ?? []).length;
+    const bare = brackets - labelled * 2;
+    const closes = (a.text.match(/\]/g) ?? []).length;
+    unlabelled += Math.max(0, bare);
+    return bare < 0 || labelled + bare !== closes;
+  });
+  if (unbalanced.length > 0) {
+    fail(
+      `${unbalanced.length} ayahs have unbalanced tajweed markup, e.g. ` +
+        `${unbalanced[0].surah.number}:${unbalanced[0].numberInSurah}`,
+    );
+  }
+
+  console.log(
+    `  ✓ tajweed markup is balanced in all ${tajweed.length} ayahs` +
+      (unlabelled > 0 ? ` (${unlabelled} unlabelled spans)` : ""),
+  );
+  console.log(`  ✓ ${compared} ayahs match the Uthmani text once marks are stripped`);
+  if (tajweedDetached > 0) console.log(`  ✓ detached ${tajweedDetached} tajweed basmalas`);
+  console.log(
+    `  ✓ ${rules.size} rule codes: ${[...rules]
+      .sort((a, b) => b[1] - a[1])
+      .map(([r, n]) => `${r}(${n})`)
+      .join(" ")}`,
+  );
+
   /* ── Shape it ──────────────────────────────────────────────────────────── */
   const translations = {
     uz: new Map(uz.map((a) => [`${a.surah.number}:${a.numberInSurah}`, a.text])),
@@ -301,6 +454,9 @@ async function main() {
           a: a.numberInSurah,
           p: a.page,
           t: a.text,
+          /* The same ayah with tajweed markup, parsed at render time only when
+             the reader turns colouring on. */
+          tj: tajweedByKey.get(key)?.text ?? "",
           sajda: a.sajda === true || (typeof a.sajda === "object" && a.sajda !== null),
           uz: translations.uz.get(key) ?? "",
           ru: translations.ru.get(key) ?? "",
@@ -332,6 +488,11 @@ async function main() {
         /* SHA-256 over the Arabic text alone. A test asserts the shipped data
            still hashes to this, so corruption is loud rather than silent. */
         uthmaniChecksum: checksum,
+        /* Every rule code the shipped tajweed text actually uses. The parser's
+           colour table is asserted against this, so a code appearing in the
+           data with no colour defined is caught by a test rather than by
+           rendering as unstyled text. */
+        tajweedRules: [...rules.keys()].sort(),
         surahs,
         pages: pageIndex,
       },
