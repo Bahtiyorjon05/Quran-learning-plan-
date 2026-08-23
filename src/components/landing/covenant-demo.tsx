@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { addMonths, differenceInCalendarDays, startOfDay } from "date-fns";
 import { ChevronLeft, ChevronRight, Lock, ScrollText, ShieldCheck, X } from "lucide-react";
 
 import { Section, Measure, Eyebrow, SectionTitle, Lead, Panel } from "@/components/ui/section";
+import { useMounted } from "@/lib/client-store";
 import { cn } from "@/lib/utils";
 
 const TOTAL_LINES = 9060; // 604 pages × 15 lines in the Madani mushaf
@@ -17,12 +18,13 @@ export function CovenantDemo() {
   const t = useTranslations("landing.covenant");
   const format = useFormatter();
 
-  const [mounted, setMounted] = useState(false);
+  /* The deadline is computed from today's date, which differs between the
+     server render and the browser. Rendering a dash until hydration keeps the
+     markup identical; an effect-set flag would render twice to say the same. */
+  const mounted = useMounted();
   const [months, setMonths] = useState(36);
   const [verdict, setVerdict] = useState<Verdict>(null);
   const [log, setLog] = useState<{ from: number; to: number }[]>([]);
-
-  useEffect(() => setMounted(true), []);
 
   const { deadline, days, linesPerDay } = useMemo(() => {
     const today = startOfDay(new Date());

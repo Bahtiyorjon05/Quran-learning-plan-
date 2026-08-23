@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSupports } from "@/lib/client-store";
 import { cn } from "@/lib/utils";
 
 export const TOTAL_PAGES = 604;
@@ -100,16 +101,18 @@ export function MosaicGrid({
   onSelectPage?: (page: number) => void;
 }) {
   const [revealed, setRevealed] = useState(false);
+  /* Where the observer does not exist there is no reveal to stage, so the tiles
+     are simply shown. Derived rather than set from inside the effect, which
+     would render once blank and once again populated. */
+  const canObserve = useSupports("IntersectionObserver");
+  const shown = revealed || !canObserve;
   const ref = useRef<HTMLDivElement>(null);
   const strengths = given ?? demoStrengths(memorizedPages);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
-    if (typeof IntersectionObserver === "undefined") {
-      setRevealed(true);
-      return;
-    }
+    if (!el || !canObserve) return;
+
     const io = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
@@ -121,7 +124,7 @@ export function MosaicGrid({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [canObserve]);
 
   return (
     <div
@@ -148,12 +151,12 @@ export function MosaicGrid({
             onFocus={interactive ? () => onHoverPage?.(page) : undefined}
             onMouseEnter={interactive ? () => onHoverPage?.(page) : undefined}
             style={{
-              transitionDelay: revealed ? `${(i % 160) * 5}ms` : "0ms",
+              transitionDelay: shown ? `${(i % 160) * 5}ms` : "0ms",
             }}
             className={cn(
               "aspect-square rounded-[2px] transition-[opacity,transform,background-color] duration-700 ease-[var(--ease-settle)]",
               BAND_CLASS[band],
-              revealed ? "scale-100 opacity-100" : "scale-75 opacity-0",
+              shown ? "scale-100 opacity-100" : "scale-75 opacity-0",
               interactive &&
                 "hover:!scale-[1.55] hover:!opacity-100 hover:ring-1 hover:ring-gold-300 hover:transition-none",
               onSelectPage && "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]",

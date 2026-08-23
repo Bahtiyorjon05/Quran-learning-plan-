@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Check, Languages, Minus, Plus } from "lucide-react";
 
+import { useLocalValue, writeLocal } from "@/lib/client-store";
 import { cn } from "@/lib/utils";
 
 const SIZE_KEY = "ahd-arabic-size";
@@ -14,21 +15,13 @@ const MIN_SIZE = 80;
 const MAX_SIZE = 200;
 const STEP = 15;
 
-/** Pages marked read on this device, as a set of page numbers. */
-function loadRead(): Set<number> {
+function parsePages(raw: string | null): number[] {
+  if (!raw) return [];
   try {
-    const raw = localStorage.getItem(READ_KEY);
-    return new Set(raw ? (JSON.parse(raw) as number[]) : []);
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed) ? parsed.filter((n): n is number => typeof n === "number") : [];
   } catch {
-    return new Set();
-  }
-}
-
-function saveRead(pages: Set<number>) {
-  try {
-    localStorage.setItem(READ_KEY, JSON.stringify([...pages].sort((a, b) => a - b)));
-  } catch {
-    /* Private mode or blocked storage. Reading still works; only the mark is lost. */
+    return [];
   }
 }
 
@@ -36,57 +29,43 @@ function saveRead(pages: Set<number>) {
  * Reading settings and the read-marker.
  *
  * All of it lives in localStorage, because the public reader has no account by
- * design. The size is written to a CSS custom property on the document rather
- * than held in React state, so the Arabic — rendered on the server — resizes
- * without re-rendering a single ayah.
+ * design. It is read through an external store rather than copied into state in
+ * an effect, so the first render is already right — otherwise the size would
+ * visibly snap from the default to the saved value on every page turn.
+ *
+ * The Arabic size is written to a CSS custom property on the document, so
+ * resizing never re-renders a single server-rendered ayah.
  */
 export function ReaderControls({ page }: { page: number }) {
   const t = useTranslations("quran.reader");
 
-  const [size, setSize] = useState(100);
-  const [showTranslation, setShowTranslation] = useState(true);
-  const [read, setRead] = useState<Set<number>>(new Set());
-  const [ready, setReady] = useState(false);
+  const storedSize = Number(useLocalValue(SIZE_KEY));
+  const size = storedSize >= MIN_SIZE && storedSize <= MAX_SIZE ? storedSize : 100;
 
-  useEffect(() => {
-    try {
-      const storedSize = Number(localStorage.getItem(SIZE_KEY));
-      if (storedSize >= MIN_SIZE && storedSize <= MAX_SIZE) setSize(storedSize);
+  const storedTranslation = useLocalValue(TRANSLATION_KEY);
+  const showTranslation = storedTranslation !== "false";
 
-      const storedTranslation = localStorage.getItem(TRANSLATION_KEY);
-      if (storedTranslation !== null) setShowTranslation(storedTranslation === "true");
-
-      setRead(loadRead());
-    } catch {
-      /* Defaults are already correct. */
-    }
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!ready) return;
-    document.documentElement.style.setProperty("--arabic-scale", String(size / 100));
-    try {
-      localStorage.setItem(SIZE_KEY, String(size));
-    } catch {}
-  }, [size, ready]);
-
-  useEffect(() => {
-    if (!ready) return;
-    document.documentElement.dataset.translation = showTranslation ? "on" : "off";
-    try {
-      localStorage.setItem(TRANSLATION_KEY, String(showTranslation));
-    } catch {}
-  }, [showTranslation, ready]);
-
+  const rawRead = useLocalValue(READ_KEY);
+  const read = useMemo(() => new Set(parsePages(rawRead)), [rawRead]);
   const isRead = read.has(page);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty("--arabic-scale", String(size / 100));
+  }, [size]);
+
+  useEffect(() => {
+    document.documentElement.dataset.translation = showTranslation ? "on" : "off";
+  }, [showTranslation]);
+
+  function setSize(next: number) {
+    writeLocal(SIZE_KEY, String(Math.max(MIN_SIZE, Math.min(MAX_SIZE, next))));
+  }
 
   function toggleRead() {
     const next = new Set(read);
     if (next.has(page)) next.delete(page);
     else next.add(page);
-    setRead(next);
-    saveRead(next);
+    writeLocal(READ_KEY, JSON.stringify([...next].sort((a, b) => a - b)));
   }
 
   return (
@@ -94,7 +73,7 @@ export function ReaderControls({ page }: { page: number }) {
       <div className="inline-flex items-center rounded-full border border-[var(--line-strong)]">
         <button
           type="button"
-          onClick={() => setSize((s) => Math.max(MIN_SIZE, s - STEP))}
+          onClick={() => setSize(size - STEP)}
           disabled={size <= MIN_SIZE}
           aria-label={`${t("fontSize")} −`}
           className="grid h-9 w-9 place-items-center rounded-s-full text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)] disabled:opacity-35"
@@ -106,7 +85,7 @@ export function ReaderControls({ page }: { page: number }) {
         </span>
         <button
           type="button"
-          onClick={() => setSize((s) => Math.min(MAX_SIZE, s + STEP))}
+          onClick={() => setSize(size + STEP)}
           disabled={size >= MAX_SIZE}
           aria-label={`${t("fontSize")} +`}
           className="grid h-9 w-9 place-items-center rounded-e-full text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)] disabled:opacity-35"
@@ -117,7 +96,7 @@ export function ReaderControls({ page }: { page: number }) {
 
       <button
         type="button"
-        onClick={() => setShowTranslation((v) => !v)}
+        onClick={() => writeLocal(TRANSLATION_KEY, String(!showTranslation))}
         aria-pressed={showTranslation}
         title={showTranslation ? t("hideTranslation") : t("showTranslation")}
         className={cn(
@@ -152,9 +131,8 @@ export function ReaderControls({ page }: { page: number }) {
 /** How many pages this device has marked, for the index page. */
 export function ReadTally() {
   const t = useTranslations("quran.index");
-  const [count, setCount] = useState<number | null>(null);
-
-  useEffect(() => setCount(loadRead().size), []);
+  const raw = useLocalValue(READ_KEY);
+  const count = parsePages(raw).length;
 
   if (!count) return null;
   return (

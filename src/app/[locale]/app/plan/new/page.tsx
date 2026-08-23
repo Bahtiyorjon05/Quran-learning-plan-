@@ -7,9 +7,9 @@ import { plans, profiles } from "@/db/schema";
 import { requireOnboardedUser } from "@/auth/guard";
 import { todayIn } from "@/core/date/civil";
 import { CovenantWizard } from "@/components/plan/covenant-wizard";
-import { Wordmark } from "@/components/brand/logo";
+import { FocusHeader } from "@/components/app/focus-header";
 import { Measure } from "@/components/ui/section";
-import { Link, redirectTo } from "@/i18n/navigation";
+import { redirectTo } from "@/i18n/navigation";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("plan.new");
@@ -39,13 +39,7 @@ export default async function NewCovenantPage() {
 
   return (
     <div className="min-h-dvh">
-      <header className="border-b border-[var(--line-subtle)]">
-        <Measure className="flex h-16 items-center sm:h-18">
-          <Link href="/app" aria-label="Ahd">
-            <Wordmark size={32} />
-          </Link>
-        </Measure>
-      </header>
+      <FocusHeader />
 
       <Measure className="py-10 sm:py-14">
         <CovenantWizard today={todayIn(profile?.timeZone ?? "Asia/Tashkent")} />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   ArrowLeft,
@@ -18,6 +18,7 @@ import { RECITERS, DEFAULT_RECITER } from "@/lib/reciters";
 import { ONBOARDING_IDLE } from "@/auth/form-state";
 import { completeOnboarding } from "@/app/[locale]/onboarding/actions";
 import { buttonStyles } from "@/components/ui/button";
+import { useTimeZone } from "@/lib/client-store";
 import { cn } from "@/lib/utils";
 
 /**
@@ -46,17 +47,10 @@ export function OnboardingFlow() {
   const [moment, setMoment] = useState<string>("afterFajr");
   const [customTime, setCustomTime] = useState("06:00");
   const [reciter, setReciter] = useState<string>(DEFAULT_RECITER);
-  const [timeZone, setTimeZone] = useState("");
 
   /* Read from the browser rather than guessed server-side: an address in
      Tashkent can still belong to someone studying in another country. */
-  useEffect(() => {
-    try {
-      setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone ?? "");
-    } catch {
-      setTimeZone("");
-    }
-  }, []);
+  const timeZone = useTimeZone();
 
   const studyTime =
     moment === "custom" ? customTime : MOMENTS.find((m) => m.id === moment)!.time;
