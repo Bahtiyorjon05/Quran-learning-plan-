@@ -596,6 +596,59 @@ body:has([data-app-tabbar]) {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   DATA-VIZ TOKENS  (admin charts)
+   Two jobs, two palettes, and nothing else gets a colour.
+
+   --viz-1..4  magnitude. One hue, stepped. Validated as an ordinal ramp on
+               each surface: lightness monotone, adjacent gaps >= 0.06 L, and
+               the step nearest the surface clearing 2:1 contrast. The dark
+               column is the same hue re-stepped for the dark ground, not the
+               light one flipped.
+
+   --status-*  state. Reserved: never used as a series colour. Every use ships
+               an icon and a word, because two of these sit below 3:1 on a light
+               surface by design and colour must never carry the meaning alone.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Dark is the base theme, so these are the dark-surface steps. */
+  --viz-1: #cbf1e1;
+  --viz-2: #97e2c5;
+  --viz-3: #5ecca5;
+  --viz-4: #2fae87;
+
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+
+  /* Ink variants, for text and small marks that must clear contrast. */
+  --status-good-ink: #3ecf6d;
+  --status-warning-ink: #fab219;
+  --status-critical-ink: #f07a7a;
+}
+
+:root[data-theme="light"],
+:root[data-theme="sepia"] {
+  --viz-1: #2fae87;
+  --viz-2: #1b8a6b;
+  --viz-3: #0e5c4a;
+  --viz-4: #08342a;
+
+  --status-good-ink: #0a7d0a;
+  --status-warning-ink: #8a5b00;
+  --status-critical-ink: #b32b2b;
+}
+
+/* Cormorant ships old-style figures: the 1 is a small capital I, so "11" reads
+   as "II" and "182" as "I82". Beautiful in running prose and wrong for every
+   number in this product, because all of them are data — page counts, streaks,
+   percentages. Lining figures are asked for wherever the display face is used.
+   Caught by screenshotting the admin metrics and reading them. */
+[class*="--font-display"] {
+  font-variant-numeric: lining-nums;
+}
+
 @utility animate-rise {
   animation: ahd-rise 0.7s var(--ease-settle) both;
 }
