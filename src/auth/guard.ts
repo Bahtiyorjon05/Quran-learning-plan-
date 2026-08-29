@@ -1,5 +1,6 @@
 import "server-only";
 
+import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
 
 import { redirectTo } from "@/i18n/navigation";
@@ -55,5 +56,27 @@ export async function requireRole(role: "teacher" | "admin"): Promise<CurrentUse
   if (user.role !== role && user.role !== "admin") {
     redirectTo("/app", user.locale);
   }
+  return user;
+}
+
+/**
+ * The gate on /admin.
+ *
+ * Stricter than {@link requireRole} on purpose. A signed-in stranger who pokes
+ * at /admin should not learn that /admin is a thing: a redirect to /app says
+ * "that page exists and is not yours", and a 404 says nothing at all.
+ *
+ * Someone who is not signed in still goes to /login, because they may well be
+ * the admin with an expired session, and answering that with a 404 would be
+ * unhelpful without being any more secret — every protected route in the
+ * product behaves that way.
+ */
+export async function requireAdmin(): Promise<CurrentUser> {
+  const locale = (await getLocale()) as Locale;
+  const user = await getCurrentUser();
+
+  if (!user) redirectTo("/login", locale);
+  if (user.role !== "admin") notFound();
+
   return user;
 }

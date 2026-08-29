@@ -323,3 +323,154 @@ export async function loadAdmins(): Promise<{ email: string }[]> {
     .from(users)
     .where(and(eq(users.role, "admin"), isNotNull(users.emailVerifiedAt)));
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE DEEPER REPORTS
+   Everything above answers "how many". These answer "is it working" — whether
+   people come back, what they chose, and when they actually study.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export type Cohort = {
+  /** Monday of the week people signed up in. */
+  week: string;
+  joined: number;
+  /** Of those, how many have been seen in the last fortnight. */
+  retained: number;
+};
+
+export type Slice = { key: string; count: number };
+
+export type HourCount = { hour: number; count: number };
+
+export type Leader = {
+  displayName: string | null;
+  email: string;
+  pagesHeld: number;
+  strength: number;
+};
+
+export type AdminDepth = {
+  activity: DayCount[];
+  memorized: DayCount[];
+  cohorts: Cohort[];
+  locales: Slice[];
+  reciters: Slice[];
+  scopes: Slice[];
+  studyHours: HourCount[];
+  leaders: Leader[];
+  streak: { current: number; longest: number } | null;
+};
+
+export async function loadDepth(): Promise<AdminDepth> {
+  const [activity, memorized, cohorts, locales, reciters, scopes, hours, leaders, streaks] =
+    await Promise.all([
+      /* Drills marked per day. Dense, like the signup series: a missing day and
+         a zero day look identical on a chart, and they are not the same thing. */
+      db.execute(sql`
+        select to_char(day, 'YYYY-MM-DD') as date, coalesce(n, 0)::int as count
+        from generate_series(current_date - ${DAYS_IN_WINDOW - 1}::int, current_date,
+                             interval '1 day') as day
+        left join (
+          select date_trunc('day', created_at) as d, count(*) as n
+          from ${reviewLogs} group by 1
+        ) c on c.d = day
+        order by day
+      `),
+
+      db.execute(sql`
+        select to_char(day, 'YYYY-MM-DD') as date, coalesce(n, 0)::int as count
+        from generate_series(current_date - ${DAYS_IN_WINDOW - 1}::int, current_date,
+                             interval '1 day') as day
+        left join (
+          select date_trunc('day', first_memorized_at) as d, count(*) as n
+          from ${memorizationUnits}
+          where state = 'memorized' and first_memorized_at is not null
+          group by 1
+        ) c on c.d = day
+        order by day
+      `),
+
+      /* Retention by signup week. The only honest answer to "is this working":
+         of the people who arrived in a given week, how many are still here. */
+      db.execute(sql`
+        select to_char(week, 'YYYY-MM-DD') as week,
+               count(*)::int as joined,
+               count(*) filter (
+                 where exists (
+                   select 1 from ${sessions} s
+                   where s.user_id = u.id and s.last_seen_at > now() - interval '14 days'
+                 )
+               )::int as retained
+        from (
+          select id, date_trunc('week', created_at) as week from ${users}
+        ) u
+        where week > now() - interval '10 weeks'
+        group by week
+        order by week
+      `),
+
+      db
+        .select({ key: profiles.locale, count: sql<number>`count(*)::int` })
+        .from(profiles)
+        .groupBy(profiles.locale)
+        .orderBy(desc(sql`count(*)`)),
+
+      db
+        .select({ key: profiles.preferredReciter, count: sql<number>`count(*)::int` })
+        .from(profiles)
+        .groupBy(profiles.preferredReciter)
+        .orderBy(desc(sql`count(*)`)),
+
+      db
+        .select({ key: plans.scope, count: sql<number>`count(*)::int` })
+        .from(plans)
+        .groupBy(plans.scope)
+        .orderBy(desc(sql`count(*)`)),
+
+      /* When people say they will study. Answers a real product question —
+         whether the reminder should go out at Fajr or after Isha. */
+      db.execute(sql`
+        select extract(hour from study_time)::int as hour, count(*)::int as count
+        from ${profiles}
+        where study_time is not null
+        group by 1 order by 1
+      `),
+
+      db
+        .select({
+          displayName: users.displayName,
+          email: users.email,
+          pagesHeld: sql<number>`count(${memorizationUnits.id})::int`,
+          strength: sql<number>`coalesce(round(avg(${memorizationUnits.strength})), 0)::int`,
+        })
+        .from(memorizationUnits)
+        .innerJoin(users, eq(users.id, memorizationUnits.userId))
+        .where(eq(memorizationUnits.state, "memorized"))
+        .groupBy(users.id, users.displayName, users.email)
+        .orderBy(desc(sql`count(${memorizationUnits.id})`))
+        .limit(8),
+
+      db.execute(sql`
+        select coalesce(max(current_streak), 0)::int as current,
+               coalesce(max(longest_streak), 0)::int as longest
+        from ${profiles}
+      `),
+    ]);
+
+  const streakRow = (streaks.rows[0] ?? {}) as Record<string, number>;
+
+  return {
+    activity: activity.rows as unknown as DayCount[],
+    memorized: memorized.rows as unknown as DayCount[],
+    cohorts: cohorts.rows as unknown as Cohort[],
+    locales,
+    reciters,
+    scopes,
+    studyHours: hours.rows as unknown as HourCount[],
+    leaders,
+    streak:
+      streakRow.longest > 0
+        ? { current: streakRow.current ?? 0, longest: streakRow.longest ?? 0 }
+        : null,
+  };
+}

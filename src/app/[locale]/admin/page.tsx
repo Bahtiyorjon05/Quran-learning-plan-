@@ -1,12 +1,22 @@
 import type { Metadata } from "next";
 
-import { requireRole } from "@/auth/guard";
+import { requireAdmin } from "@/auth/guard";
 import { surah as surahMeta } from "@/data/quran/loader";
 import { AdminShell, Metric, Panel } from "@/components/admin/admin-shell";
-import { DailyBars, Funnel, PaceBands, RankedBars } from "@/components/admin/charts";
+import {
+  Cohorts,
+  DailyBars,
+  Funnel,
+  HourHistogram,
+  PaceBands,
+  RankedBars,
+  Split,
+} from "@/components/admin/charts";
 import { Measure } from "@/components/ui/section";
 
-import { loadAdmins, loadOverview } from "./data";
+import { RECITERS } from "@/lib/reciters";
+
+import { loadAdmins, loadDepth, loadOverview } from "./data";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -54,6 +64,22 @@ const EVENT_LABELS: Record<string, string> = {
   account_deleted: "deleted their account",
 };
 
+const LOCALE_LABELS: Record<string, string> = {
+  uz: "O\u2018zbekcha",
+  en: "English",
+  ru: "\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
+};
+
+const SCOPE_LABELS: Record<string, string> = {
+  full: "The whole mushaf",
+  juz_range: "A range of juz",
+  surah_set: "Chosen surahs",
+};
+
+const RECITER_LABELS: Record<string, string> = Object.fromEntries(
+  RECITERS.map((r) => [r.id, r.name]),
+);
+
 /** "3 Sep, 14:20" — enough to place an event, without the noise of seconds. */
 const WHEN = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
@@ -63,9 +89,13 @@ const WHEN = new Intl.DateTimeFormat("en-GB", {
 });
 
 export default async function AdminOverviewPage() {
-  await requireRole("admin");
+  await requireAdmin();
 
-  const [overview, admins] = await Promise.all([loadOverview(), loadAdmins()]);
+  const [overview, depth, admins] = await Promise.all([
+    loadOverview(),
+    loadDepth(),
+    loadAdmins(),
+  ]);
   const { totals, funnel, signups, bands, hardest, practice, events } = overview;
 
   /* The one number worth putting a judgement on: of everyone who ever signed
@@ -120,7 +150,11 @@ export default async function AdminOverviewPage() {
         </div>
 
         {/* ── The two that matter most ── */}
-        <div className="mt-8 grid gap-4 lg:grid-cols-2 lg:items-start">
+        <h2 className="mt-12 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+          Where they go
+        </h2>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
           <Panel
             title="Where people stop"
             note="all accounts, ever"
@@ -163,7 +197,102 @@ export default async function AdminOverviewPage() {
           </Panel>
         </div>
 
+        {/* ── Is it working ──
+            Everything above counts people. These say whether they come back,
+            which is the only question that decides anything. */}
+        <h2 className="mt-12 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+          Whether it is working
+        </h2>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
+          <Panel title="Retention" note="by signup week">
+            <Cohorts
+              cohorts={depth.cohorts}
+              emptyLabel="Not enough weeks yet to say anything."
+            />
+          </Panel>
+
+          <Panel title="Drills marked" note="last 30 days">
+            <DailyBars
+              data={depth.activity}
+              label="Drills marked per day over the last thirty days"
+              emptyLabel="No drills in the last thirty days."
+            />
+          </Panel>
+        </div>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
+          <Panel title="Pages committed to memory" note="last 30 days">
+            <DailyBars
+              data={depth.memorized}
+              label="Pages first memorised per day over the last thirty days"
+              emptyLabel="No pages memorised in the last thirty days."
+            />
+          </Panel>
+
+          <Panel title="Furthest along" note="pages held">
+            <RankedBars
+              rows={depth.leaders.map((leader) => ({
+                key: leader.email,
+                label: leader.displayName || leader.email,
+                value: leader.pagesHeld,
+                note: `${leader.strength}% avg`,
+              }))}
+              emptyLabel="Nobody holds a page yet."
+            />
+          </Panel>
+        </div>
+
+        {/* ── Who they are ── */}
+        <h2 className="mt-12 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+          Who they are
+        </h2>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-3 lg:items-start">
+          <Panel title="Language" note="chosen at signup">
+            <Split
+              slices={depth.locales}
+              labels={LOCALE_LABELS}
+              emptyLabel="Nobody has onboarded yet."
+            />
+          </Panel>
+
+          <Panel title="Reciter" note="chosen at onboarding">
+            <Split
+              slices={depth.reciters}
+              labels={RECITER_LABELS}
+              emptyLabel="Nobody has onboarded yet."
+            />
+          </Panel>
+
+          <Panel title="Scope" note="of every covenant made">
+            <Split
+              slices={depth.scopes}
+              labels={SCOPE_LABELS}
+              emptyLabel="No covenants yet."
+            />
+          </Panel>
+        </div>
+
+        <div className="mt-4">
+          <Panel title="When people study" note="the hour they chose at onboarding">
+            <HourHistogram
+              hours={depth.studyHours}
+              emptyLabel="Nobody has chosen a study time yet."
+            />
+            <p className="mt-5 border-t border-[var(--line-subtle)] pt-4 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+              A real decision rests on this: whether the daily reminder should go
+              out before Fajr or after Isha. Every hour is drawn, because the
+              empty ones are as much of an answer as the full ones.
+            </p>
+          </Panel>
+        </div>
+
         {/* ── The report that is about the Qur'an rather than the software ── */}
+        <h2 className="mt-12 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+          The Qur&rsquo;an, and the last twelve things that happened
+        </h2>
+
         <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
           <Panel title="Hardest passages" note="most missed, everyone">
             <RankedBars

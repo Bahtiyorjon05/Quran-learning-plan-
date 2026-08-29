@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { LogOut } from "lucide-react";
+import { LogOut, ShieldCheck } from "lucide-react";
 
 import { Wordmark } from "@/components/brand/logo";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/site/theme-toggle";
 import { buttonStyles } from "@/components/ui/button";
 import { Measure } from "@/components/ui/section";
 import { Link } from "@/i18n/navigation";
+import { getCurrentUser } from "@/auth/session";
 import { logoutAction } from "@/app/[locale]/app/actions";
 
 import { AppNavDesktop, AppTabBar } from "./app-nav";
@@ -20,6 +21,10 @@ import { AppNavDesktop, AppTabBar } from "./app-nav";
  */
 export async function AppHeader() {
   const tn = await getTranslations("nav");
+  /* Only an admin is shown the way in. Everyone else gets no link and, if they
+     type the address anyway, a 404 — the page should not advertise itself. */
+  const user = await getCurrentUser();
+  const isAdmin = user?.role === "admin";
 
   return (
     <>
@@ -33,6 +38,16 @@ export async function AppHeader() {
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {isAdmin && (
+              <Link
+                href="/admin"
+                aria-label="Admin"
+                title="Admin"
+                className="inline-grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[var(--status-warning)]/35 text-[var(--status-warning-ink)] transition-colors duration-300 hover:bg-[var(--status-warning)]/10"
+              >
+                <ShieldCheck className="h-4 w-4" />
+              </Link>
+            )}
             <LanguageSwitcher />
             <ThemeToggle />
             <form action={logoutAction}>

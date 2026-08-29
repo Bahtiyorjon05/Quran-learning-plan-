@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { BadgeCheck, Search, ShieldCheck } from "lucide-react";
 
-import { requireRole } from "@/auth/guard";
+import { requireAdmin } from "@/auth/guard";
 import { AdminShell, Panel } from "@/components/admin/admin-shell";
 import { Measure } from "@/components/ui/section";
 import { cn } from "@/lib/utils";
@@ -35,7 +35,7 @@ export default async function AdminUsersPage({
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
-  await requireRole("admin");
+  await requireAdmin();
 
   const { q } = await searchParams;
   const search = (q ?? "").slice(0, 120);

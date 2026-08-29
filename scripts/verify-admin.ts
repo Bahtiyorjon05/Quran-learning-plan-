@@ -57,20 +57,29 @@ async function main() {
   const teacher = await makeAccount("teacher");
   const admin = await makeAccount("admin");
 
-  /* ── Everyone who is not an admin must be turned away ── */
-  for (const [who, account] of [
-    ["signed out", anonymous],
-    ["an ordinary reader", reader],
-    ["a teacher", teacher],
+  /* ── Everyone who is not an admin must be turned away ──
+     A signed-in stranger gets 404: a redirect to /app would tell them the page
+     exists and is not theirs. Someone signed out goes to /login, because they
+     may be the admin with an expired session and every protected route in the
+     product answers that way. */
+  for (const [who, account, expected] of [
+    ["signed out", anonymous, "redirect"],
+    ["an ordinary reader", reader, "notFound"],
+    ["a teacher", teacher, "notFound"],
   ] as const) {
     for (const path of PATHS) {
       const { status, location, body } = await visit(path, account.token);
-      const turnedAway = status >= 300 && status < 400;
+      const redirected = status >= 300 && status < 400;
 
-      console.log(`  ${who.padEnd(20)} ${path.padEnd(14)} → ${status}${location ? ` → ${location}` : ""}`);
+      console.log(
+        `  ${who.padEnd(20)} ${path.padEnd(14)} → ${status}${location ? ` → ${location}` : ""}`,
+      );
 
-      if (!turnedAway) {
-        failures.push(`${who} got ${status} on ${path} instead of a redirect`);
+      if (expected === "redirect" && !redirected) {
+        failures.push(`${who} got ${status} on ${path} instead of a redirect to /login`);
+      }
+      if (expected === "notFound" && status !== 404) {
+        failures.push(`${who} got ${status} on ${path} instead of 404`);
       }
       /* Belt and braces: even a wrong status must not have leaked the page. */
       if (body.includes("Where people stop") || body.includes("everyone&rsquo;s data")) {
@@ -87,6 +96,21 @@ async function main() {
 
     if (status !== 200) failures.push(`an admin got ${status} on ${path}`);
     else if (!body.includes("Admin")) failures.push(`${path} rendered without the admin band`);
+  }
+
+  /* ── And the way in must be shown to nobody else ── */
+  const readerApp = await visit("/app", reader.token);
+  if (readerApp.body.includes('href="/admin"')) {
+    failures.push("an ordinary reader is shown a link to /admin");
+  } else {
+    console.log("\n  ✓ no admin link for an ordinary reader");
+  }
+
+  const adminApp = await visit("/app", admin.token);
+  if (!adminApp.body.includes('href="/admin"')) {
+    failures.push("an admin is not shown a link to /admin");
+  } else {
+    console.log("  ✓ the admin is shown the way in");
   }
 
   /* ── The pages must never be indexed ── */
