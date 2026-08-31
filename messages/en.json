@@ -657,7 +657,8 @@
       "markedHint": "Saved on this device. Sign in to keep your progress everywhere.",
       "translationBy": "Translation: {name}",
       "sajda": "Prostration",
-      "jumpToPage": "Go to page"
+      "jumpToPage": "Go to page",
+      "autoMarked": "Marked as read — you reached the end of the page"
     },
     "audio": {
       "play": "Play",
@@ -668,7 +669,11 @@
       "nowPlaying": "Reciting {ayah}",
       "failed": "That ayah would not play",
       "failedHelp": "The recitation could not be reached. Check the connection, or try another reciter.",
-      "heading": "Listen"
+      "heading": "Listen",
+      "nowPlayingSurah": "Reciting the surah",
+      "follow": "Follow along as it plays",
+      "wholeSurah": "whole surah",
+      "wholeSurahNote": "This reciter is one file per surah, so the page cannot follow along verse by verse or repeat a single one. The other reciters can."
     }
   },
   "pages": {

@@ -2,32 +2,51 @@
  * Who recites, and where the audio comes from.
  *
  * Only reciters whose audio actually plays are listed. Offering a name that
- * produces silence is worse than not offering it, and the two that are missing
- * are missing for a real reason: Badr al-Turki and Alijon Qori are not on the
- * open CDN this uses, nor on everyayah, so there is nothing to fetch. Adding
- * either later is one entry in this array plus a `url` that resolves — the rest
- * of the product reads from here.
+ * produces silence is worse than not offering it at all.
  *
- * The audio is served per ayah by islamic.network, addressed by the ayah's
- * position in the whole Qur'an rather than by surah and ayah. That number is
- * not in the shipped index, so it is derived — see `globalAyahNumber`.
+ * Two kinds of source, because the world only offers two:
+ *
+ *   "ayah"   one file per verse (islamic.network). The player can mark the
+ *            verse being recited, scroll to it, and loop a single one — which
+ *            is what makes the reader useful for memorising rather than just
+ *            for listening.
+ *
+ *   "surah"  one file for the whole chapter (mp3quran.net). It plays, and
+ *            nothing else: there is no timing data, so nothing can know which
+ *            verse is sounding at a given second. Marked in the interface as
+ *            such rather than quietly behaving differently.
+ *
+ * Badr al-Turki is here as "surah" for exactly that reason. He is on no
+ * per-verse CDN — not islamic.network's twenty editions, not everyayah's
+ * seventy-four; both were searched in full. Alijon Qori is on neither in any
+ * form, so he is not listed: an Uzbek reciter would be the most valuable
+ * addition here, and the moment a hosted source exists he is one entry.
+ *
+ * The bitrate belongs to the reciter, not to the CDN. Every edition publishes
+ * a different set, and assuming a single global one is what made Minshawi
+ * return 403 on every verse while the others played.
  */
+
+export type ReciterKind = "ayah" | "surah";
 
 export type Reciter = {
   id: string;
-  /** The edition slug on the CDN. */
-  edition: string;
-  /** Their name, in each language the product speaks. */
+  kind: ReciterKind;
+  /** Edition slug (per-ayah) or base URL (per-surah). */
+  source: string;
+  /** Only for per-ayah sources, and only a bitrate that edition publishes. */
+  bitrate?: 64 | 128;
   name: { uz: string; en: string; ru: string };
   arabic: string;
-  /** A word on the style, so the choice means something to a beginner. */
   note: { uz: string; en: string; ru: string };
 };
 
 export const RECITERS: readonly Reciter[] = [
   {
     id: "alafasy",
-    edition: "ar.alafasy",
+    kind: "ayah",
+    source: "ar.alafasy",
+    bitrate: 64,
     name: { uz: "Mishari Alafasiy", en: "Mishary Alafasy", ru: "Мишари Аль-Афаси" },
     arabic: "مشاري العفاسي",
     note: {
@@ -38,7 +57,9 @@ export const RECITERS: readonly Reciter[] = [
   },
   {
     id: "husary",
-    edition: "ar.husary",
+    kind: "ayah",
+    source: "ar.husary",
+    bitrate: 64,
     name: { uz: "Mahmud Xusariy", en: "Mahmoud al-Husary", ru: "Махмуд Аль-Хусари" },
     arabic: "محمود الحصري",
     note: {
@@ -49,13 +70,29 @@ export const RECITERS: readonly Reciter[] = [
   },
   {
     id: "minshawi",
-    edition: "ar.minshawi",
+    kind: "ayah",
+    /* 128 only. This edition publishes no 64k, and asking for one returned 403
+       on every single verse. */
+    source: "ar.minshawi",
+    bitrate: 128,
     name: { uz: "Muhammad Minshoviy", en: "Mohamed al-Minshawi", ru: "Мухаммад Аль-Миншави" },
     arabic: "محمد المنشاوي",
     note: {
       uz: "Yumshoq va vazmin, uzoq mashgʻulotlar uchun qulay.",
       en: "Gentle and unhurried, easy to sit with for a long session.",
       ru: "Мягкое и неспешное, удобно для долгих занятий.",
+    },
+  },
+  {
+    id: "badr",
+    kind: "surah",
+    source: "https://server10.mp3quran.net/bader/Rewayat-Hafs-A-n-Assem",
+    name: { uz: "Badr at-Turkiy", en: "Badr al-Turki", ru: "Бадр Ат-Турки" },
+    arabic: "بدر التركي",
+    note: {
+      uz: "Butun sura bir faylda — oyatma-oyat kuzatib boʻlmaydi.",
+      en: "The whole surah in one file — it cannot follow along verse by verse.",
+      ru: "Вся сура одним файлом — следить по аятам не получится.",
     },
   },
 ];
@@ -72,6 +109,11 @@ export function reciter(id: string): Reciter {
   return RECITERS.find((r) => r.id === id) ?? RECITERS[0];
 }
 
+/** Whether this reciter can drive the highlight, the scroll and ayah repeat. */
+export function followsAlong(id: string): boolean {
+  return reciter(id).kind === "ayah";
+}
+
 /** How many ayahs each surah has, in order — the only thing needed to number them. */
 const AYAH_COUNTS = [
   7, 286, 200, 176, 120, 165, 206, 75, 129, 109, 123, 111, 43, 52, 99, 128, 111, 110, 98, 135,
@@ -84,8 +126,8 @@ const AYAH_COUNTS = [
 /**
  * Where an ayah sits in the whole Qur'an, from 1 to 6236.
  *
- * The CDN addresses audio by this number, and the shipped index stores surah
- * and ayah instead. Computed rather than stored: it is a sum of a fixed table,
+ * The per-ayah CDN addresses audio by this number, and the shipped index stores
+ * surah and ayah. Computed rather than stored: it is a sum of a fixed table,
  * and a second copy of it in the data would be a second thing to keep right.
  */
 export function globalAyahNumber(surah: number, ayah: number): number {
@@ -94,8 +136,15 @@ export function globalAyahNumber(surah: number, ayah: number): number {
   return total + ayah;
 }
 
-/** The mp3 for one ayah, at a bitrate that is small enough for a phone. */
+/** The mp3 for one ayah. Only meaningful for a per-ayah reciter. */
 export function ayahAudioUrl(reciterId: string, surah: number, ayah: number): string {
-  const edition = reciter(reciterId).edition;
-  return `https://cdn.islamic.network/quran/audio/64/${edition}/${globalAyahNumber(surah, ayah)}.mp3`;
+  const r = reciter(reciterId);
+  const number = globalAyahNumber(surah, ayah);
+  return `https://cdn.islamic.network/quran/audio/${r.bitrate ?? 128}/${r.source}/${number}.mp3`;
+}
+
+/** The mp3 for a whole surah. Only meaningful for a per-surah reciter. */
+export function surahAudioUrl(reciterId: string, surah: number): string {
+  const padded = String(surah).padStart(3, "0");
+  return `${reciter(reciterId).source}/${padded}.mp3`;
 }

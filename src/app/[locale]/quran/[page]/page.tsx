@@ -15,6 +15,7 @@ import { Footer } from "@/components/site/footer";
 import { PageView } from "@/components/quran/page-view";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
+import { AutoReadMark } from "@/components/quran/auto-read-mark";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -110,6 +111,8 @@ export default async function QuranPage({ params }: Params) {
 
         <Measure className="pb-16">
           <PageView ayahs={ayahs} locale={locale as Locale} />
+
+        <AutoReadMark page={page} />
 
           <div className="mx-auto mt-10 flex max-w-2xl items-center justify-between gap-3 border-t border-[var(--line-subtle)] pt-8">
             {page > 1 ? (

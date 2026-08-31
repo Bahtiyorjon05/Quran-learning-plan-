@@ -96,6 +96,68 @@ async function main() {
     }
   }
 
+  /* ── The page follows the recitation ── */
+  console.log("");
+  await page.goto(`${BASE}/quran/2`, { waitUntil: "networkidle" });
+  await page.evaluate(() => window.scrollTo(0, 0));
+
+  const play2 = page.getByRole("button", { name: /Tinglash|Play|Слушать/ }).first();
+  await play2.click();
+  await page.waitForTimeout(1200);
+
+  const before = await page.evaluate(() => window.scrollY);
+  /* Jump several ayahs down the page; the scroll must catch up. */
+  for (let i = 0; i < 4; i++) {
+    await page.getByRole("button", { name: /Keyingi oyat|Next ayah|Следующий аят/ }).first().click();
+    await page.waitForTimeout(700);
+  }
+  const after = await page.evaluate(() => window.scrollY);
+
+  console.log(`  scrolled while playing: ${before} → ${after}`);
+  if (after <= before) {
+    failures.push("the page did not scroll to follow the recitation");
+  }
+
+  const stillMarked = await page.locator("[data-reciting]").count();
+  if (stillMarked !== 1) failures.push(`${stillMarked} ayahs marked after skipping, expected 1`);
+
+  /* ── Reaching the end marks the page read ── */
+  console.log("");
+  await page.goto(`${BASE}/quran/3`, { waitUntil: "networkidle" });
+  await page.evaluate(() => localStorage.removeItem("ahd-pages-read"));
+  await page.reload({ waitUntil: "networkidle" });
+
+  const readBefore = await page.evaluate(() => localStorage.getItem("ahd-pages-read"));
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.waitForTimeout(1200);
+  const readAfter = await page.evaluate(() => localStorage.getItem("ahd-pages-read"));
+
+  console.log(`  read marker: ${readBefore ?? "none"} → ${readAfter ?? "none"}`);
+  if (!readAfter?.includes("3")) {
+    failures.push("scrolling to the end did not mark the page read");
+  }
+
+  const notice = await page.getByText(/belgilandi|Marked as read|Отмечено как/).count();
+  console.log(`  told the reader: ${notice > 0 ? "✓" : "✗"}`);
+  if (notice === 0) failures.push("the page was marked read without saying so");
+
+  /* ── The surah-only reciter is honest about what it cannot do ── */
+  console.log("");
+  const badr = page.getByRole("button", { name: /Badr|Бадр/ }).first();
+  if ((await badr.count()) === 0) {
+    failures.push("Badr al-Turki is not offered");
+  } else {
+    await badr.click();
+    await page.waitForTimeout(400);
+    const repeat = await page
+      .getByRole("button", { name: /takrorlash|Repeat this ayah|Повторять этот аят/ })
+      .count();
+    const note = await page.getByText(/butun sura|whole surah|вся сура/i).count();
+    console.log(`  Badr al-Turki: repeat hidden ${repeat === 0 ? "✓" : "✗"}, note shown ${note > 0 ? "✓" : "✗"}`);
+    if (repeat !== 0) failures.push("ayah repeat is offered for a surah-only reciter");
+    if (note === 0) failures.push("nothing tells the reader this reciter cannot follow along");
+  }
+
   await browser.close();
 
   if (failures.length > 0) {

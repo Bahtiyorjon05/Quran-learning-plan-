@@ -5,9 +5,11 @@ import {
   DEFAULT_RECITER,
   RECITERS,
   ayahAudioUrl,
+  followsAlong,
   globalAyahNumber,
   isReciterId,
   reciter,
+  surahAudioUrl,
 } from "./reciters";
 
 describe("numbering an ayah in the whole Qur'an", () => {
@@ -43,11 +45,39 @@ describe("numbering an ayah in the whole Qur'an", () => {
 });
 
 describe("the reciters", () => {
-  it("offers only reciters that have an edition to play", () => {
+  it("gives every reciter a source of the shape its kind requires", () => {
     for (const r of RECITERS) {
-      expect(r.edition, `${r.id} has no edition`).toMatch(/^ar\./);
+      if (r.kind === "ayah") {
+        expect(r.source, `${r.id} is not a CDN edition`).toMatch(/^ar\./);
+        /* The bitrate belongs to the reciter. Assuming one global value is what
+           made Minshawi return 403 on every verse while the others played. */
+        expect([64, 128], `${r.id} has no bitrate`).toContain(r.bitrate);
+      } else {
+        expect(r.source, `${r.id} is not a URL`).toMatch(/^https:\/\//);
+      }
     }
     expect(RECITERS.length).toBeGreaterThan(0);
+  });
+
+  it("knows which reciters can follow along and which cannot", () => {
+    expect(followsAlong("alafasy")).toBe(true);
+    expect(followsAlong("minshawi")).toBe(true);
+    /* One file per surah, no timing data — nothing can know which verse is
+       sounding, so the highlight, the scroll and ayah-repeat are all off. */
+    expect(followsAlong("badr")).toBe(false);
+  });
+
+  it("builds a surah url for the reciter that needs one", () => {
+    expect(surahAudioUrl("badr", 2)).toBe(
+      "https://server10.mp3quran.net/bader/Rewayat-Hafs-A-n-Assem/002.mp3",
+    );
+    expect(surahAudioUrl("badr", 114)).toMatch(/114\.mp3$/);
+  });
+
+  it("no longer offers a reciter with nothing to play", () => {
+    /* Alijon Qori is on no per-verse CDN and no surah CDN reached from here.
+       A name that produces silence is worse than no name. */
+    expect(isReciterId("alijon")).toBe(false);
   });
 
   it("names every reciter in all three languages", () => {
@@ -67,8 +97,8 @@ describe("the reciters", () => {
 
   it("falls back rather than throwing on a reciter that was removed", () => {
     /* Someone's stored preference can name a reciter that no longer ships. */
-    expect(isReciterId("badr")).toBe(false);
-    expect(reciter("badr").id).toBe(RECITERS[0].id);
+    expect(isReciterId("alijon")).toBe(false);
+    expect(reciter("alijon").id).toBe(RECITERS[0].id);
   });
 
   it("builds a url for the right ayah", () => {
@@ -77,6 +107,10 @@ describe("the reciters", () => {
     );
     expect(ayahAudioUrl("husary", 1, 1)).toBe(
       "https://cdn.islamic.network/quran/audio/64/ar.husary/1.mp3",
+    );
+    /* Minshawi publishes no 64k. Asking for one returned 403 on every verse. */
+    expect(ayahAudioUrl("minshawi", 2, 255)).toBe(
+      "https://cdn.islamic.network/quran/audio/128/ar.minshawi/262.mp3",
     );
   });
 });
