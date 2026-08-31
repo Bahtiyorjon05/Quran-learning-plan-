@@ -127,7 +127,7 @@ export default async function AppQuranPage({ params }: Params) {
               cannot drift between the two. What is extra here is the marking,
               which writes to the covenant rather than to this browser. */}
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <ReaderControls page={page} />
+            <ReaderControls />
             <MemorizeToggle page={page} memorized={Boolean(unit)} />
           </div>
           <div className="mt-4">

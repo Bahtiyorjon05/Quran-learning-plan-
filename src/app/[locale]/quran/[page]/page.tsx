@@ -103,7 +103,7 @@ export default async function QuranPage({ params }: Params) {
         <Measure className="py-6">
           <div className="mx-auto max-w-2xl space-y-4">
             <div className="flex justify-end">
-              <ReaderControls page={page} />
+              <ReaderControls />
             </div>
             <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
           </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Languages, Minus, Plus } from "lucide-react";
+import { Languages, Minus, Plus } from "lucide-react";
 
 import { useLocalValue, writeLocal } from "@/lib/client-store";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ function parsePages(raw: string | null): number[] {
 }
 
 /**
- * Reading settings and the read-marker.
+ * Reading settings.
  *
  * All of it lives in localStorage, because the public reader has no account by
  * design. It is read through an external store rather than copied into state in
@@ -36,7 +36,7 @@ function parsePages(raw: string | null): number[] {
  * The Arabic size is written to a CSS custom property on the document, so
  * resizing never re-renders a single server-rendered ayah.
  */
-export function ReaderControls({ page }: { page: number }) {
+export function ReaderControls() {
   const t = useTranslations("quran.reader");
 
   const storedSize = Number(useLocalValue(SIZE_KEY));
@@ -44,10 +44,6 @@ export function ReaderControls({ page }: { page: number }) {
 
   const storedTranslation = useLocalValue(TRANSLATION_KEY);
   const showTranslation = storedTranslation !== "false";
-
-  const rawRead = useLocalValue(READ_KEY);
-  const read = useMemo(() => new Set(parsePages(rawRead)), [rawRead]);
-  const isRead = read.has(page);
 
   useEffect(() => {
     document.documentElement.style.setProperty("--arabic-scale", String(size / 100));
@@ -60,13 +56,6 @@ export function ReaderControls({ page }: { page: number }) {
 
   function setSize(next: number) {
     writeLocal(SIZE_KEY, String(Math.max(MIN_SIZE, Math.min(MAX_SIZE, next))));
-  }
-
-  function toggleRead() {
-    const next = new Set(read);
-    if (next.has(page)) next.delete(page);
-    else next.add(page);
-    writeLocal(READ_KEY, JSON.stringify([...next].sort((a, b) => a - b)));
   }
 
   return (
@@ -111,20 +100,6 @@ export function ReaderControls({ page }: { page: number }) {
         <span className="max-sm:sr-only">{t("translation")}</span>
       </button>
 
-      <button
-        type="button"
-        onClick={toggleRead}
-        aria-pressed={isRead}
-        className={cn(
-          "inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-xs font-medium transition-colors",
-          isRead
-            ? "border-[var(--accent)] bg-[var(--accent-ground)] text-[var(--on-accent)]"
-            : "border-[var(--line-strong)] text-[var(--text-muted)] hover:border-[var(--accent)]/50 hover:text-[var(--text-strong)]",
-        )}
-      >
-        <Check className="h-3.5 w-3.5" />
-        {isRead ? t("marked") : t("markRead")}
-      </button>
     </div>
   );
 }

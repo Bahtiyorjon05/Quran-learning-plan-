@@ -10,6 +10,9 @@ import { cn } from "@/lib/utils";
 /**
  * Marks a page read once the reader has actually reached the end of it.
  *
+ * There is no button for this any more, and there was not much point in one:
+ * it asked the reader to record something the page already knew.
+ *
  * "Read" and "memorised" are deliberately different things, and only one of
  * them can be inferred:
  *
@@ -19,8 +22,8 @@ import { cn } from "@/lib/utils";
  *
  *   memorised  you hold it by heart. Nothing on a screen can tell that, and
  *              guessing would corrupt the covenant's progress and the revision
- *              schedule with it. That stays a deliberate act, made in the
- *              controls above, and nothing here touches it.
+ *              schedule with it. That stays a deliberate act, taken on the
+ *              signed-in reader, and nothing here touches it.
  *
  * It measures where the end of the page *is* rather than waiting to be told it
  * came into view. An IntersectionObserver was the obvious way to do this and
@@ -125,9 +128,9 @@ export function AutoReadMark({ page }: { page: number }) {
     <>
       <div ref={endRef} aria-hidden className="h-px w-full" />
 
-      {/* Said once, briefly, and only when it was this visit that did it. A
-          page that silently changed state behind you is unsettling, and the
-          control above can undo it. */}
+      {/* Said once, briefly, and only when it was this visit that did it: a
+          page that changed state silently behind you is unsettling, and this
+          is the only sign that anything happened. */}
       {justMarked && (
         <p
           role="status"

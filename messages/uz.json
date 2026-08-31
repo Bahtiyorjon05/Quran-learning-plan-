@@ -652,8 +652,6 @@
       "translation": "Tarjima",
       "showTranslation": "Tarjimani koʻrsatish",
       "hideTranslation": "Tarjimani yashirish",
-      "markRead": "Bu sahifani oʻqilgan deb belgilash",
-      "marked": "Oʻqilgan deb belgilandi",
       "markedHint": "Shu qurilmada saqlandi. Hamma joyda saqlanishi uchun tizimga kiring.",
       "translationBy": "Tarjima: {name}",
       "sajda": "Sajda",
