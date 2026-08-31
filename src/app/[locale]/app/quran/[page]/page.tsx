@@ -7,11 +7,18 @@ import { ChevronLeft, ChevronRight, LayoutGrid } from "lucide-react";
 import { db } from "@/db/client";
 import { memorizationUnits } from "@/db/schema";
 import { requireOnboardedUser } from "@/auth/guard";
-import { QURAN_META, TOTAL_PAGES, loadPage, surah as surahMeta } from "@/data/quran/loader";
+import {
+  QURAN_META,
+  TOTAL_PAGES,
+  loadPage,
+  localisedSurah,
+  type QuranLocale,
+} from "@/data/quran/loader";
 import { AppHeader } from "@/components/app/app-header";
 import { PageView } from "@/components/quran/page-view";
 import { MemorizeToggle } from "@/components/quran/memorize-toggle";
 import { ReaderControls } from "@/components/quran/reader-controls";
+import { Recitation } from "@/components/quran/recitation";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -64,7 +71,7 @@ export default async function AppQuranPage({ params }: Params) {
 
   const t = await getTranslations("quran.reader");
   const tm = await getTranslations("app.mushaf");
-  const names = meta.surahs.map((n) => surahMeta(n));
+  const names = meta.surahs.map((n) => localisedSurah(n, locale as QuranLocale));
 
   return (
     <div className="min-h-dvh">
@@ -82,7 +89,7 @@ export default async function AppQuranPage({ params }: Params) {
             </Link>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-[var(--text-strong)]">
-                {names.map((s) => s.latin).join(" · ")}
+                {names.map((s) => s.title).join(" · ")}
               </p>
               <p className="text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
                 {t("page", { page })} · {t("juz", { juz: meta.juz })}
@@ -121,6 +128,9 @@ export default async function AppQuranPage({ params }: Params) {
           <div className="flex flex-wrap items-center justify-end gap-2">
             <ReaderControls page={page} />
             <MemorizeToggle page={page} memorized={Boolean(unit)} />
+          </div>
+          <div className="mt-4">
+            <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
           </div>
         </div>
       </Measure>

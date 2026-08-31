@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Search } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
-import type { Surah } from "@/data/quran/loader";
+import type { LocalisedSurah } from "@/data/quran/loader";
 import { cn } from "@/lib/utils";
 
 /**
@@ -23,7 +23,7 @@ export function SurahIndex({
   juzStartPages,
   basePath = "/quran",
 }: {
-  surahs: Surah[];
+  surahs: LocalisedSurah[];
   juzStartPages: { juz: number; from: number; to: number }[];
   /** "/quran" in public, "/app/quran" for a signed-in reader. */
   basePath?: string;
@@ -37,8 +37,8 @@ export function SurahIndex({
     if (!needle) return surahs;
     return surahs.filter(
       (s) =>
-        s.latin.toLowerCase().includes(needle) ||
-        s.meaning.toLowerCase().includes(needle) ||
+        s.title.toLowerCase().includes(needle) ||
+        s.gloss.toLowerCase().includes(needle) ||
         s.name.includes(needle) ||
         String(s.number) === needle,
     );
@@ -106,7 +106,7 @@ export function SurahIndex({
                   <span className="min-w-0 flex-1">
                     <span className="flex items-baseline justify-between gap-2">
                       <span className="truncate text-sm font-medium text-[var(--text-strong)]">
-                        {s.latin}
+                        {s.title}
                       </span>
                       <span
                         className="font-arabic shrink-0 text-base text-gold-ink"
@@ -117,7 +117,8 @@ export function SurahIndex({
                       </span>
                     </span>
                     <span className="mt-0.5 block truncate text-[0.6875rem] text-[var(--text-faint)]">
-                      {s.meaning} · {t("ayahs", { count: s.ayahs })}
+                      {s.gloss ? `${s.gloss} · ` : ""}
+                      {t("ayahs", { count: s.ayahs })}
                     </span>
                   </span>
                 </Link>

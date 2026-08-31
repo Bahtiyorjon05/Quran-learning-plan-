@@ -27,7 +27,8 @@
     "observe:theme": "tsx scripts/observe-theme.ts",
     "observe:practice": "tsx scripts/observe-practice.ts",
     "admin:grant": "tsx scripts/grant-admin.ts",
-    "verify:admin": "tsx scripts/verify-admin.ts"
+    "verify:admin": "tsx scripts/verify-admin.ts",
+    "observe:reader": "tsx scripts/observe-reader.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",

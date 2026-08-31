@@ -658,6 +658,17 @@
       "translationBy": "Tarjima: {name}",
       "sajda": "Sajda",
       "jumpToPage": "Sahifaga oʻtish"
+    },
+    "audio": {
+      "play": "Tinglash",
+      "pause": "Toʻxtatish",
+      "next": "Keyingi oyat",
+      "repeat": "Shu oyatni takrorlash",
+      "idle": "Sahifani tinglash uchun bosing",
+      "nowPlaying": "{ayah} oʻqilmoqda",
+      "failed": "Bu oyat ijro etilmadi",
+      "failedHelp": "Qiroatga ulanib boʻlmadi. Internetni tekshiring yoki boshqa qorini tanlang.",
+      "heading": "Tinglash"
     }
   },
   "pages": {

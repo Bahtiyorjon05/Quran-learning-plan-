@@ -6,6 +6,7 @@ import meta from "./meta.json";
 /* Eighty kilobytes, server-side only, and consulted on every practice session,
    so it is imported outright rather than loaded lazily. */
 import confusableTable from "./mutashabihat.json";
+import { SURAH_NAMES } from "./surah-names";
 
 /**
  * Access to the Qur'an text.
@@ -195,4 +196,46 @@ export async function confusableOnPage(ayahs: readonly Ayah[]) {
   }
 
   return table;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SURAH NAMES, PER LANGUAGE
+   The index carries the Arabic name and an English transliteration, because
+   that is all the source has. A reader in Uzbek was shown "Al-Baqara · The
+   Cow" on an otherwise Uzbek page. These read from the authored table instead.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+
+export type QuranLocale = "uz" | "en" | "ru";
+
+export type LocalisedSurah = Surah & {
+  /** What to call it in this language. */
+  title: string;
+  /** What the name means, or "" where the name is a proper noun. */
+  gloss: string;
+};
+
+/**
+ * A surah, named in one language.
+ *
+ * One function rather than a `.latin` reached for in a dozen places, so a
+ * screen cannot accidentally be the one that stays English.
+ */
+export function localisedSurah(number: number, locale: QuranLocale): LocalisedSurah {
+  const info = surah(number);
+  const names = SURAH_NAMES[number - 1];
+
+  if (locale === "uz") return { ...info, title: names.uz, gloss: names.uzMeaning };
+  if (locale === "ru") return { ...info, title: names.ru, gloss: names.ruMeaning };
+  return { ...info, title: info.latin, gloss: info.meaning };
+}
+
+/** Just the name, for the many places that want nothing else. */
+export function surahTitle(number: number, locale: QuranLocale): string {
+  return localisedSurah(number, locale).title;
+}
+
+/** Every surah, named in one language — for the index and its search. */
+export function localisedSurahs(locale: QuranLocale): LocalisedSurah[] {
+  return SURAHS.map((info) => localisedSurah(info.number, locale));
 }

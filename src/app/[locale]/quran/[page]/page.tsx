@@ -7,12 +7,14 @@ import {
   QURAN_META,
   TOTAL_PAGES,
   loadPage,
-  surah as surahMeta,
+  localisedSurah,
+  type QuranLocale,
 } from "@/data/quran/loader";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { PageView } from "@/components/quran/page-view";
 import { ReaderControls } from "@/components/quran/reader-controls";
+import { Recitation } from "@/components/quran/recitation";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -31,7 +33,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!page) return {};
 
   const t = await getTranslations({ locale, namespace: "quran.reader" });
-  const names = QURAN_META.pages[page - 1].surahs.map((n) => surahMeta(n).latin).join(", ");
+  const names = QURAN_META.pages[page - 1].surahs
+    .map((n) => localisedSurah(n, locale as QuranLocale).title)
+    .join(", ");
   return { title: `${t("page", { page })} · ${names}` };
 }
 
@@ -44,7 +48,7 @@ export default async function QuranPage({ params }: Params) {
 
   const { meta, ayahs } = await loadPage(page);
   const t = await getTranslations("quran.reader");
-  const names = meta.surahs.map((n) => surahMeta(n));
+  const names = meta.surahs.map((n) => localisedSurah(n, locale as QuranLocale));
 
   return (
     <>
@@ -64,7 +68,7 @@ export default async function QuranPage({ params }: Params) {
               </Link>
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-[var(--text-strong)]">
-                  {names.map((s) => s.latin).join(" · ")}
+                  {names.map((s) => s.title).join(" · ")}
                 </p>
                 <p className="text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
                   {t("page", { page })} · {t("juz", { juz: meta.juz })}
@@ -96,8 +100,11 @@ export default async function QuranPage({ params }: Params) {
         </div>
 
         <Measure className="py-6">
-          <div className="mx-auto flex max-w-2xl justify-end">
-            <ReaderControls page={page} />
+          <div className="mx-auto max-w-2xl space-y-4">
+            <div className="flex justify-end">
+              <ReaderControls page={page} />
+            </div>
+            <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
           </div>
         </Measure>
 

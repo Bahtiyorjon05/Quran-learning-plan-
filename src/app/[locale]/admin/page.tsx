@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { requireAdmin } from "@/auth/guard";
-import { surah as surahMeta } from "@/data/quran/loader";
+import { surahTitle } from "@/data/quran/loader";
 import { AdminShell, Metric, Panel } from "@/components/admin/admin-shell";
 import {
   Cohorts,
@@ -77,7 +77,7 @@ const SCOPE_LABELS: Record<string, string> = {
 };
 
 const RECITER_LABELS: Record<string, string> = Object.fromEntries(
-  RECITERS.map((r) => [r.id, r.name]),
+  RECITERS.map((r) => [r.id, r.name.en]),
 );
 
 /** "3 Sep, 14:20" — enough to place an event, without the noise of seconds. */
@@ -298,7 +298,7 @@ export default async function AdminOverviewPage() {
             <RankedBars
               rows={hardest.map((row) => ({
                 key: `${row.surah}:${row.ayah}`,
-                label: `${surahMeta(row.surah).latin} ${row.surah}:${row.ayah}`,
+                label: `${surahTitle(row.surah, "en")} ${row.surah}:${row.ayah}`,
                 value: row.count,
               }))}
               emptyLabel="No mistakes recorded yet."

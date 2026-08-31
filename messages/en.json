@@ -658,6 +658,17 @@
       "translationBy": "Translation: {name}",
       "sajda": "Prostration",
       "jumpToPage": "Go to page"
+    },
+    "audio": {
+      "play": "Play",
+      "pause": "Pause",
+      "next": "Next ayah",
+      "repeat": "Repeat this ayah",
+      "idle": "Tap play to follow the page",
+      "nowPlaying": "Reciting {ayah}",
+      "failed": "That ayah would not play",
+      "failedHelp": "The recitation could not be reached. Check the connection, or try another reciter.",
+      "heading": "Listen"
     }
   },
   "pages": {

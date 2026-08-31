@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useLocale } from "next-intl";
 import { useTranslations } from "next-intl";
 import {
   ArrowLeft,
@@ -40,6 +41,9 @@ const MOMENTS = [
 
 export function OnboardingFlow() {
   const t = useTranslations("onboarding");
+  /* The reciters are named in the reader's own language, like everything
+     else on the page — a Russian screen should not list them in English. */
+  const locale = useLocale() as "uz" | "en" | "ru";
 
   const [state, action, pending] = useActionState(completeOnboarding, ONBOARDING_IDLE);
 
@@ -150,7 +154,7 @@ export function OnboardingFlow() {
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-[0.9375rem] font-medium text-[var(--text-strong)]">
-                        {option.name}
+                        {option.name[locale]}
                       </span>
                       <span
                         className="font-arabic mt-0.5 block truncate text-sm text-gold-ink"

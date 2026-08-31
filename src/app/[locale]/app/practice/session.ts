@@ -10,7 +10,13 @@ import { decayedStrength, FRAGILE_BELOW, weakestFirst, type UnitState } from "@/
 import { availableModes, generateDrill, type GenerateInput } from "@/core/drill/generate";
 import { seedFrom } from "@/core/drill/random";
 import type { Drill, DrillMode } from "@/core/drill/types";
-import { confusableOnPage, loadPage, pageMeta, surah as surahMeta } from "@/data/quran/loader";
+import {
+  confusableOnPage,
+  loadPage,
+  pageMeta,
+  surahTitle,
+  type QuranLocale,
+} from "@/data/quran/loader";
 
 /**
  * Deciding what to practise, and building it.
@@ -32,7 +38,10 @@ export type PracticePage = {
 };
 
 /** Pages held by this user, weakest first. */
-export async function practicablePages(userId: string): Promise<PracticePage[]> {
+export async function practicablePages(
+  userId: string,
+  locale: QuranLocale = "uz",
+): Promise<PracticePage[]> {
   const [profile] = await db
     .select({ timeZone: profiles.timeZone })
     .from(profiles)
@@ -74,7 +83,7 @@ export async function practicablePages(userId: string): Promise<PracticePage[]> 
     return {
       page: item.page,
       juz: juzOfPage(item.page),
-      surahNames: pageMeta(item.page).surahs.map((n) => surahMeta(n).latin),
+      surahNames: pageMeta(item.page).surahs.map((n) => surahTitle(n, locale)),
       strength,
       daysSinceReview: item.daysSinceReview,
       fragile: strength < FRAGILE_BELOW,
@@ -113,6 +122,7 @@ export async function buildSession(input: {
   mode?: DrillMode;
   level?: number;
   nonce?: string;
+  locale: QuranLocale;
 }): Promise<BuiltSession | null> {
   const { meta, ayahs } = await loadPage(input.page);
   if (ayahs.length === 0) return null;
@@ -147,7 +157,7 @@ export async function buildSession(input: {
     ...ayahs.map((a) => a.s),
     ...Object.values(confusable).flatMap((list) => list.map((c) => c.s)),
   ])) {
-    names[number] = surahMeta(number).latin;
+    names[number] = surahTitle(number, input.locale);
   }
 
   return { drill, seed, level: input.level ?? 0, modes, page: input.page, names };

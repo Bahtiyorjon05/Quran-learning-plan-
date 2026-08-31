@@ -649,6 +649,18 @@ body:has([data-app-tabbar]) {
   font-variant-numeric: lining-nums;
 }
 
+/* The ayah being recited. Marked by an attribute the audio player writes onto
+   the node, not by React state: the page is server-rendered and re-rendering
+   the Arabic once per ayah would be both wasteful and visible. */
+[data-reciting] {
+  background-color: color-mix(in oklab, var(--accent) 8%, transparent);
+  box-shadow: inset 3px 0 0 0 var(--accent);
+  border-radius: 0.5rem;
+  transition:
+    background-color 0.4s var(--ease-calm),
+    box-shadow 0.4s var(--ease-calm);
+}
+
 @utility animate-rise {
   animation: ahd-rise 0.7s var(--ease-settle) both;
 }

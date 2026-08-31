@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { db } from "@/db/client";
 import { memorizationUnits } from "@/db/schema";
 import { requireOnboardedUser } from "@/auth/guard";
-import { SURAHS } from "@/data/quran/loader";
+import { localisedSurahs, type QuranLocale } from "@/data/quran/loader";
 import { pagesOfJuz, TOTAL_JUZ, TOTAL_PAGES } from "@/core/quran/mushaf";
 import { AppHeader } from "@/components/app/app-header";
 import { MushafMosaic } from "@/components/app/mushaf-mosaic";
@@ -17,7 +17,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title"), robots: { index: false, follow: false } };
 }
 
-export default async function AppMushafPage() {
+export default async function AppMushafPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const user = await requireOnboardedUser();
   const t = await getTranslations("app.mushaf");
 
@@ -66,7 +71,11 @@ export default async function AppMushafPage() {
           <h2 className="mb-5 text-sm font-semibold text-[var(--text-strong)]">
             {t("browse")}
           </h2>
-          <SurahIndex surahs={[...SURAHS]} juzStartPages={juz} basePath="/app/quran" />
+          <SurahIndex
+            surahs={localisedSurahs(locale as QuranLocale)}
+            juzStartPages={juz}
+            basePath="/app/quran"
+          />
         </div>
       </Measure>
     </div>

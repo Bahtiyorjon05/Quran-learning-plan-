@@ -1,6 +1,11 @@
 import { getTranslations } from "next-intl/server";
 
-import { BASMALA, surah as surahMeta, type Ayah } from "@/data/quran/loader";
+import {
+  BASMALA,
+  localisedSurah,
+  type Ayah,
+  type QuranLocale,
+} from "@/data/quran/loader";
 import type { Locale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
@@ -39,9 +44,9 @@ function AyahMarker({ number }: { number: number }) {
 }
 
 /** The heading that opens a surah on the page where it begins. */
-async function SurahHeading({ number }: { number: number }) {
+async function SurahHeading({ number, locale }: { number: number; locale: QuranLocale }) {
   const t = await getTranslations("quran.index");
-  const info = surahMeta(number);
+  const info = localisedSurah(number, locale);
 
   return (
     <header className="my-8 first:mt-0">
@@ -51,7 +56,13 @@ async function SurahHeading({ number }: { number: number }) {
           {info.name}
         </p>
         <p className="relative mt-2 text-sm text-[var(--text-strong)]">
-          {info.latin} · <span className="text-[var(--text-muted)]">{info.meaning}</span>
+          {info.title}
+          {info.gloss && (
+            <>
+              {" · "}
+              <span className="text-[var(--text-muted)]">{info.gloss}</span>
+            </>
+          )}
         </p>
         <p className="relative mt-1 text-[0.6875rem] tracking-[0.14em] text-[var(--text-faint)] uppercase">
           {info.revelation === "makkah" ? t("makkah") : t("madinah")} ·{" "}
@@ -97,10 +108,11 @@ export async function PageView({
 
         return (
           <div key={ayah.k}>
-            {opensSurah && <SurahHeading number={ayah.s} />}
+            {opensSurah && <SurahHeading number={ayah.s} locale={locale as QuranLocale} />}
 
             <div
               id={`ayah-${ayah.k}`}
+              data-ayah={ayah.k}
               className={cn(
                 "scroll-mt-24 border-b border-[var(--line-subtle)] py-6",
                 i === ayahs.length - 1 && "border-b-0",

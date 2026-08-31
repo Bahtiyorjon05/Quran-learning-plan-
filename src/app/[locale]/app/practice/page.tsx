@@ -9,6 +9,8 @@ import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
+import type { QuranLocale } from "@/data/quran/loader";
+
 import { PRACTICE_SHORTLIST, heldPageCount, practicablePages } from "./session";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,12 +26,17 @@ export async function generateMetadata(): Promise<Metadata> {
  * enjoy reciting is what they know best. The list is short on purpose — being
  * shown two hundred pages is a reason to close the tab.
  */
-export default async function PracticeIndexPage() {
+export default async function PracticeIndexPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const user = await requireOnboardedUser();
   const t = await getTranslations("practice");
 
   const [pages, held] = await Promise.all([
-    practicablePages(user.id),
+    practicablePages(user.id, locale as QuranLocale),
     heldPageCount(user.id),
   ]);
 

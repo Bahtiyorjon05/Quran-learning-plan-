@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { SURAHS } from "@/data/quran/loader";
+import { localisedSurahs, type QuranLocale } from "@/data/quran/loader";
 import { pagesOfJuz, TOTAL_JUZ } from "@/core/quran/mushaf";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
@@ -52,7 +52,7 @@ export default async function QuranIndexPage({
           </div>
 
           <div className="mt-10">
-            <SurahIndex surahs={[...SURAHS]} juzStartPages={juz} />
+            <SurahIndex surahs={localisedSurahs(locale as QuranLocale)} juzStartPages={juz} />
           </div>
         </Measure>
       </main>

@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { logoutEverywhereAction } from "./actions";
 import { loadToday } from "./today";
 import { practicablePages } from "./practice/session";
+import type { QuranLocale } from "@/data/quran/loader";
 import { CovenantArc, Stat } from "@/components/app/covenant-arc";
 import { PracticeInvite } from "@/components/app/practice-invite";
 import { MushafMosaic } from "@/components/app/mushaf-mosaic";
@@ -145,7 +146,12 @@ function buildTracks(
   ];
 }
 
-export default async function AppHomePage() {
+export default async function AppHomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const user = await requireOnboardedUser();
   const ta = await getTranslations("app");
   const tp = await getTranslations("app.pace");
@@ -189,7 +195,7 @@ export default async function AppHomePage() {
   /* The mosaic and the practice invitation both come from what is held, so
      the pages are fetched once and shaped twice. */
   const [pages, active] = await Promise.all([
-    practicablePages(user.id),
+    practicablePages(user.id, locale as QuranLocale),
     db
     .select({
       id: sessions.id,

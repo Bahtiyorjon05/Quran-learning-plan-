@@ -6,7 +6,7 @@ import { ArrowLeft, Info } from "lucide-react";
 import { requireOnboardedUser } from "@/auth/guard";
 import { TOTAL_PAGES, juzOfPage } from "@/core/quran/mushaf";
 import { DRILL_MODES, type DrillMode } from "@/core/drill/types";
-import { pageMeta, surah as surahMeta } from "@/data/quran/loader";
+import { pageMeta, surahTitle, type QuranLocale } from "@/data/quran/loader";
 import { AppHeader } from "@/components/app/app-header";
 import { DrillRunner } from "@/components/practice/drill-runner";
 import { Measure } from "@/components/ui/section";
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  * result screen — and so "the same page, harder" is just another link.
  */
 export default async function PracticeSessionPage({ params, searchParams }: Params) {
-  const { page: raw } = await params;
+  const { locale, page: raw } = await params;
   const { mode: modeRaw, level: levelRaw, n } = await searchParams;
 
   const user = await requireOnboardedUser();
@@ -60,13 +60,16 @@ export default async function PracticeSessionPage({ params, searchParams }: Para
       mode,
       level,
       nonce: n ?? "",
+      locale: locale as QuranLocale,
     }),
     isHeld(user.id, page),
   ]);
 
   if (!session || session.drill.questions.length === 0) notFound();
 
-  const names = pageMeta(page).surahs.map((number) => surahMeta(number).latin);
+  const names = pageMeta(page).surahs.map((number) =>
+    surahTitle(number, locale as QuranLocale),
+  );
 
   return (
     <>
