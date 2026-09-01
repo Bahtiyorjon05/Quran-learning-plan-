@@ -155,6 +155,32 @@ async function main() {
       .toBuffer(),
   );
 
+  /* Maskable icons, for the home screen.
+     Android crops an installed icon to whatever shape the launcher uses — a
+     circle, a squircle, a rounded square — and anything outside the middle 80%
+     can be cut. A transparent circular seal survives none of that, so these get
+     the ink ground and 20% padding the spec asks for. */
+  for (const size of [192, 512]) {
+    const inner = Math.round(size * 0.62);
+    await emit(
+      path.join(OUT, `maskable-${size}.png`),
+      await sharp({
+        create: { width: size, height: size, channels: 4, background: INK },
+      })
+        .composite([
+          { input: await sharp(master).resize(inner, inner).toBuffer(), gravity: "centre" },
+        ])
+        .png({ compressionLevel: 9 })
+        .toBuffer(),
+    );
+  }
+
+  /* And a plain 192, the one size every manifest is expected to carry. */
+  await emit(
+    path.join(OUT, "mark-192.png"),
+    await sharp(master).resize(192, 192).png({ compressionLevel: 9 }).toBuffer(),
+  );
+
   /* Open Graph card: the seal on ink, at the size every social platform wants. */
   await emit(
     path.join(OUT, "og.png"),

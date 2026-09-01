@@ -107,6 +107,12 @@ export const profiles = pgTable("profiles", {
   studyTime: time(),
   remindersEnabled: boolean().notNull().default(true),
 
+  /* The weekly report, on by default and switchable off.
+     Opt-out rather than opt-in: it reports on a promise the reader made, which
+     is the one message a hifz app has standing to send unasked — and every
+     copy of it carries the way to stop it. */
+  weeklyEmail: boolean().notNull().default(true),
+
   currentStreak: integer().notNull().default(0),
   longestStreak: integer().notNull().default(0),
   lastCompleteDate: timestamp({ withTimezone: true, mode: "string" }),

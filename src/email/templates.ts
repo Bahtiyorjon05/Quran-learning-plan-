@@ -19,7 +19,7 @@ const MESSAGES = { en, ru, uz } as const;
  * weekly report cards and reminder digests in later phases run from a cron job
  * with no request at all — so the templates must not depend on it.
  */
-type EmailNamespace = "email.common" | "email.verify" | "email.reset";
+type EmailNamespace = "email.common" | "email.verify" | "email.reset" | "email.weekly";
 
 function translator(locale: Locale, namespace: EmailNamespace) {
   return createTranslator({ locale, messages: MESSAGES[locale], namespace });
@@ -221,3 +221,131 @@ export async function passwordResetEmail(
     ].join("\n"),
   };
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE WEEKLY REPORT
+   The one message Ahd sends that nobody asked for, so it has to earn the
+   interruption. It says what happened, what is slipping, and nothing else —
+   no streaks-are-great, no come-back-we-miss-you.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export type WeeklyFigures = {
+  /** Pages committed to memory in the last seven days. */
+  memorized: number;
+  /** Drills marked in the last seven days. */
+  drills: number;
+  /** Days in a row with the day's work complete. */
+  streak: number;
+  /** Pages held whose strength has decayed below the fragile line. */
+  fragile: number;
+  /** Total pages held. */
+  held: number;
+  /** Days of slack against the covenant. Negative means behind. */
+  daysBanked: number | null;
+};
+
+/**
+ * A row of figures, as a table.
+ *
+ * Flexbox and grid do not survive Outlook, and a column that collapses turns a
+ * report into a jumble. Two columns of a table always work.
+ */
+function figures(rows: { label: string; value: string; warn?: boolean }[]) {
+  return rows
+    .map(
+      (row) => `<tr>
+        <td style="padding:10px 0;font-size:14px;color:${MUTED};">${escapeHtml(row.label)}</td>
+        <td align="right" style="padding:10px 0;font-size:18px;font-weight:600;color:${
+          row.warn ? "#b45309" : INK
+        };">${escapeHtml(row.value)}</td>
+      </tr>`,
+    )
+    .join("");
+}
+
+export async function weeklyReportEmail(
+  locale: Locale,
+  to: string,
+  name: string,
+  figures_: WeeklyFigures,
+): Promise<Mail> {
+  const t = translator(locale, "email.weekly");
+
+  const first = (name ?? "").trim().split(/\s+/)[0] ?? "";
+
+  /* The one sentence that changes: what this week actually was. Nothing here
+     congratulates a week that did not happen. */
+  const verdict =
+    figures_.memorized === 0 && figures_.drills === 0
+      ? t("nothingThisWeek")
+      : figures_.fragile > 0
+        ? t("someSlipping", { count: figures_.fragile })
+        : t("holding");
+
+  const rows = [
+    { label: t("newPages"), value: String(figures_.memorized) },
+    { label: t("drills"), value: String(figures_.drills) },
+    { label: t("held"), value: `${figures_.held} / 604` },
+    {
+      label: t("fragile"),
+      value: String(figures_.fragile),
+      warn: figures_.fragile > 0,
+    },
+    ...(figures_.streak > 0 ? [{ label: t("streak"), value: t("days", { count: figures_.streak }) }] : []),
+    ...(figures_.daysBanked !== null
+      ? [
+          {
+            label: figures_.daysBanked >= 0 ? t("banked") : t("owed"),
+            value: t("days", { count: Math.abs(figures_.daysBanked) }),
+            warn: figures_.daysBanked < 0,
+          },
+        ]
+      : []),
+  ];
+
+  const html = shell({
+    preheader: verdict,
+    heading: first ? t("headingNamed", { name: first }) : t("heading"),
+    body: verdict,
+    footer: t("footer"),
+  }).replace(
+    /* The figures go between the body and the footer rule. Injected rather
+       than added as another shell parameter, because this is the only message
+       that has a table and the shell should stay the shape it is. */
+    '<tr>\n              <td style="padding:32px 32px 36px;">',
+    `<tr>
+              <td style="padding:24px 32px 0;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  ${figures(rows)}
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:24px 32px 0;" align="center">
+                <a href="${env.NEXT_PUBLIC_SITE_URL}/app"
+                   style="display:inline-block;background:${EMERALD};color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:13px 28px;border-radius:999px;">${escapeHtml(t("open"))}</a>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:32px 32px 36px;">`,
+  );
+
+  const text = [
+    first ? t("headingNamed", { name: first }) : t("heading"),
+    "",
+    verdict,
+    "",
+    ...rows.map((row) => `${row.label}: ${row.value}`),
+    "",
+    `${env.NEXT_PUBLIC_SITE_URL}/app`,
+    "",
+    t("footer"),
+  ].join("\n");
+
+  return { to, subject: t("subject"), html, text };
+}
+
+/** Exported so the cron can name the sender the same way the others do. */
+export { MESSAGES as EMAIL_MESSAGES };

@@ -388,6 +388,24 @@
       "body": "Yangi parol tanlash uchun bu kodni Ahd’ga kiriting.",
       "expiry": "Bu kod {minutes} daqiqadan soʻng eskiradi.",
       "ignore": "Agar parolni tiklashni soʻramagan boʻlsangiz, bu xatni eʼtiborsiz qoldiring — hech narsa oʻzgarmadi."
+    },
+    "weekly": {
+      "subject": "Ahd bilan haftangiz",
+      "heading": "Bu hafta",
+      "headingNamed": "Bu hafta, {name}",
+      "holding": "Yodlaganlaringiz mustahkam turibdi. Hech biri chegaradan pastga tushmadi.",
+      "someSlipping": "{count, plural, other {# sahifa}} chegaradan pastga tushdi. Ular mashq roʻyxatida birinchi turibdi.",
+      "nothingThisWeek": "Bu hafta yangi yod ham, takror ham boʻlmadi. Ahd tinch haftadan xafa boʻlmaydi — tinch oydan xafa boʻladi.",
+      "newPages": "Bu hafta yangi sahifa",
+      "drills": "Bajarilgan mashq",
+      "held": "Yodlangan sahifa",
+      "fragile": "Qoʻldan ketayotgan",
+      "streak": "Uzluksiz kun",
+      "banked": "Zaxira kun",
+      "owed": "Qoplash kerak",
+      "days": "{count, plural, other {# kun}}",
+      "open": "Bugungini ochish",
+      "footer": "Haftada bir marta, dushanba kuni yuboriladi. Hisobingizdan oʻchirib qoʻyishingiz mumkin."
     }
   },
   "app": {
@@ -963,5 +981,20 @@
       }
     },
     "next": "Keyingi"
+  },
+  "install": {
+    "title": "Ahd ilovasini oʻrnating",
+    "body": "Bosh ekranga qoʻshing: brauzer satrisiz ochiladi va oʻqigan sahifalaringiz internetsiz ham qoladi.",
+    "action": "Oʻrnatish",
+    "dismiss": "Hozir emas",
+    "iosHow": "Bosh ekranga qoʻshsangiz, ilovadek ochiladi va oʻqigan sahifalaringiz internetsiz ham ishlaydi.",
+    "iosShare": "Ulashish",
+    "iosAdd": "Bosh ekranga qoʻshish"
+  },
+  "offline": {
+    "badge": "Aloqa yoʻq",
+    "title": "Internet yoʻq",
+    "body": "Bugungi varaq va belgilashlar uchun internet kerak. Avval oʻqigan sahifalaringiz va ulardan tinglagan qiroatingiz esa shu yerda qoladi.",
+    "action": "Mushafni ochish"
   }
 }

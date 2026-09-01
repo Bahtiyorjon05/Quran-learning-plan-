@@ -43,6 +43,46 @@ export function useSupports(name: "IntersectionObserver"): boolean {
   );
 }
 
+/**
+ * Whether the page is running from an installed icon rather than a browser tab.
+ *
+ * Read through the store rather than set in an effect: it is a fact about the
+ * environment that is true before React starts, and calling setState for it
+ * during an effect is a cascading render for no reason.
+ */
+export function useStandalone(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const query = window.matchMedia("(display-mode: standalone)");
+      query.addEventListener("change", onChange);
+      return () => query.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(display-mode: standalone)").matches,
+    () => false,
+  );
+}
+
+/**
+ * Whether this is Safari on an iPhone or iPad.
+ *
+ * The only browser that offers no install event at all, so the only one that
+ * has to be told apart. iPadOS reports itself as a Mac, which is why touch
+ * support is part of the test.
+ */
+export function useAppleBrowser(): boolean {
+  return useSyncExternalStore(
+    never,
+    () => {
+      const ua = navigator.userAgent;
+      const apple =
+        /iphone|ipod|ipad/i.test(ua) ||
+        (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+      return apple && /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
+    },
+    () => false,
+  );
+}
+
 /** The browser's IANA timezone, or "" on the server and where it is blocked. */
 export function useTimeZone(): string {
   return useSyncExternalStore(

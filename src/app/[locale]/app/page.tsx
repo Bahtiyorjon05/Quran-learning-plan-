@@ -23,6 +23,7 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { logoutEverywhereAction } from "./actions";
 import { loadToday } from "./today";
+import { InstallApp } from "@/components/site/install-app";
 import { practicablePages } from "./practice/session";
 import type { QuranLocale } from "@/data/quran/loader";
 import { CovenantArc, Stat } from "@/components/app/covenant-arc";
@@ -366,6 +367,10 @@ export default async function AppHomePage({
 
               <div className="space-y-5">
                 <PracticeInvite weakest={pages[0] ?? null} fragileCount={fragile} held={held} />
+
+                {/* Only shown where it can actually be acted on: the component
+                    draws nothing at all in a browser that cannot install. */}
+                <InstallApp />
 
                 {held > 0 && (
                   <Link

@@ -18,6 +18,11 @@ const schema = z.object({
      otherwise Resend if there is an API key, otherwise the console. Development
      therefore works with no mail provider at all — the code is printed to the
      terminal — and adding SMTP later is purely an environment change. */
+  /* Vercel sends this as a bearer token on every scheduled call. Unset means
+     the cron route refuses everything rather than standing open — it can mail
+     every address in the database. */
+  CRON_SECRET: z.string().optional(),
+
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().int().positive().default(587),
   SMTP_USER: z.string().optional(),

@@ -388,6 +388,24 @@
       "body": "Enter this code in Ahd to choose a new password.",
       "expiry": "This code expires in {minutes} minutes.",
       "ignore": "If you did not ask to reset your password, ignore this email — nothing has changed."
+    },
+    "weekly": {
+      "subject": "Your week with Ahd",
+      "heading": "This week",
+      "headingNamed": "This week, {name}",
+      "holding": "Everything you hold is holding. Nothing has slipped below the line.",
+      "someSlipping": "{count, plural, one {# page has slipped} other {# pages have slipped}} below the line. They are first in the practice list.",
+      "nothingThisWeek": "Nothing was memorised or revised this week. The covenant does not mind a quiet week; it minds a quiet month.",
+      "newPages": "New pages this week",
+      "drills": "Drills marked",
+      "held": "Pages held",
+      "fragile": "Slipping",
+      "streak": "Current streak",
+      "banked": "Days banked",
+      "owed": "Days to make up",
+      "days": "{count, plural, one {# day} other {# days}}",
+      "open": "Open today",
+      "footer": "Sent once a week, on Monday. You can turn this off in your account."
     }
   },
   "app": {
@@ -963,5 +981,20 @@
       }
     },
     "next": "Next"
+  },
+  "install": {
+    "title": "Install Ahd",
+    "body": "Add it to your home screen: it opens without a browser bar, and pages you have read stay available offline.",
+    "action": "Install",
+    "dismiss": "Not now",
+    "iosHow": "Add it to your home screen and it opens like an app, with the pages you have read available offline.",
+    "iosShare": "Share",
+    "iosAdd": "Add to Home Screen"
+  },
+  "offline": {
+    "badge": "No connection",
+    "title": "You are offline",
+    "body": "Ahd needs the network for today's sheet and for anything you mark. Pages you have already read are still here, and so is the recitation you played from them.",
+    "action": "Open the mushaf"
   }
 }

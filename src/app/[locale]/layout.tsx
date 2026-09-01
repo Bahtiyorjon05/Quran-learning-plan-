@@ -4,6 +4,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Amiri, Cormorant_Garamond, Inter } from "next/font/google";
 
+import { ServiceWorker } from "@/components/site/install-app";
 import { ThemeGuard } from "@/components/site/theme-guard";
 import { routing, localeDir, localeTag, type Locale } from "@/i18n/routing";
 import "../globals.css";
@@ -126,6 +127,7 @@ export default async function LocaleLayout({
       <body className="min-h-dvh antialiased">
         <NextIntlClientProvider>
           <ThemeGuard />
+          <ServiceWorker />
           {children}
         </NextIntlClientProvider>
       </body>

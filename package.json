@@ -29,7 +29,8 @@
     "admin:grant": "tsx scripts/grant-admin.ts",
     "verify:admin": "tsx scripts/verify-admin.ts",
     "observe:reader": "tsx scripts/observe-reader.ts",
-    "verify:routes": "tsx scripts/verify-routes.ts"
+    "verify:routes": "tsx scripts/verify-routes.ts",
+    "observe:pwa": "tsx scripts/observe-pwa.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
@@ -66,7 +67,7 @@
     "playwright-core": "^1.62.1",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "sharp": "^0.35.3",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4",
     "tsx": "^4.20.7",
     "typescript": "^5",

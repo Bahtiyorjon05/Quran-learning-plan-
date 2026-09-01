@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { ProsePage, ProseSection } from "@/components/site/prose-page";
+import { ProsePage, ProseSection, headingId } from "@/components/site/prose-page";
 
 type Section = { heading: string; body: string[] };
 
@@ -25,12 +25,18 @@ export default async function AboutPage({
 
   const t = await getTranslations("pages.about");
   const sections = t.raw("sections") as Section[];
+  const contents = sections.map((section) => ({
+    id: headingId(section.heading),
+    label: section.heading,
+  }));
+
 
   return (
     <ProsePage
       title={t("title")}
       lead={t("lead")}
       updated={t.has("updated") ? t("updated") : undefined}
+      contents={contents}
     >
       {sections.map((section) => (
         <ProseSection key={section.heading} heading={section.heading}>
