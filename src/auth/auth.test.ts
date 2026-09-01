@@ -40,7 +40,7 @@ const {
   signup,
   verifyEmail,
 } = await import("./service");
-const { LOCKOUT_THRESHOLD } = await import("./rate-limit");
+const { LOCKOUT_THRESHOLD, BUCKETS, recordAuthEvent } = await import("./rate-limit");
 const { checkPassword, scorePassword } = await import("./password-policy");
 const { hashPassword, verifyPassword, burnPasswordTime } = await import("./password");
 const { generateOtp, hashOtp, safeEqualHex } = await import("./codes");
@@ -56,7 +56,7 @@ function uniqueEmail(tag: string) {
 /**
  * A fresh client identity per test.
  *
- * Sign-up is limited to five attempts per IP per hour, which is correct in
+ * Sign-up is limited per IP per hour, which is correct in
  * production and would otherwise make the eleventh test in this file fail for
  * the wrong reason. Addresses come from TEST-NET-3 (RFC 5737), which is
  * reserved for exactly this.
@@ -238,23 +238,48 @@ describe("signing up", () => {
 describe("rate limiting", () => {
   it("stops a burst of sign-ups from one address", async () => {
     const attacker = freshCtx();
-    let refused: unknown;
 
-    for (let i = 0; i < 8; i++) {
-      try {
-        const result = await signup({
-          email: uniqueEmail(`burst${i}`),
-          locale: "uz",
-          ctx: attacker,
-        });
-        created.push(result.userId);
-      } catch (error) {
-        refused = error;
-        break;
-      }
+    /* The cap is generous enough that walking up to it with real sign-ups
+       would mean dozens of round trips to the database. The bucket counts
+       rows in the audit log, so the log is filled directly and only the
+       refusal itself goes through the real sign-up path. */
+    await Promise.all(
+      Array.from({ length: BUCKETS.signup.perIp }, () =>
+        recordAuthEvent({ kind: "signup", email: uniqueEmail("burst"), ctx: attacker }),
+      ),
+    );
+
+    let refused: unknown;
+    try {
+      const result = await signup({
+        email: uniqueEmail("burst-final"),
+        locale: "uz",
+        ctx: attacker,
+      });
+      created.push(result.userId);
+    } catch (error) {
+      refused = error;
     }
 
     expect(refused).toMatchObject({ code: "rateLimited" });
+  });
+
+  it("lets a shared address through far enough for a household", async () => {
+    /* The failure this guards against is not an attack but a family, a class
+       or a carrier NAT: several people signing up from one address within the
+       hour must all get through. */
+    const shared = freshCtx();
+
+    for (let i = 0; i < 6; i++) {
+      const result = await signup({
+        email: uniqueEmail(`shared${i}`),
+        locale: "uz",
+        ctx: shared,
+      });
+      created.push(result.userId);
+    }
+
+    expect(BUCKETS.signup.perIp).toBeGreaterThanOrEqual(20);
   });
 });
 

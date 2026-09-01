@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Info } from "lucide-react";
 
@@ -17,7 +17,17 @@ export function ResetForm({ email }: { email: string | null }) {
   const te = useTranslations("auth.errors");
 
   const [state, action, pending] = useActionState(resetAction, IDLE);
+
+  /* Uncontrolled, for the same reason as the set-password form: hydration
+     resets a controlled field, taking anything typed before the JavaScript
+     arrived with it. */
+  const passwordRef = useRef<HTMLInputElement>(null);
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const typedBeforeHydration = passwordRef.current?.value;
+    if (typedBeforeHydration) setPassword(typedBeforeHydration);
+  }, []);
 
   const fieldError = (name: string) => {
     const key = state.fieldErrors?.[name];
@@ -77,7 +87,7 @@ export function ResetForm({ email }: { email: string | null }) {
           name="password"
           autoComplete="new-password"
           required
-          value={password}
+          ref={passwordRef}
           onChange={(e) => setPassword(e.target.value)}
           invalid={!!fieldError("password")}
         />

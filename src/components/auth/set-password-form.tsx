@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { BadgeCheck } from "lucide-react";
 
@@ -16,7 +16,20 @@ export function SetPasswordForm({ email }: { email: string }) {
   const te = useTranslations("auth.errors");
 
   const [state, action, pending] = useActionState(setPasswordAction, IDLE);
+
+  /* The strength meter needs to know the password, but the input stays
+     uncontrolled on purpose. A controlled field is reset to its React state
+     the moment hydration runs, so anyone who starts typing on a slow phone
+     before the JavaScript lands watches their password vanish. Reading the
+     value on change keeps the meter live; reading it once on mount picks up
+     whatever was typed during that gap. */
+  const passwordRef = useRef<HTMLInputElement>(null);
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const typedBeforeHydration = passwordRef.current?.value;
+    if (typedBeforeHydration) setPassword(typedBeforeHydration);
+  }, []);
 
   const fieldError = (name: string) => {
     const key = state.fieldErrors?.[name];
@@ -63,7 +76,7 @@ export function SetPasswordForm({ email }: { email: string }) {
           name="password"
           autoComplete="new-password"
           required
-          value={password}
+          ref={passwordRef}
           onChange={(e) => setPassword(e.target.value)}
           invalid={!!fieldError("password")}
         />

@@ -29,7 +29,16 @@ type Bucket = {
 };
 
 export const BUCKETS = {
-  signup: { kind: "signup", windowMinutes: 60, perIp: 5 },
+  /* Deliberately generous per IP. Most of the people this is built for reach
+     the internet through a mobile carrier's NAT, where a whole city shares a
+     handful of addresses; a masjid, a school and a family share one too. At
+     five an hour the second person on a shared connection is turned away with
+     an error they can do nothing about, which is a far more likely event than
+     the abuse the cap exists to stop. The real cost of a sign-up is one
+     verification email, and thirty of those an hour from one address is a
+     ceiling worth living with. Resends to a single address stay capped tightly
+     below, which is where mail-bombing is actually prevented. */
+  signup: { kind: "signup", windowMinutes: 60, perIp: 30 },
   login: { kind: "login_failure", windowMinutes: 15, perIp: 20, perEmail: 10 },
   resend: { kind: "verification_resent", windowMinutes: 60, perEmail: 5 },
   reset: { kind: "password_reset_requested", windowMinutes: 60, perIp: 10, perEmail: 3 },

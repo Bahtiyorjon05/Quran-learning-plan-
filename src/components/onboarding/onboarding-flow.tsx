@@ -188,8 +188,14 @@ export function OnboardingFlow() {
           {t("back")}
         </button>
 
+        {/* Distinct keys, and they matter. Without them React reconciles these
+            two buttons as one DOM node and simply patches `type` on it — so the
+            click that advances the step lands on a node that has already become
+            a submit button, and the browser posts the form. That skipped step
+            two entirely and onboarded everyone with the default reciter. */}
         {step === 0 ? (
           <button
+            key="next"
             type="button"
             onClick={() => setStep(1)}
             className={buttonStyles({ size: "lg", className: "group" })}
@@ -198,7 +204,12 @@ export function OnboardingFlow() {
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 rtl:rotate-180" />
           </button>
         ) : (
-          <button type="submit" disabled={pending} className={buttonStyles({ size: "lg" })}>
+          <button
+            key="submit"
+            type="submit"
+            disabled={pending}
+            className={buttonStyles({ size: "lg" })}
+          >
             <Check className="h-4 w-4" />
             {pending ? t("submitting") : t("submit")}
           </button>
