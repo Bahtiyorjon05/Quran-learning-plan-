@@ -36,16 +36,25 @@ export function OtpInput({
   /* Which code was already handed to the parent, so the same one is not
      submitted twice and a different one always is. */
   const [submitted, setSubmitted] = React.useState("");
-  const [wasInvalid, setWasInvalid] = React.useState(invalid);
   const ref = React.useRef<HTMLInputElement>(null);
 
-  /* The parent has just reported a rejection: empty the field so the next code
-     can simply be typed. Adjusting state during render rather than in an effect
-     is what React asks for when state has to follow a prop — an effect would
-     paint the wrong digits first and clear them a frame later. */
-  if (invalid !== wasInvalid) {
-    setWasInvalid(invalid);
-    if (invalid) {
+  /* Clearing keys off the attempt finishing, not off `invalid` changing.
+     `invalid` stays true from one wrong code to the next, so watching it for a
+     change emptied the field on the first rejection and never again — every
+     code after that had to be deleted by hand. The parent disables the field
+     while the code is with the server, so the moment that ends is the moment a
+     verdict exists, and it is the same moment whether it is the first wrong
+     code or the fifth.
+
+     Adjusted during render rather than in an effect, which is what React asks
+     for when state has to follow a prop: an effect would paint the rejected
+     digits first and clear them a frame later. */
+  const busy = !!disabled;
+  const [wasBusy, setWasBusy] = React.useState(busy);
+
+  if (busy !== wasBusy) {
+    setWasBusy(busy);
+    if (!busy && invalid) {
       setValue("");
       setSubmitted("");
     }

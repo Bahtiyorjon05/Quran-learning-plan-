@@ -89,27 +89,40 @@ async function main() {
     return;
   }
 
-  /* ── 2. A wrong code must clear itself ── */
-  await typeCode(page, "000000");
-  await page.waitForTimeout(2500);
-
-  const afterWrong = await page.evaluate(() =>
-    [...document.querySelectorAll<HTMLInputElement>("input")]
-      .map((i) => i.value)
-      .join(""),
-  );
-  console.log(`  2. after a wrong code the boxes hold "${afterWrong}"`);
-  if (afterWrong.replace(/\D/g, "").length > 0) {
-    failures.push("a wrong code is left in the boxes to be deleted by hand");
-  }
-
-  /* ── 3. Verify ── */
+  /* ── 2. Every wrong code must clear itself, not just the first ── */
   const code = await recoverCode(user.id);
   if (!code) {
     failures.push("no verification code was issued");
     await finish(browser, email);
     return;
   }
+
+  /* Three in a row, because the bug was that only the first one cleared: the
+     field keys off the attempt finishing now, and `invalid` never changes
+     between one rejection and the next. Three wrong plus the real one stays
+     inside OTP_MAX_ATTEMPTS. */
+  const wrongCodes = ["000000", "111111", "222222"].filter((c) => c !== code);
+
+  for (const [i, wrong] of wrongCodes.entries()) {
+    await typeCode(page, wrong);
+    await page.waitForTimeout(2500);
+
+    const left = (
+      await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLInputElement>("input")].map((n) => n.value).join(""),
+      )
+    ).replace(/\D/g, "");
+
+    console.log(`  2.${i + 1} wrong code ${wrong} → boxes hold "${left}"`);
+    if (left.length > 0) {
+      failures.push(
+        `wrong code number ${i + 1} was left in the boxes to be deleted by hand`,
+      );
+      break;
+    }
+  }
+
+  /* ── 3. And the right one is still accepted afterwards ── */
   await typeCode(page, code);
   await page.waitForURL(/set-password/, { timeout: 20000 }).catch(() => {});
   console.log(`  3. verified       → ${new URL(page.url()).pathname}`);
