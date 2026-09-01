@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Wordmark } from "@/components/brand/logo";
 import { buttonStyles } from "@/components/ui/button";
+import { InstallButton } from "./install-app";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
@@ -81,6 +82,7 @@ export function Header() {
               the wrong language or the wrong brightness, and burying either
               behind a hamburger makes people leave rather than adjust. */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            <InstallButton />
             <LanguageSwitcher />
             <ThemeToggle />
 

@@ -996,5 +996,23 @@
     "title": "Internet yoʻq",
     "body": "Bugungi varaq va belgilashlar uchun internet kerak. Avval oʻqigan sahifalaringiz va ulardan tinglagan qiroatingiz esa shu yerda qoladi.",
     "action": "Mushafni ochish"
+  },
+  "mistakes": {
+    "title": "Zaif joylar",
+    "subtitle": "Doim xato ketayotgan soʻzlar. Har bir mashqdan yigʻilgan va qanchalik tez-tez xato boʻlgani boʻyicha tartiblangan — yaqinligi boʻyicha emas.",
+    "timesMissed": "{count, plural, other {# marta xato}}",
+    "confused": "adashtirilgan",
+    "drillWord": "Bu sahifani mashq qilish",
+    "drillConfusion": "Adashishni mashq qilish",
+    "open": "Oʻqish",
+    "gotIt": "Endi bilaman",
+    "openCount": "{ayahs, plural, other {# oyat}} xato ketmoqda, jami {times, plural, other {# marta}}",
+    "resolvedCount": "{count} tasi hal qilindi",
+    "allClear": "Hech narsa xato ketmayapti.",
+    "allClearBody": "Shu paytgacha {count} tasini hal qildingiz. Yangilari mashqlarda topilgani sari shu yerda paydo boʻladi.",
+    "nothingYet": "Hozircha yozuv yoʻq.",
+    "nothingYetBody": "Mashqni yakunlang — xato qilgan soʻzlaringiz shu yerga, soʻzma-soʻz yigʻiladi.",
+    "goPractise": "Mashqqa oʻtish",
+    "footnote": "Hal qilingan joy shu yerdan yashiriladi, yozuvning oʻzi saqlanadi. Yana xato qilsangiz, darhol qaytadi."
   }
 }

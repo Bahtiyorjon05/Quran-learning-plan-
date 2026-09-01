@@ -40,10 +40,11 @@ const GOLD = "#c9a227";
 const PAPER = "#f7f1e3";
 const MUTED = "#6b7a74";
 
-/* Absolute, because an email is read outside our origin. The wordmark stays as
-   text beside it: most clients block remote images until the reader allows
-   them, and a header that renders as an empty box is worse than no logo. */
-const LOGO = `${env.NEXT_PUBLIC_SITE_URL}/brand/mark-128.png`;
+/* Absolute, because an email is read outside our origin.
+   The 256 rather than the 128: the seal is an intricate thing — a book, a
+   crescent, two scripts — and at 48 points it needs the extra pixels or it
+   renders as a grey smudge on the dark band. */
+const LOGO = `${env.NEXT_PUBLIC_SITE_URL}/brand/mark-256.png`;
 
 function escapeHtml(value: string) {
   return value
@@ -87,9 +88,15 @@ function shell({
             <tr>
               <td style="background:${INK};padding:22px 32px;">
                 <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-                  <td style="padding-right:12px;vertical-align:middle;">
-                    <img src="${LOGO}" width="40" height="40" alt="Ahd"
-                         style="display:block;width:40px;height:40px;border:0;border-radius:50%;" />
+                  <td style="padding-right:14px;vertical-align:middle;">
+                    <!-- alt is empty on purpose. Most clients block remote
+                         images until the reader allows them, and an alt of
+                         "Ahd" rendered a broken-image glyph beside dark text
+                         on a dark band. The wordmark is already right there in
+                         white, so the seal is decoration and a blocked one
+                         should leave nothing behind rather than a ruin. -->
+                    <img src="${LOGO}" width="48" height="48" alt=""
+                         style="display:block;width:48px;height:48px;border:0;color:#ffffff;background:${INK};" />
                   </td>
                   <td style="vertical-align:middle;">
                     <span style="color:#ffffff;font-size:19px;font-weight:600;letter-spacing:0.02em;">Ahd</span>

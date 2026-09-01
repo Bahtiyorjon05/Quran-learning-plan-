@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { BookOpen, LayoutDashboard, Sparkles } from "lucide-react";
+import { BookOpen, LayoutDashboard, Sparkles, Target } from "lucide-react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 const DESTINATIONS = [
   { href: "/app", icon: LayoutDashboard, key: "nav.dashboard" },
   { href: "/app/practice", icon: Sparkles, key: "practice.title" },
+  { href: "/app/mistakes", icon: Target, key: "mistakes.title" },
   { href: "/app/quran", icon: BookOpen, key: "app.mushaf.title" },
 ] as const;
 

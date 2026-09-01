@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { LogOut, ShieldCheck } from "lucide-react";
 
 import { Wordmark } from "@/components/brand/logo";
+import { InstallButton } from "@/components/site/install-app";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 import { buttonStyles } from "@/components/ui/button";
@@ -48,6 +49,7 @@ export async function AppHeader() {
                 <ShieldCheck className="h-4 w-4" />
               </Link>
             )}
+            <InstallButton />
             <LanguageSwitcher />
             <ThemeToggle />
             <form action={logoutAction}>

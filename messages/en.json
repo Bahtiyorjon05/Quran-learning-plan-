@@ -996,5 +996,23 @@
     "title": "You are offline",
     "body": "Ahd needs the network for today's sheet and for anything you mark. Pages you have already read are still here, and so is the recitation you played from them.",
     "action": "Open the mushaf"
+  },
+  "mistakes": {
+    "title": "Weak spots",
+    "subtitle": "The words that keep going wrong. Gathered from every drill you have marked, ordered by how often — not by how recently.",
+    "timesMissed": "{count, plural, one {missed once} other {missed # times}}",
+    "confused": "confused",
+    "drillWord": "Drill this page",
+    "drillConfusion": "Drill the confusion",
+    "open": "Read it",
+    "gotIt": "I have this now",
+    "openCount": "{ayahs, plural, one {# ayah} other {# ayahs}} going wrong, {times, plural, one {# time} other {# times}} in all",
+    "resolvedCount": "{count} cleared",
+    "allClear": "Nothing is going wrong.",
+    "allClearBody": "You have cleared {count} so far. New ones appear here as drills find them.",
+    "nothingYet": "Nothing recorded yet.",
+    "nothingYetBody": "Finish a drill and whatever you miss is gathered here, word by word.",
+    "goPractise": "Go and practise",
+    "footnote": "Clearing a spot hides it here; the record itself is kept. A word you miss again comes straight back."
   }
 }

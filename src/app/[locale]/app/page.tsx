@@ -4,6 +4,7 @@ import { and, desc, eq } from "drizzle-orm";
 import {
   ArrowRight,
   BookOpen,
+  Target,
   ChevronDown,
   Flame,
   Monitor,
@@ -24,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { logoutEverywhereAction } from "./actions";
 import { loadToday } from "./today";
 import { InstallApp } from "@/components/site/install-app";
+import { loadSummary } from "./mistakes/data";
 import { practicablePages } from "./practice/session";
 import type { QuranLocale } from "@/data/quran/loader";
 import { CovenantArc, Stat } from "@/components/app/covenant-arc";
@@ -155,6 +157,7 @@ export default async function AppHomePage({
   const { locale } = await params;
   const user = await requireOnboardedUser();
   const ta = await getTranslations("app");
+  const tw = await getTranslations("mistakes");
   const tp = await getTranslations("app.pace");
 
   const [covenant] = await db
@@ -195,8 +198,9 @@ export default async function AppHomePage({
 
   /* The mosaic and the practice invitation both come from what is held, so
      the pages are fetched once and shaped twice. */
-  const [pages, active] = await Promise.all([
+  const [pages, weakSpots, active] = await Promise.all([
     practicablePages(user.id, locale as QuranLocale),
+    loadSummary(user.id),
     db
     .select({
       id: sessions.id,
@@ -370,6 +374,29 @@ export default async function AppHomePage({
 
                 {/* Only shown where it can actually be acted on: the component
                     draws nothing at all in a browser that cannot install. */}
+                {weakSpots.ayahs > 0 && (
+                  <Link
+                    href="/app/mistakes"
+                    className="group flex items-center gap-4 rounded-2xl border border-[var(--line-strong)] p-5 transition-[border-color,background-color] duration-300 ease-[var(--ease-calm)] hover:border-[var(--accent)]/50 sm:p-6"
+                  >
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[var(--line-subtle)] bg-[var(--surface-overlay)]">
+                      <Target className="h-4.5 w-4.5 text-[var(--accent)]" strokeWidth={1.6} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
+                        {tw("title")}
+                      </span>
+                      <span className="mt-1 block text-[0.8125rem] text-[var(--text-muted)]">
+                        {tw("openCount", {
+                          ayahs: weakSpots.ayahs,
+                          times: weakSpots.open,
+                        })}
+                      </span>
+                    </span>
+                    <ArrowRight className="h-4 w-4 shrink-0 text-[var(--text-faint)] transition-transform duration-300 group-hover:translate-x-0.5 rtl:rotate-180" />
+                  </Link>
+                )}
+
                 <InstallApp />
 
                 {held > 0 && (

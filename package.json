@@ -30,7 +30,8 @@
     "verify:admin": "tsx scripts/verify-admin.ts",
     "observe:reader": "tsx scripts/observe-reader.ts",
     "verify:routes": "tsx scripts/verify-routes.ts",
-    "observe:pwa": "tsx scripts/observe-pwa.ts"
+    "observe:pwa": "tsx scripts/observe-pwa.ts",
+    "observe:mistakes": "tsx scripts/observe-mistakes.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
