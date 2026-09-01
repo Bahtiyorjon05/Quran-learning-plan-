@@ -92,7 +92,7 @@ function SpotRow({
         <p
           dir="rtl"
           lang="ar"
-          className="font-arabic mt-3 rounded-xl bg-[var(--surface-inset)]/40 px-4 py-3 text-[1.25rem] leading-[2.4] text-[var(--text-strong)] sm:text-[1.375rem]"
+          className="font-quran mt-3 rounded-xl bg-[var(--surface-inset)]/40 px-4 py-3 text-[1.25rem] leading-[2.4] text-[var(--text-strong)] sm:text-[1.375rem]"
         >
           {words.map((word, i) => (
             <span

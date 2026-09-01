@@ -135,7 +135,7 @@ export function AssembleQuestion({
       <div
         dir="rtl"
         lang="ar"
-        className="font-arabic mt-7 rounded-2xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/40 p-5 text-[1.4rem] leading-[2.8] sm:p-7 sm:text-[1.65rem] sm:leading-[3]"
+        className="font-quran mt-7 rounded-2xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/40 p-5 text-[1.4rem] leading-[2.8] sm:p-7 sm:text-[1.65rem] sm:leading-[3]"
       >
         {question.words.map((word, wordIndex) => {
           const slot = question.blanks.indexOf(wordIndex);
@@ -264,7 +264,7 @@ export function AssembleQuestion({
                     done && !spent && "opacity-50",
                   )}
                 >
-                  <span className="font-arabic text-[1.15rem] leading-snug text-[var(--text-strong)]">
+                  <span className="font-quran text-[1.15rem] leading-snug text-[var(--text-strong)]">
                     {word.text}
                   </span>
                   {i < 9 && (

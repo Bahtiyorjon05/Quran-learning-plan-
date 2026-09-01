@@ -93,7 +93,7 @@ export function OrderQuestion({
                     <p
                       dir="rtl"
                       lang="ar"
-                      className="font-arabic mt-1 text-[1.125rem] leading-relaxed text-[var(--text-strong)]"
+                      className="font-quran mt-1 text-[1.125rem] leading-relaxed text-[var(--text-strong)]"
                     >
                       {choice.text}
                     </p>
@@ -144,7 +144,7 @@ export function OrderQuestion({
                   <span
                     dir="rtl"
                     lang="ar"
-                    className="font-arabic block text-[1.125rem] leading-relaxed text-[var(--text-strong)]"
+                    className="font-quran block text-[1.125rem] leading-relaxed text-[var(--text-strong)]"
                   >
                     {choice.text}
                   </span>

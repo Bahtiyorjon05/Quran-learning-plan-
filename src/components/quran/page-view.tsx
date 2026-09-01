@@ -75,7 +75,7 @@ async function SurahHeading({ number, locale }: { number: number; locale: QuranL
         <p
           dir="rtl"
           lang="ar"
-          className="font-arabic mt-6 text-center text-[calc(1.5rem*var(--arabic-scale,1))] leading-[2] text-[var(--text-strong)]"
+          className="font-quran mt-6 text-center text-[calc(1.5rem*var(--arabic-scale,1))] leading-[2] text-[var(--text-strong)]"
         >
           {BASMALA}
         </p>
@@ -121,7 +121,7 @@ export async function PageView({
               <p
                 dir="rtl"
                 lang="ar"
-                className="font-arabic text-[calc(1.5rem*var(--arabic-scale,1))] leading-[2.1] text-[var(--text-strong)] sm:text-[calc(1.75rem*var(--arabic-scale,1))]"
+                className="font-quran text-[calc(1.5rem*var(--arabic-scale,1))] leading-[2.1] text-[var(--text-strong)] sm:text-[calc(1.75rem*var(--arabic-scale,1))]"
               >
                 {ayah.t}
                 <AyahMarker number={ayah.a} />

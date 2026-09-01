@@ -18,6 +18,12 @@ const schema = z.object({
      otherwise Resend if there is an API key, otherwise the console. Development
      therefore works with no mail provider at all — the code is printed to the
      terminal — and adding SMTP later is purely an environment change. */
+  /* Comma-separated SHA-256 certificate fingerprints of the Android app that
+     is allowed to speak for this origin. Read from the environment because the
+     one that matters is the key Play re-signs with, which is only known after
+     the first release. Unset means no app is authorised, which is true today. */
+  TWA_FINGERPRINTS: z.string().optional(),
+
   /* Vercel sends this as a bearer token on every scheduled call. Unset means
      the cron route refuses everything rather than standing open — it can mail
      every address in the database. */

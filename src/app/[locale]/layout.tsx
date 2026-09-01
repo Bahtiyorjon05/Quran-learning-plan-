@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Amiri, Cormorant_Garamond, Inter } from "next/font/google";
+import { Amiri, Amiri_Quran, Cormorant_Garamond, Inter } from "next/font/google";
 
 import { ServiceWorker } from "@/components/site/install-app";
 import { ThemeGuard } from "@/components/site/theme-guard";
@@ -33,6 +33,25 @@ const amiri = Amiri({
   subsets: ["arabic", "latin"],
   weight: ["400", "700"],
   variable: "--font-amiri",
+  display: "swap",
+});
+
+/**
+ * The face the mushaf itself is set in.
+ *
+ * Amiri Quran is Amiri redrawn for Qur'anic text: it carries the full set of
+ * vocalisation and recitation marks the Uthmani script needs, positioned for
+ * them, where the general-purpose Amiri collides some of them.
+ *
+ * It is not a page-accurate mushaf font and does not pretend to be — those
+ * are per-page fonts addressed by glyph code rather than by Unicode, which is
+ * a different text pipeline, not a different font. This is the fidelity that
+ * can be had honestly from a licensed webfont.
+ */
+const amiriQuran = Amiri_Quran({
+  subsets: ["arabic"],
+  weight: ["400"],
+  variable: "--font-amiri-quran",
   display: "swap",
 });
 
@@ -119,7 +138,7 @@ export default async function LocaleLayout({
          own, so ThemeGuard puts it back — see that file for why removing it
          from the server render was not enough on its own. */
       suppressHydrationWarning
-      className={`${inter.variable} ${cormorant.variable} ${amiri.variable}`}
+      className={`${inter.variable} ${cormorant.variable} ${amiri.variable} ${amiriQuran.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

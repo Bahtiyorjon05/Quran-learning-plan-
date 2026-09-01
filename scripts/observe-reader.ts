@@ -96,6 +96,23 @@ async function main() {
     }
   }
 
+  /* ── The Qur'an is set in the face drawn for it ── */
+  const face = await page.evaluate(() => {
+    const ayah = document.querySelector("[data-ayah] p[lang='ar']");
+    if (!ayah) return null;
+    const family = getComputedStyle(ayah).fontFamily;
+    /* Loaded, not merely named: a family that never arrived falls back
+       silently and the marks land in the wrong place. */
+    const loaded = [...document.fonts].some(
+      (f) => /Amiri Quran/i.test(f.family) && f.status === "loaded",
+    );
+    return { family, loaded };
+  });
+  console.log(`  qur'an face: ${face?.family?.split(",")[0] ?? "none"} (loaded: ${face?.loaded})`);
+  if (!face || !/Amiri.?Quran/i.test(face.family)) {
+    failures.push(`the Qur'an is not set in Amiri Quran (${face?.family ?? "no ayah found"})`);
+  }
+
   /* ── The page follows the recitation ── */
   console.log("");
   await page.goto(`${BASE}/quran/2`, { waitUntil: "networkidle" });
@@ -120,6 +137,17 @@ async function main() {
 
   const stillMarked = await page.locator("[data-reciting]").count();
   if (stillMarked !== 1) failures.push(`${stillMarked} ayahs marked after skipping, expected 1`);
+
+  /* ── Seek and speed ── */
+  const seek = await page.locator("input.ahd-seek").count();
+  console.log(`  seek bar while playing: ${seek === 1 ? "✓" : "✗"}`);
+  if (seek !== 1) failures.push("no seek bar appeared once something was playing");
+
+  await page.getByRole("button", { name: "0.5×" }).click();
+  await page.waitForTimeout(400);
+  const rate = await page.evaluate(() => document.querySelector("audio")?.playbackRate);
+  console.log(`  playback rate after choosing 0.5×: ${rate}`);
+  if (rate !== 0.5) failures.push(`speed did not apply (rate is ${rate})`);
 
   /* ── Reaching the end marks the page read ── */
   console.log("");

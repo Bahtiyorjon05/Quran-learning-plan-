@@ -689,7 +689,9 @@
       "nowPlayingSurah": "Reciting the surah",
       "follow": "Follow along as it plays",
       "wholeSurah": "whole surah",
-      "wholeSurahNote": "This reciter is one file per surah, so the page cannot follow along verse by verse or repeat a single one. The other reciters can."
+      "wholeSurahNote": "This reciter is one file per surah, so the page cannot follow along verse by verse or repeat a single one. The other reciters can.",
+      "seek": "Position in the ayah",
+      "speed": "Speed"
     }
   },
   "pages": {

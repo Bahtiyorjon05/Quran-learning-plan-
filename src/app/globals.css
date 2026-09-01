@@ -61,7 +61,10 @@
   /* ── Typography ── */
   --font-display: var(--font-cormorant), "Iowan Old Style", Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Arabic used as ornament — a track's name, the du'a in the footer. */
   --font-arabic: var(--font-amiri), "Traditional Arabic", serif;
+  /* The Qur'an itself, set in a face drawn for its marks. */
+  --font-quran: var(--font-amiri-quran), var(--font-amiri), "Traditional Arabic", serif;
 
   /* ── Motion: slow and soft. Nothing bounces. ── */
   --ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
@@ -288,6 +291,13 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    COMPONENT-LEVEL UTILITIES
    ═══════════════════════════════════════════════════════════════════════════ */
+
+@utility font-quran {
+  font-family: var(--font-quran);
+  /* The Uthmani script leans on its marks; ligature substitution is what puts
+     them where they belong rather than stacked on the letter. */
+  font-feature-settings: "liga" 1, "calt" 1;
+}
 
 @utility font-arabic {
   font-family: var(--font-arabic);
@@ -659,6 +669,50 @@ body:has([data-app-tabbar]) {
   transition:
     background-color 0.4s var(--ease-calm),
     box-shadow 0.4s var(--ease-calm);
+}
+
+/* The recitation scrubber.
+   A native range input is styled almost nowhere by default and differently in
+   every engine, so the track is painted with a gradient and the thumb is drawn
+   by hand — twice, because WebKit and Firefox use different pseudo-elements
+   and neither tolerates the other in the same rule. */
+.ahd-seek {
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(
+    to right,
+    var(--accent) 0%,
+    var(--accent) var(--played, 0%),
+    color-mix(in oklab, var(--text-strong) 12%, transparent) var(--played, 0%),
+    color-mix(in oklab, var(--text-strong) 12%, transparent) 100%
+  );
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.ahd-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface-base);
+  cursor: grab;
+}
+
+.ahd-seek::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface-base);
+  cursor: grab;
+}
+
+/* RTL pages flip the layout, but time still runs left to right. */
+[dir="rtl"] .ahd-seek {
+  direction: ltr;
 }
 
 @utility animate-rise {

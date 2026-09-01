@@ -38,6 +38,11 @@ import { cn } from "@/lib/utils";
 const RECITER_KEY = "ahd-reciter";
 const REPEAT_KEY = "ahd-repeat-ayah";
 const FOLLOW_KEY = "ahd-follow-recitation";
+const SPEED_KEY = "ahd-recitation-speed";
+
+/** Slow enough to follow a hard ayah, and never so fast it stops being tajwid. */
+const SPEEDS = [0.5, 0.75, 1, 1.25] as const;
+type Speed = (typeof SPEEDS)[number];
 
 export type PlayableAyah = { k: string; s: number; a: number };
 
@@ -47,6 +52,12 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
 
   const reciter = reciterById(useLocalValue(RECITER_KEY) ?? "");
   const repeatOne = useLocalValue(REPEAT_KEY) === "true";
+
+  /* Half speed is the reason this control exists: a difficult ayah taken slowly
+     is the oldest trick in hifz, and every reciter here is too fast for a
+     beginner at least once. */
+  const storedSpeed = Number(useLocalValue(SPEED_KEY));
+  const speed = SPEEDS.includes(storedSpeed as Speed) ? (storedSpeed as Speed) : 1;
   /* On by default: someone who pressed play wants to read along, and having to
      find the control before that works would be a strange first impression. */
   const follow = useLocalValue(FOLLOW_KEY) !== "false";
@@ -61,7 +72,20 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
      when the audio pauses anyway. */
   const [paused, setPaused] = useState(true);
 
+  /* Position, for the seek bar. Kept in state because it has to be drawn, and
+     updated from the element's own timeupdate rather than a timer — the
+     element is the thing that knows. */
+  const [position, setPosition] = useState(0);
+  const [duration, setDuration] = useState(0);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  /* playbackRate is a property of the element, not of the file, so it has to
+     be set again after every new src. */
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) audio.playbackRate = speed;
+  });
 
   /* The mark, and the scroll that follows it. */
   useEffect(() => {
@@ -118,6 +142,8 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
     setIndex(next);
     setFailed(false);
     setLoading(true);
+    setPosition(0);
+    setDuration(0);
 
     const audio = audioRef.current;
     if (!audio) return;
@@ -155,6 +181,8 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
       <audio
         ref={audioRef}
         preload="none"
+        onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 0)}
+        onTimeUpdate={(event) => setPosition(event.currentTarget.currentTime)}
         onPlay={() => setPaused(false)}
         onPause={() => setPaused(true)}
         onPlaying={() => setLoading(false)}
@@ -253,6 +281,63 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
         </div>
       </div>
 
+      {/* ── Position ──
+          Shown only once something is playing: an empty scrubber above a
+          player that has never been started is furniture. */}
+      {started && duration > 0 && (
+        <div className="mt-4 flex items-center gap-3">
+          <span className="w-9 shrink-0 text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+            {clock(position)}
+          </span>
+
+          <input
+            type="range"
+            min={0}
+            max={Math.max(0.1, duration)}
+            step={0.1}
+            value={Math.min(position, duration)}
+            onChange={(event) => {
+              const audio = audioRef.current;
+              if (!audio) return;
+              const next = Number(event.target.value);
+              audio.currentTime = next;
+              setPosition(next);
+            }}
+            aria-label={t("seek")}
+            className="ahd-seek h-1.5 flex-1"
+            style={{ ["--played" as string]: `${(position / duration) * 100}%` }}
+          />
+
+          <span className="w-9 shrink-0 text-end text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+            {clock(duration)}
+          </span>
+        </div>
+      )}
+
+      {/* ── Speed ── */}
+      <div className="mt-4 flex flex-wrap items-center gap-1.5">
+        <span className="me-1 text-[0.6875rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
+          {t("speed")}
+        </span>
+        {SPEEDS.map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => writeLocal(SPEED_KEY, String(option))}
+            aria-pressed={option === speed}
+            className={cn(
+              "rounded-full border px-2.5 py-1 text-[0.6875rem] tabular-nums",
+              "transition-[border-color,background-color,color] duration-300",
+              option === speed
+                ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
+                : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
+            )}
+          >
+            {option}&times;
+          </button>
+        ))}
+      </div>
+
       {/* The reciters, named in the reader's own language. Buttons rather than
           a dropdown, for the same reason the language switcher is buttons: one
           tap, and you can see what you are switching from. */}
@@ -294,4 +379,11 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
       )}
     </div>
   );
+}
+
+/** "1:07". Seconds only; no recitation of one ayah runs to an hour. */
+function clock(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+  const whole = Math.floor(seconds);
+  return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, "0")}`;
 }

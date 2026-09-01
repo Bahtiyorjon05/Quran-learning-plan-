@@ -48,7 +48,7 @@ export function ChoiceQuestion({
         dir="rtl"
         lang="ar"
         className={cn(
-          "font-arabic mt-8 rounded-2xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/40 px-5 py-6 text-[var(--text-strong)]",
+          "font-quran mt-8 rounded-2xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/40 px-5 py-6 text-[var(--text-strong)]",
           duel
             ? "text-center text-[1.5rem] leading-loose sm:text-[1.75rem]"
             : "text-[1.375rem] leading-loose",
@@ -111,7 +111,7 @@ export function ChoiceQuestion({
                     <span
                       dir="rtl"
                       lang="ar"
-                      className="font-arabic mt-1 block text-[1.125rem] leading-relaxed text-[var(--text-strong)]"
+                      className="font-quran mt-1 block text-[1.125rem] leading-relaxed text-[var(--text-strong)]"
                     >
                       {choice.text}
                     </span>

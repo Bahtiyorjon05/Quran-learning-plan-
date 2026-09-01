@@ -7,7 +7,7 @@ import { Menu, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Wordmark } from "@/components/brand/logo";
 import { buttonStyles } from "@/components/ui/button";
-import { InstallButton } from "./install-app";
+import { InstallApp, InstallButton } from "./install-app";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
@@ -163,6 +163,11 @@ export function Header() {
               className="animate-rise mt-auto flex flex-col gap-3 py-8"
               style={{ animationDelay: `${LINKS.length * 55}ms` }}
             >
+              {/* The sheet is where there is room to say what installing gets
+                  you. The header keeps the bare icon, for anyone who already
+                  knows. Both draw nothing where installing is impossible. */}
+              <InstallApp />
+
               <Link
                 href="/signup"
                 onClick={() => setOpen(false)}
