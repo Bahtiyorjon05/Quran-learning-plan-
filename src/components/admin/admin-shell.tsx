@@ -1,4 +1,4 @@
-import { LayoutDashboard, ShieldCheck, Users } from "lucide-react";
+import { ArrowLeft, LayoutDashboard, ShieldCheck, Users } from "lucide-react";
 
 import { Wordmark } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/site/theme-toggle";
@@ -38,7 +38,10 @@ export async function AdminShell({
       <div className="bg-[var(--status-warning)]/12 border-b border-[var(--status-warning)]/25">
         <Measure className="flex h-8 items-center gap-2 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--status-warning-ink)] uppercase">
           <ShieldCheck className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
-          Admin — you are seeing everyone&rsquo;s data
+          {/* The full sentence does not fit on a phone and truncating it to
+              "Admin — you are seeing everyone…" is worse than saying less. */}
+          <span className="max-sm:hidden">Admin — you are seeing everyone&rsquo;s data</span>
+          <span className="sm:hidden">Admin — everyone&rsquo;s data</span>
         </Measure>
       </div>
 
@@ -49,7 +52,7 @@ export async function AdminShell({
               <Wordmark priority size={30} />
             </Link>
 
-            <nav className="flex items-center gap-1" aria-label="Admin">
+            <nav className="hidden items-center gap-1 sm:flex" aria-label="Admin">
               {tabs.map((tab) => (
                 <Link
                   key={tab.id}
@@ -74,16 +77,82 @@ export async function AdminShell({
             <ThemeToggle />
             <Link
               href="/app"
-              className={buttonStyles({ variant: "outline", size: "sm" })}
+              className={buttonStyles({
+                variant: "outline",
+                size: "sm",
+                className: "max-sm:hidden",
+              })}
             >
               <LayoutDashboard className="h-3.5 w-3.5" />
-              <span className="max-sm:hidden">Back to the app</span>
+              Back to the app
             </Link>
           </div>
         </Measure>
       </header>
 
       <main>{children}</main>
+
+      {/* The same bottom bar the product uses, for the same reason: two
+          destinations squeezed into a 390px header beside a theme toggle and a
+          way out were neither reachable nor legible. `data-app-tabbar` is the
+          marker the stylesheet already looks for to keep the last row of the
+          page clear of it. */}
+      <nav
+        data-app-tabbar
+        aria-label="Admin"
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-40 sm:hidden",
+          "border-t border-[var(--line-subtle)]",
+          "bg-[color-mix(in_oklab,var(--surface-base)_92%,transparent)] backdrop-blur-xl",
+          "pb-[env(safe-area-inset-bottom)]",
+        )}
+      >
+        <div className="mx-auto flex max-w-md items-stretch">
+          {tabs.map((tab) => (
+            <Link
+              key={tab.id}
+              href={tab.href}
+              aria-current={tab.id === current ? "page" : undefined}
+              className="relative flex flex-1 flex-col items-center gap-1 px-2 pt-3 pb-2.5"
+            >
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute top-0 h-0.5 rounded-b-full transition-[background-color,width] duration-300 ease-[var(--ease-calm)]",
+                  tab.id === current ? "w-8 bg-[var(--accent)]" : "w-0 bg-transparent",
+                )}
+              />
+              <tab.icon
+                className={cn(
+                  "h-5 w-5",
+                  tab.id === current ? "text-[var(--accent)]" : "text-[var(--text-faint)]",
+                )}
+                strokeWidth={tab.id === current ? 2 : 1.6}
+              />
+              <span
+                className={cn(
+                  "text-[0.6875rem] leading-none",
+                  tab.id === current
+                    ? "font-medium text-[var(--accent-strong)]"
+                    : "text-[var(--text-faint)]",
+                )}
+              >
+                {tab.label}
+              </span>
+            </Link>
+          ))}
+
+          <Link
+            href="/app"
+            className="relative flex flex-1 flex-col items-center gap-1 px-2 pt-3 pb-2.5"
+          >
+            <ArrowLeft className="h-5 w-5 text-[var(--text-faint)]" strokeWidth={1.6} />
+            <span className="text-[0.6875rem] leading-none text-[var(--text-faint)]">
+              The app
+            </span>
+          </Link>
+        </div>
+      </nav>
     </div>
   );
 }
@@ -109,7 +178,12 @@ export function Panel({
   return (
     <section
       className={cn(
-        "rounded-2xl border border-[var(--line-strong)] bg-[var(--surface-raised)]/40 p-5 sm:p-6",
+        /* min-w-0 is load-bearing. A grid item's default min-width is auto,
+           which means a long unbreakable string inside — an email address, in
+           practice — pushes the track wider than the viewport and the whole
+           page slides sideways under the thumb. Measured at 583px in a 390px
+           phone before this. */
+        "panel min-w-0 rounded-2xl p-5 sm:p-6",
         className,
       )}
     >
@@ -143,10 +217,10 @@ export function Metric({
   tone?: "plain" | "good" | "warn";
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--line-subtle)] bg-[var(--surface-raised)]/40 px-5 py-4">
+    <div className="panel min-w-0 rounded-2xl px-4 py-4 sm:px-5">
       <p
         className={cn(
-          "font-[family-name:var(--font-display)] text-[2rem] leading-none font-light tabular-nums",
+          "font-[family-name:var(--font-display)] text-[1.75rem] leading-none font-light tabular-nums sm:text-[2rem]",
           tone === "plain" && "text-[var(--text-strong)]",
           tone === "good" && "text-[var(--status-good-ink)]",
           tone === "warn" && "text-[var(--status-warning-ink)]",

@@ -35,8 +35,12 @@ const SCREENS = [
   ["mushaf", "/app/quran"],
   ["mistakes", "/app/mistakes"],
   ["plan-new", "/app/plan/new"],
+  ["admin", "/admin"],
+  ["admin-people", "/admin/users"],
   ["home", "/"],
 ] as const;
+
+const overflows: string[] = [];
 
 async function main() {
   mkdirSync(OUT, { recursive: true });
@@ -46,9 +50,11 @@ async function main() {
 
   /* ── An account midway through a three-year covenant ── */
   const email = `shot-${Date.now()}${DOMAIN}`;
+  /* Admin, so the admin screens can be photographed too. The account is
+     deleted at the end of the run like every other seeded row. */
   const [user] = (await sql`
-    insert into users (email, email_verified_at, password_hash, display_name)
-    values (${email}, now(), 'not-a-real-hash', 'Bahtiyorjon') returning id
+    insert into users (email, email_verified_at, password_hash, display_name, role)
+    values (${email}, now(), 'not-a-real-hash', 'Bahtiyorjon', 'admin') returning id
   `) as { id: string }[];
 
   await sql`
@@ -139,9 +145,49 @@ async function main() {
 
       /* Let the arrival animations finish before the shutter. */
       await page.waitForTimeout(2600);
+      /* Horizontal overflow is the one responsiveness bug that is a fact
+         rather than a matter of taste, so it is measured rather than eyeballed:
+         a page whose scrollWidth exceeds its viewport slides sideways under the
+         thumb, and on a phone that is always wrong. */
+      const overflow = await page.evaluate(() => {
+        const doc = document.documentElement;
+        if (doc.scrollWidth <= doc.clientWidth + 1) return null;
+
+        /* scrollWidth alone over-reports. A decorative blur inside a section
+           with overflow-hidden still measures wider than the viewport while
+           being perfectly well behaved, and `overflow-x: hidden` on the body
+           already stops the page moving. The question that matters to a thumb
+           is whether the page can actually be dragged sideways, so ask it. */
+        const before = window.scrollX;
+        window.scrollTo(doc.clientWidth, window.scrollY);
+        const moved = window.scrollX > before;
+        window.scrollTo(before, window.scrollY);
+        if (!moved) return null;
+
+        /* Name the widest offender, or the report is unactionable. */
+        const guilty = [...document.querySelectorAll<HTMLElement>("body *")]
+          .map((el) => ({ el, r: el.getBoundingClientRect() }))
+          .filter(({ r }) => r.width > 0 && r.right > doc.clientWidth + 1)
+          .sort((a, b) => b.r.right - a.r.right)[0];
+
+        return {
+          scrollWidth: doc.scrollWidth,
+          clientWidth: doc.clientWidth,
+          widest: guilty
+            ? `${guilty.el.tagName.toLowerCase()}.${String(guilty.el.className).slice(0, 60)} → right ${Math.round(guilty.r.right)}`
+            : "unknown",
+        };
+      });
+
+      if (overflow) {
+        overflows.push(
+          `${name} @${width} ${theme}: scrolls to ${overflow.scrollWidth}px in a ${overflow.clientWidth}px viewport — ${overflow.widest}`,
+        );
+      }
+
       const file = `${OUT}/${name}-${theme}-${width}.png`;
       await page.screenshot({ path: file, fullPage: true });
-      console.log(`  ${name.padEnd(10)} ${theme.padEnd(5)} → ${file}`);
+      console.log(`  ${name.padEnd(12)} ${theme.padEnd(5)} → ${file.split("/").pop()}${overflow ? "  ⚠ OVERFLOWS" : ""}`);
     }
     await context.close();
   }
@@ -149,6 +195,14 @@ async function main() {
   await browser.close();
   await sql`delete from users where email like ${"%" + DOMAIN}`;
   console.log("\ntest account removed");
+
+  if (overflows.length > 0) {
+    console.error(`\n✗ ${overflows.length} screens scroll sideways:`);
+    for (const line of overflows) console.error(`  ${line}`);
+    process.exitCode = 1;
+  } else {
+    console.log("✓ no screen scrolls sideways");
+  }
 }
 
 main().catch(async (error) => {

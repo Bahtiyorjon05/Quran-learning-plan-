@@ -15,7 +15,8 @@ import {
   hashSessionToken,
 } from "./codes";
 
-export const SESSION_COOKIE = "ahd_session";
+import { SESSION_COOKIE } from "./cookie";
+export { SESSION_COOKIE };
 /** Set between sign-up and verification so the OTP page knows who is verifying
  *  without ever putting an email address in a URL. */
 export const PENDING_COOKIE = "ahd_pending";

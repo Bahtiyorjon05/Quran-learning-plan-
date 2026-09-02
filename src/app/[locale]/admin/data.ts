@@ -9,6 +9,7 @@ import {
   mistakes,
   plans,
   profiles,
+  planDays,
   reviewLogs,
   sessions,
   users,
@@ -248,6 +249,23 @@ export type AdminUser = {
   lastSeenAt: Date | null;
   pagesHeld: number;
   planProgress: number | null;
+
+  /* ── This person's own numbers ──
+     A list of accounts answers "who signed up". These answer the question
+     actually asked when a name is looked up: is this person getting anywhere,
+     and if not, where did they stop. */
+  /** Mean strength across the pages they hold, 0–100. */
+  averageStrength: number;
+  /** Drills finished, ever. */
+  drills: number;
+  /** Unresolved weak spots. */
+  openMistakes: number;
+  /** Days on which every owed track was completed. */
+  daysKept: number;
+  /** What they chose at onboarding, for support questions. */
+  locale: string | null;
+  reciter: string | null;
+  studyTime: string | null;
 };
 
 /**
@@ -289,6 +307,29 @@ export async function loadUsers(search: string, limit = 50): Promise<AdminUser[]
         where p.user_id = ${users.id} and p.status = 'active'
         limit 1
       )`,
+
+      /* Still one query. Correlated subqueries on indexed user_id columns cost
+         far less than a round trip each, and the alternative — a query per row
+         — is the classic reason an admin list takes nine seconds at scale. */
+      averageStrength: sql<string | number | null>`(
+        select round(avg(m.strength))::int from ${memorizationUnits} m
+        where m.user_id = ${users.id} and m.state = 'memorized'
+      )`,
+      drills: sql<number>`(
+        select count(*)::int from ${reviewLogs} r where r.user_id = ${users.id}
+      )`,
+      openMistakes: sql<number>`(
+        select count(*)::int from ${mistakes} k
+        where k.user_id = ${users.id} and k.resolved_at is null
+      )`,
+      daysKept: sql<number>`(
+        select count(*)::int from ${planDays} d
+        join ${plans} p on p.id = d.plan_id
+        where p.user_id = ${users.id} and d.status = 'complete'
+      )`,
+      locale: profiles.locale,
+      reciter: profiles.preferredReciter,
+      studyTime: profiles.studyTime,
     })
     .from(users)
     .leftJoin(profiles, eq(profiles.userId, users.id))
@@ -307,6 +348,14 @@ export async function loadUsers(search: string, limit = 50): Promise<AdminUser[]
     lastSeenAt: row.lastSeenAt ? new Date(row.lastSeenAt) : null,
     pagesHeld: Number(row.pagesHeld),
     planProgress: row.planProgress === null ? null : Number(row.planProgress),
+    averageStrength: row.averageStrength === null ? 0 : Number(row.averageStrength),
+    drills: Number(row.drills),
+    openMistakes: Number(row.openMistakes),
+    daysKept: Number(row.daysKept),
+    locale: row.locale ?? null,
+    reciter: row.reciter ?? null,
+    /* A `time` column arrives as "05:30:00"; the seconds are noise here. */
+    studyTime: row.studyTime ? String(row.studyTime).slice(0, 5) : null,
   }));
 }
 

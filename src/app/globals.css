@@ -235,6 +235,8 @@
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   body {
@@ -244,7 +246,17 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* `hidden` first as the fallback, then `clip`. They differ in a way that
+       matters here: `hidden` makes the element a scroll container, which
+       silently breaks every `position: sticky` descendant — and this site
+       sticks its header on every page. `clip` refuses the scroll without
+       creating a scroll container, so the header keeps working.
+
+       Set on both html and body because with it on body alone the document
+       element still scrolled: a 44rem decorative blur in the hero left the
+       landing page draggable 12px sideways on a 390px phone. */
     overflow-x: hidden;
+    overflow-x: clip;
   }
 
   h1,
@@ -473,15 +485,18 @@ body:has([data-app-tabbar]) {
   inset-block-start: -18rem;
   inset-inline-start: 50%;
   height: 44rem;
-  width: 44rem;
-  margin-inline-start: -22rem;
+  width: min(44rem, 100vw);
+  margin-inline-start: min(-22rem, -50vw);
   background: radial-gradient(circle, var(--halo), transparent 62%);
   animation: ahd-drift-a 23s ease-in-out infinite alternate;
 }
 
 .ahd-aurora-b {
   inset-block-start: 4rem;
-  inset-inline-end: -16rem;
+  /* Was -16rem, which put 12px of a blurred circle past the right edge of a
+     390px phone and made the whole landing page scrollable sideways. Decoration
+     must never be the reason a page moves. */
+  inset-inline-end: -8rem;
   height: 32rem;
   width: 32rem;
   background: radial-gradient(

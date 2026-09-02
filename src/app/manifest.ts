@@ -19,7 +19,12 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "Ahd",
     description:
       "Hifzingizni rejalashtiring, unga sodiq qoling, mashq qiling va hech qachon yoʻqotmang.",
-    start_url: "/",
+    /* The dashboard, not the landing page. Somebody who has put Ahd on their
+       home screen has already been sold; opening them onto the marketing copy
+       every morning and asking them to find the way in is a tax on the most
+       committed users. A lapsed session is bounced to sign-in from here by the
+       same guard as everywhere else, so nothing is exposed. */
+    start_url: "/app",
     /* Anything under the origin, so an installed window can reach the reader
        and the app without falling out into a browser tab. */
     scope: "/",

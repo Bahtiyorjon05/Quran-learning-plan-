@@ -117,7 +117,7 @@ export default async function AdminOverviewPage() {
         </header>
 
         {/* ── The figures ── */}
-        <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-7 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Metric
             value={totals.users}
             label="Accounts"
@@ -137,7 +137,7 @@ export default async function AdminOverviewPage() {
           />
         </div>
 
-        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Metric value={totals.verified} label="Verified addresses" />
           <Metric value={totals.onboarded} label="Finished onboarding" />
           <Metric value={totals.drills} label="Drills marked" />

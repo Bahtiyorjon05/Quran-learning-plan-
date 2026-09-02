@@ -33,6 +33,7 @@
     "observe:pwa": "tsx scripts/observe-pwa.ts",
     "observe:mistakes": "tsx scripts/observe-mistakes.ts",
     "observe:signup": "tsx --require ./scripts/allow-server-only.cjs scripts/observe-signup.ts",
+    "observe:session": "tsx --require ./scripts/allow-server-only.cjs scripts/observe-session.ts",
     "shoot": "tsx --require ./scripts/allow-server-only.cjs scripts/shoot-app.ts"
   },
   "dependencies": {

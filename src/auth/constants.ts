@@ -11,9 +11,25 @@ export const OTP_TTL_MINUTES = 10;
 export const OTP_MAX_ATTEMPTS = 5;
 export const OTP_RESEND_COOLDOWN_SECONDS = 60;
 
-export const SESSION_TTL_DAYS = 30;
-/** How stale a session's last_seen may get before we refresh it. */
-export const SESSION_REFRESH_HOURS = 12;
+/**
+ * How long a session survives *without use*.
+ *
+ * Sliding, not absolute. Someone who opens Ahd every morning — which is the
+ * whole premise of the product — is never signed out; someone who has not
+ * opened it in three days has to prove who they are again. An absolute three
+ * days would log out the most devoted user every third morning, which is the
+ * opposite of what a daily habit needs.
+ *
+ * The window is kept by two things that must agree: the row in `sessions`,
+ * refreshed on read, and the cookie's own lifetime, refreshed by the proxy on
+ * every request. A long database expiry behind a cookie that has already
+ * expired signs people out regardless.
+ */
+export const SESSION_TTL_DAYS = 3;
+/** How stale a session's last_seen may get before we refresh it. Well inside
+ *  SESSION_TTL_DAYS, so an active session is always extended long before it
+ *  can lapse. */
+export const SESSION_REFRESH_HOURS = 6;
 
 /** "123456" → "123 456", so a code is readable when it is read aloud. */
 export function formatOtp(code: string): string {
