@@ -35,7 +35,7 @@ export function useMounted(): boolean {
  * we care about, so the markup React sends matches what almost every client
  * will hydrate into, and the rare browser without it corrects itself silently.
  */
-export function useSupports(name: "IntersectionObserver"): boolean {
+export function useSupports(name: "IntersectionObserver" | "caches"): boolean {
   return useSyncExternalStore(
     never,
     () => typeof window !== "undefined" && name in window,

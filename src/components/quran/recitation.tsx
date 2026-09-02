@@ -7,6 +7,8 @@ import { Loader2, Pause, Play, Repeat, SkipForward, Volume2 } from "lucide-react
 import {
   RECITERS,
   ayahAudioUrl,
+  basmalaAudioUrl,
+  opensWithBasmala,
   reciter as reciterById,
   surahAudioUrl,
 } from "@/lib/reciters";
@@ -61,20 +63,43 @@ function sharedAudio(): HTMLAudioElement {
 }
 
 /**
- * Whether a recitation of this ayah should open with the Basmala.
+ * The next verse, fetched while this one is still sounding.
  *
- * Every surah but At-Tawbah opens with it, and in all of them except
- * Al-Fatiha it is not a numbered ayah — so the audio file for ayah 1 begins at
- * the first word of the surah and the opening is simply missing. Reciters do
- * not begin that way and neither should this.
+ * One element with `preload="none"` means every ayah is asked for at the exact
+ * moment it is needed, so on anything but a fast connection there is a silence
+ * between verses while the file arrives — which is precisely when following
+ * along falls apart. Two verses are kept warm ahead of the one playing.
  *
- * Al-Fatiha 1:1 *is* the Basmala, so it supplies the audio in the same
- * reciter's own voice: no second source, no mismatch of room or register.
- * At-Tawbah is the exception the tradition itself makes, and Al-Fatiha needs
- * no help because its first ayah already is the words.
+ * Done with a second <audio> rather than fetch() on purpose: the media loader
+ * needs no CORS headers, goes through the service worker like the real request
+ * will, and fills the same cache — so when the player asks, the file is
+ * already there. It never plays; it only loads.
  */
-function opensWithBasmala(surah: number, ayah: number): boolean {
-  return ayah === 1 && surah !== 1 && surah !== 9;
+let warmer: HTMLAudioElement | null = null;
+
+function warm(urls: string[]) {
+  if (typeof document === "undefined" || urls.length === 0) return;
+
+  if (!warmer) {
+    warmer = document.createElement("audio");
+    warmer.preload = "auto";
+    warmer.muted = true;
+    warmer.setAttribute("data-ahd-warmer", "");
+    document.body.append(warmer);
+  }
+
+  /* One at a time, and the nearest first: a phone on one bar gains nothing
+     from three parallel downloads competing with the verse being heard. */
+  let at = 0;
+  const next = () => {
+    if (!warmer || at >= urls.length) return;
+    warmer.src = urls[at++];
+    warmer.load();
+  };
+
+  warmer.oncanplaythrough = next;
+  warmer.onerror = next;
+  next();
 }
 
 /** Identity of the page being recited, so a remount knows what it is hearing. */
@@ -235,6 +260,7 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
         delete audio.dataset.basmala;
         setLoading(true);
         audio.src = sourceFor(reciter.id, index);
+        if (index + 1 < ayahs.length) warm([sourceFor(reciter.id, index + 1)]);
         void audio.play().catch(() => {
           setLoading(false);
           setFailed(true);
@@ -350,7 +376,7 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
     const basmala =
       perAyah && withBasmala && opensWithBasmala(target.s, target.a);
 
-    audio.src = basmala ? ayahAudioUrl(reciter.id, 1, 1) : sourceFor(reciter.id, next);
+    audio.src = basmala ? basmalaAudioUrl(reciter.id) : sourceFor(reciter.id, next);
     /* Written to the element, because the element is what survives a language
        switch — the React state does not. */
     audio.dataset.index = String(next);
@@ -362,6 +388,24 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
       setLoading(false);
       setFailed(true);
     });
+
+    /* And what comes after it, so the next file is not waited for. Only for a
+       per-ayah reciter — a whole-surah file has nothing queued behind it.
+
+       When the Basmala is sounding, the very next thing needed is the ayah it
+       opens, not the one after that: warming ahead of the ayah while skipping
+       the ayah itself left exactly the gap this is meant to close. */
+    if (perAyah) {
+      const upcoming = basmala
+        ? [next, next + 1]
+        : [next + 1, next + 2];
+
+      warm(
+        upcoming
+          .filter((ahead) => ahead >= 0 && ahead < ayahs.length)
+          .map((ahead) => sourceFor(reciter.id, ahead)),
+      );
+    }
   }
 
   function toggle() {
@@ -381,7 +425,7 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
     if (index === null || !audio) return;
     const wasPlaying = !paused;
     audio.src =
-      audio.dataset.basmala === "1" ? ayahAudioUrl(id, 1, 1) : sourceFor(id, index);
+      audio.dataset.basmala === "1" ? basmalaAudioUrl(id) : sourceFor(id, index);
     if (wasPlaying) void audio.play().catch(() => setFailed(true));
   }
 

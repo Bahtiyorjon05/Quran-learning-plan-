@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { RotateCw } from "lucide-react";
+import { Inbox, RotateCw } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import { FormError, FormNotice } from "@/components/ui/field";
@@ -70,6 +70,15 @@ export function VerifyForm({ showDevHint }: { showDevHint: boolean }) {
 
         <p className="text-center text-[0.8125rem] text-[var(--text-faint)]">
           {t("expiresIn", { minutes: OTP_TTL_MINUTES })}
+        </p>
+
+        {/* Said before it is needed rather than after. A new sender has no
+            reputation, so the first message this app ever writes to somebody is
+            the one most likely to be filed as junk — and a code that appears not
+            to arrive is where people give up. */}
+        <p className="flex items-start gap-2 rounded-xl border border-[var(--line-subtle)] bg-[var(--surface-raised)]/40 px-3.5 py-3 text-[0.75rem] leading-relaxed text-[var(--text-muted)]">
+          <Inbox className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--text-faint)]" strokeWidth={1.7} />
+          {t("checkSpam")}
         </p>
 
         <SubmitButton

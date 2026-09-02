@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { db } from "@/db/client";
 import { memorizationUnits } from "@/db/schema";
 import { requireOnboardedUser } from "@/auth/guard";
-import { localisedSurahs, type QuranLocale } from "@/data/quran/loader";
+import { localisedSurahs, pageSurahNames, type QuranLocale } from "@/data/quran/loader";
 import { pagesOfJuz, TOTAL_JUZ, TOTAL_PAGES } from "@/core/quran/mushaf";
 import { AppHeader } from "@/components/app/app-header";
 import { Atmosphere } from "@/components/app/atmosphere";
@@ -64,6 +64,7 @@ export default async function AppMushafPage({
 
         <MushafMosaic
           strengths={strengths}
+          pageNames={pageSurahNames(locale as QuranLocale)}
           held={held}
           averageStrength={averageStrength}
           basePath="/app/quran"

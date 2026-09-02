@@ -34,9 +34,11 @@ export default function manifest(): MetadataRoute.Manifest {
        paints this behind the icon while the app starts, and the deepest ink in
        the palette read as a black rectangle with a mark floating in it; one
        step up is still unmistakably night, and the seal sits on it rather than
-       in a hole. It is also the colour the opening screen resolves into. */
-    background_color: "#0f1815",
-    theme_color: "#060908",
+       in a hole. It is also the colour the opening screen resolves into, and
+       the same value is given to `theme_color` so the status bar does not draw
+       a darker stripe across the top of it. */
+    background_color: "#122019",
+    theme_color: "#122019",
     categories: ["education", "books", "lifestyle"],
     lang: "uz",
     dir: "ltr",

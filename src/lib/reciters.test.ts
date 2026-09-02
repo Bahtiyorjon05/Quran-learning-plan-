@@ -1,6 +1,9 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import meta from "@/data/quran/meta.json";
+import { SAVED_CACHE } from "./offline-audio";
 import {
   DEFAULT_RECITER,
   RECITERS,
@@ -111,6 +114,33 @@ describe("the reciters", () => {
     /* Minshawi publishes no 64k. Asking for one returned 403 on every verse. */
     expect(ayahAudioUrl("minshawi", 2, 255)).toBe(
       "https://cdn.islamic.network/quran/audio/128/ar.minshawi/262.mp3",
+    );
+  });
+});
+
+describe("keeping recitation offline", () => {
+  /* The service worker is plain JavaScript in public/ and cannot import from
+     the app, so the name of the cache that holds downloads is written twice.
+     If the two ever drift, downloads silently stop being found and everybody
+     who paid for them on mobile data is quietly back online. */
+  /* Read from the project root: vitest runs there, and `import.meta.url`
+     trips Vite's SSR transform in this file. */
+  const worker = readFileSync("public/sw.js", "utf8");
+
+  it("names the same cache in the app and in the service worker", () => {
+    expect(worker).toContain(`const SAVED = "${SAVED_CACHE}"`);
+  });
+
+  it("spares that cache when a new version activates", () => {
+    /* A deploy clears the app's own caches. It must not clear this one. */
+    expect(worker).toMatch(/name !== SAVED/);
+  });
+
+  it("looks in it before the rolling cache", () => {
+    /* The rolling cache evicts; this one does not. Asking it second would mean
+       a download quietly falling back to the network. */
+    expect(worker.indexOf("caches.open(SAVED)")).toBeLessThan(
+      worker.indexOf("caches.open(AUDIO)"),
     );
   });
 });

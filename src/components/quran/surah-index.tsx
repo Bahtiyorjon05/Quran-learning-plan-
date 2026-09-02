@@ -22,11 +22,21 @@ export function SurahIndex({
   surahs,
   juzStartPages,
   basePath = "/quran",
+  continuous = false,
 }: {
   surahs: LocalisedSurah[];
   juzStartPages: { juz: number; from: number; to: number }[];
   /** "/quran" in public, "/app/quran" for a signed-in reader. */
   basePath?: string;
+  /**
+   * Open a surah or a juz whole, rather than at the page it begins on.
+   *
+   * True for the public reader, where somebody choosing "Ya-Sin" means the
+   * surah and not page 440. The signed-in mushaf stays page-by-page: that is
+   * the unit a covenant is measured in and the unit a page gets marked as
+   * read, and quietly changing it would break both.
+   */
+  continuous?: boolean;
 }) {
   const t = useTranslations("quran.index");
   const [tab, setTab] = useState<"surahs" | "juz">("surahs");
@@ -89,7 +99,7 @@ export function SurahIndex({
             {filtered.map((s) => (
               <li key={s.number}>
                 <Link
-                  href={`${basePath}/${s.startPage}`}
+                  href={continuous ? `${basePath}/surah/${s.number}` : `${basePath}/${s.startPage}`}
                   className="group panel panel-interactive flex items-center gap-3.5 rounded-xl p-3.5"
                 >
                   {/* The number in a rotated square, the way a mushaf marks it. */}
@@ -131,7 +141,7 @@ export function SurahIndex({
           {juzStartPages.map((j) => (
             <li key={j.juz}>
               <Link
-                href={`${basePath}/${j.from}`}
+                href={continuous ? `${basePath}/juz/${j.juz}` : `${basePath}/${j.from}`}
                 className="panel panel-interactive flex items-center justify-between gap-3 rounded-xl p-3.5"
               >
                 <span className="text-sm font-medium text-[var(--text-strong)]">

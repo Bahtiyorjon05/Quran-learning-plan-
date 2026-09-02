@@ -137,6 +137,27 @@ export function globalAyahNumber(surah: number, ayah: number): number {
 }
 
 /** The mp3 for one ayah. Only meaningful for a per-ayah reciter. */
+/**
+ * Whether a recitation of this ayah should open with the Basmala.
+ *
+ * Every surah but At-Tawbah opens with it, and in all of them except
+ * Al-Fatiha it is not a numbered ayah — so the audio file for ayah 1 begins at
+ * the first word of the surah and the opening is missing. Al-Fatiha 1:1 *is*
+ * the Basmala, which is where the audio comes from.
+ *
+ * Lives here rather than in the player because two things need it: the player,
+ * to sound it, and the offline download, to keep it. A surah downloaded
+ * without its Basmala is silent from its very first request.
+ */
+export function opensWithBasmala(surah: number, ayah: number): boolean {
+  return ayah === 1 && surah !== 1 && surah !== 9;
+}
+
+/** The Basmala, in this reciter's voice: Al-Fatiha's first ayah. */
+export function basmalaAudioUrl(reciterId: string): string {
+  return ayahAudioUrl(reciterId, 1, 1);
+}
+
 export function ayahAudioUrl(reciterId: string, surah: number, ayah: number): string {
   const r = reciter(reciterId);
   const number = globalAyahNumber(surah, ayah);

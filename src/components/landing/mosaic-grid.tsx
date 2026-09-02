@@ -83,6 +83,7 @@ export function MosaicLegend({
 export function MosaicGrid({
   memorizedPages = 214,
   strengths: given,
+  pageNames,
   interactive = false,
   className,
   tileClassName,
@@ -93,6 +94,15 @@ export function MosaicGrid({
   /** Real strengths, 604 entries, 0 meaning not started. The landing page has
    *  none and falls back to the seeded demo. */
   strengths?: number[];
+  /**
+   * What is on each page, in the reader's language: "Baqara", "Niso · Moida".
+   *
+   * A page number alone is not a place. Somebody looking at the mosaic is
+   * hunting for a surah, not for page 214, and the tooltip that said only
+   * "page 214" made them count. Optional, because the landing page's mosaic is
+   * a picture rather than a map.
+   */
+  pageNames?: string[];
   interactive?: boolean;
   className?: string;
   tileClassName?: string;
@@ -145,7 +155,13 @@ export function MosaicGrid({
             key={page}
             type={onSelectPage ? "button" : undefined}
             data-page={page}
-            title={interactive ? `${page}` : undefined}
+            title={
+              interactive
+                ? pageNames?.[i]
+                  ? `${page} · ${pageNames[i]}`
+                  : `${page}`
+                : undefined
+            }
             aria-label={onSelectPage ? String(page) : undefined}
             onClick={onSelectPage ? () => onSelectPage(page) : undefined}
             onFocus={interactive ? () => onHoverPage?.(page) : undefined}

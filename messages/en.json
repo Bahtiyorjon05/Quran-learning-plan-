@@ -288,7 +288,8 @@
       "expiresIn": "The code expires in {minutes} minutes.",
       "wrongEmail": "Wrong address?",
       "startOver": "Start over",
-      "devHint": "No mail provider is configured yet, so the code is printed in your terminal."
+      "devHint": "No mail provider is configured yet, so the code is printed in your terminal.",
+      "checkSpam": "No email yet? Look in Spam or Promotions — the code often lands there."
     },
     "login": {
       "title": "Welcome back",
@@ -462,7 +463,8 @@
       "hint": "Marking a page here moves your covenant's progress.",
       "openPage": "Open page {page}",
       "browse": "Browse",
-      "heldSummary": "{held} pages held · {average}% average strength"
+      "heldSummary": "{held} pages held · {average}% average strength",
+      "openPageNamed": "Page {page} · {names}"
     },
     "today": {
       "heading": "Today",
@@ -674,7 +676,18 @@
       "translationBy": "Translation: {name}",
       "sajda": "Prostration",
       "jumpToPage": "Go to page",
-      "autoMarked": "Marked as read — you reached the end of the page"
+      "autoMarked": "Marked as read — you reached the end of the page",
+      "bySurah": "By surah",
+      "byJuz": "By juz",
+      "byPage": "By page",
+      "wholeSurah": "The whole surah",
+      "wholeJuz": "The whole juz",
+      "ayahCount": "{count} ayahs",
+      "prevSurah": "Previous surah",
+      "nextSurah": "Next surah",
+      "prevJuz": "Previous juz",
+      "nextJuz": "Next juz",
+      "openPage": "Open page {page}"
     },
     "audio": {
       "play": "Play",
@@ -692,6 +705,17 @@
       "wholeSurahNote": "This reciter is one file per surah, so the page cannot follow along verse by verse or repeat a single one. The other reciters can.",
       "seek": "Position in the ayah",
       "speed": "Speed"
+    },
+    "offline": {
+      "title": "Listen offline",
+      "save": "Download",
+      "saving": "Downloading… {done}/{total}",
+      "saved": "Downloaded · {count} ayahs",
+      "remove": "Remove",
+      "failed": "The download did not finish. Check your connection.",
+      "hint": "Downloaded once, it plays without a connection in this reciter's voice.",
+      "reciterNote": "For the chosen reciter only: {reciter}",
+      "unsupported": "This browser cannot store recitation offline."
     }
   },
   "pages": {

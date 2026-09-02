@@ -29,7 +29,7 @@ import { loadToday } from "./today";
 import { InstallApp } from "@/components/site/install-app";
 import { loadSummary } from "./mistakes/data";
 import { practicablePages } from "./practice/session";
-import type { QuranLocale } from "@/data/quran/loader";
+import { pageSurahNames, type QuranLocale } from "@/data/quran/loader";
 import { CovenantArc, Stat } from "@/components/app/covenant-arc";
 import { PracticeInvite } from "@/components/app/practice-invite";
 import { MushafMosaic } from "@/components/app/mushaf-mosaic";
@@ -443,6 +443,7 @@ export default async function AppHomePage({
             <div className="animate-rise [animation-delay:200ms]">
               <MushafMosaic
                 strengths={strengths}
+                pageNames={pageSurahNames(locale as QuranLocale)}
                 held={held}
                 averageStrength={averageStrength}
                 basePath="/app/quran"

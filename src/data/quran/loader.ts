@@ -239,3 +239,54 @@ export function surahTitle(number: number, locale: QuranLocale): string {
 export function localisedSurahs(locale: QuranLocale): LocalisedSurah[] {
   return SURAHS.map((info) => localisedSurah(info.number, locale));
 }
+
+/**
+ * A whole surah, in order.
+ *
+ * Reading by page is how the mushaf is bound and how hifz is measured, but it
+ * is not how anybody thinks about Ya-Sin or Al-Mulk. A surah can straddle
+ * several juz — Al-Baqara covers three — so the files its pages fall in are
+ * the ones consulted, rather than all thirty.
+ */
+export async function loadSurahAyahs(number: number): Promise<Ayah[]> {
+  const info = surah(number);
+
+  const juzToLoad = new Set<number>();
+  for (let page = info.startPage; page <= info.endPage; page++) {
+    juzToLoad.add(pageMeta(page).juz);
+  }
+
+  const files = await Promise.all([...juzToLoad].map(loadJuz));
+  return files
+    .flatMap((file) => file.ayahs)
+    .filter((ayah) => ayah.s === number)
+    .sort((a, b) => a.a - b.a);
+}
+
+/**
+ * A whole juz, in order.
+ *
+ * One file, because that is exactly how the text is stored — the thirtieths
+ * were chosen as the unit precisely so a reader never loads more than one.
+ */
+export async function loadJuzAyahs(number: number): Promise<Ayah[]> {
+  if (!Number.isInteger(number) || number < 1 || number > 30) {
+    throw new RangeError(`Juz out of range: ${number}`);
+  }
+  const file = await loadJuz(number);
+  return [...file.ayahs].sort((a, b) => a.s - b.s || a.a - b.a);
+}
+
+/**
+ * What is on each mushaf page, named in one language: 604 entries in order.
+ *
+ * Built for the mosaic, where six hundred squares are a map and a bare page
+ * number is not a place — somebody looking at it is hunting for a surah. Cheap
+ * to build (a walk over metadata already in memory) and small to send, because
+ * most pages name one surah.
+ */
+export function pageSurahNames(locale: QuranLocale): string[] {
+  return PAGES.map((page) =>
+    page.surahs.map((number) => localisedSurah(number, locale).title).join(" · "),
+  );
+}

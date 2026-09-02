@@ -52,7 +52,11 @@ export default async function QuranIndexPage({
           </div>
 
           <div className="mt-10">
-            <SurahIndex surahs={localisedSurahs(locale as QuranLocale)} juzStartPages={juz} />
+            <SurahIndex
+              continuous
+              surahs={localisedSurahs(locale as QuranLocale)}
+              juzStartPages={juz}
+            />
           </div>
         </Measure>
       </main>

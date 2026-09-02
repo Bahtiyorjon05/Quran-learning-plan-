@@ -27,6 +27,20 @@ const PAGES = `${VERSION}-pages`;
 const STATIC = `${VERSION}-static`;
 const AUDIO = `${VERSION}-audio`;
 
+/**
+ * Recitation somebody asked to keep.
+ *
+ * Deliberately not versioned, and deliberately never trimmed. The two caches
+ * above are the app's own workings and are thrown away when a new build lands;
+ * this one holds files a person chose to download onto their phone, sometimes
+ * over an expensive connection, and losing those to a deploy they never asked
+ * for would be indefensible. It shrinks only when they say so.
+ *
+ * The name is duplicated in src/lib/offline-audio.ts, because a service worker
+ * cannot import from the app. A test holds the two together.
+ */
+const SAVED = "ahd-audio-saved";
+
 /** Recitation is immutable but not unbounded; a full mushaf is a lot of mp3s. */
 /* Roughly a juz of listening kept on the device. Each ayah is a small mp3,
    and 300 of them was about twenty pages — enough to be surprised by silence
@@ -47,7 +61,9 @@ self.addEventListener("activate", (event) => {
     (async () => {
       const names = await caches.keys();
       await Promise.all(
-        names.filter((name) => !name.startsWith(VERSION)).map((name) => caches.delete(name)),
+        names
+          .filter((name) => name !== SAVED && !name.startsWith(VERSION))
+          .map((name) => caches.delete(name)),
       );
       await self.clients.claim();
     })(),
@@ -75,6 +91,13 @@ self.addEventListener("fetch", (event) => {
   if (url.hostname === "cdn.islamic.network" || url.hostname.endsWith("mp3quran.net")) {
     event.respondWith(
       (async () => {
+        /* What was downloaded on purpose is looked at first: it is the copy a
+           person is relying on, and the rolling cache may have evicted its
+           own. */
+        const saved = await caches.open(SAVED);
+        const kept = await saved.match(request);
+        if (kept) return kept;
+
         const cache = await caches.open(AUDIO);
         const hit = await cache.match(request);
         if (hit) return hit;

@@ -288,7 +288,8 @@
       "expiresIn": "Kod {minutes} daqiqadan soʻng eskiradi.",
       "wrongEmail": "Manzil notoʻgʻrimi?",
       "startOver": "Boshidan boshlash",
-      "devHint": "Hozircha pochta xizmati ulanmagan, shuning uchun kod terminalda chiqadi."
+      "devHint": "Hozircha pochta xizmati ulanmagan, shuning uchun kod terminalda chiqadi.",
+      "checkSpam": "Xat koʻrinmayaptimi? Spam yoki «Promotions» papkasini ham tekshiring — kod koʻpincha oʻsha yerga tushadi."
     },
     "login": {
       "title": "Xush kelibsiz",
@@ -462,7 +463,8 @@
       "hint": "Bu yerda sahifani belgilash ahdingiz taraqqiyotini ham siljitadi.",
       "openPage": "{page}-sahifani ochish",
       "browse": "Koʻrib chiqish",
-      "heldSummary": "{held} sahifa yodlangan · oʻrtacha mustahkamlik {average}%"
+      "heldSummary": "{held} sahifa yodlangan · oʻrtacha mustahkamlik {average}%",
+      "openPageNamed": "{page}-sahifa · {names}"
     },
     "today": {
       "heading": "Bugun",
@@ -674,7 +676,18 @@
       "translationBy": "Tarjima: {name}",
       "sajda": "Sajda",
       "jumpToPage": "Sahifaga oʻtish",
-      "autoMarked": "Oʻqilgan deb belgilandi — sahifa oxiriga yetdingiz"
+      "autoMarked": "Oʻqilgan deb belgilandi — sahifa oxiriga yetdingiz",
+      "bySurah": "Sura boʻyicha",
+      "byJuz": "Juz boʻyicha",
+      "byPage": "Sahifa boʻyicha",
+      "wholeSurah": "Butun sura",
+      "wholeJuz": "Butun juz",
+      "ayahCount": "{count} oyat",
+      "prevSurah": "Oldingi sura",
+      "nextSurah": "Keyingi sura",
+      "prevJuz": "Oldingi juz",
+      "nextJuz": "Keyingi juz",
+      "openPage": "{page}-sahifani ochish"
     },
     "audio": {
       "play": "Tinglash",
@@ -692,6 +705,17 @@
       "wholeSurahNote": "Bu qori uchun butun sura bitta faylda, shuning uchun sahifa oyatma-oyat kuzatib bora olmaydi va bitta oyatni takrorlay olmaydi. Boshqa qorilar buni qiladi.",
       "seek": "Oyat ichidagi joy",
       "speed": "Tezlik"
+    },
+    "offline": {
+      "title": "Oflayn tinglash",
+      "save": "Yuklab olish",
+      "saving": "Yuklanmoqda… {done}/{total}",
+      "saved": "Yuklab olingan · {count} oyat",
+      "remove": "Oʻchirish",
+      "failed": "Yuklab boʻlmadi. Internetni tekshiring.",
+      "hint": "Bir marta yuklab olsangiz, internetsiz ham shu qori bilan tinglaysiz.",
+      "reciterNote": "Faqat tanlangan qori uchun: {reciter}",
+      "unsupported": "Bu brauzer oflayn saqlashni qoʻllab-quvvatlamaydi."
     }
   },
   "pages": {

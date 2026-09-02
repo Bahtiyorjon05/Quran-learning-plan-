@@ -84,22 +84,33 @@ async function recordNewMemorization(userId: string, frontierLine: number, scope
   const lastCompletePage = Math.floor(frontierLine / LINES_PER_PAGE);
   if (lastCompletePage < scopeFromPage) return;
 
+  /* One statement, not one per page.
+     This walked from the first page of the scope to the frontier and awaited an
+     insert for each, so somebody three hundred pages in paid three hundred
+     sequential round trips to Frankfurt for a single tap on "done" — almost all
+     of them no-ops on rows that already existed. The range is still walked from
+     the start of the scope rather than from the last page, because a day that
+     completes two pages, or a plan repaired by hand, must still fill the gap. */
+  const rows = [];
   for (let page = scopeFromPage; page <= lastCompletePage; page++) {
-    await db
-      .insert(memorizationUnits)
-      .values({
-        userId,
-        page,
-        state: "memorized",
-        strength: NEW_STRENGTH,
-        reps: 1,
-        firstMemorizedAt: sql`now()`,
-        lastReviewedAt: sql`now()`,
-      })
-      .onConflictDoNothing({
-        target: [memorizationUnits.userId, memorizationUnits.page],
-      });
+    rows.push({
+      userId,
+      page,
+      state: "memorized" as const,
+      strength: NEW_STRENGTH,
+      reps: 1,
+      firstMemorizedAt: sql`now()`,
+      lastReviewedAt: sql`now()`,
+    });
   }
+  if (rows.length === 0) return;
+
+  await db
+    .insert(memorizationUnits)
+    .values(rows)
+    .onConflictDoNothing({
+      target: [memorizationUnits.userId, memorizationUnits.page],
+    });
 }
 
 /** Reciting a page cleanly strengthens it and resets its clock. */

@@ -20,11 +20,14 @@ export function MushafMosaic({
   held,
   averageStrength,
   basePath,
+  pageNames,
 }: {
   strengths: number[];
   held: number;
   averageStrength: number;
   basePath: string;
+  /** What is on each page, in the reader's language. 604 entries. */
+  pageNames?: string[];
 }) {
   const t = useTranslations("app.mushaf");
   const tl = useTranslations("landing.mosaic");
@@ -47,6 +50,7 @@ export function MushafMosaic({
           <div className="relative">
           <MosaicGrid
             strengths={strengths}
+            pageNames={pageNames}
             interactive
             onHoverPage={setHovered}
             onSelectPage={(page) => router.push(`${basePath}/${page}`)}
@@ -61,7 +65,11 @@ export function MushafMosaic({
           <MosaicLegend labels={labels} className="flex-col !items-start gap-2" />
 
           <p className="border-t border-[var(--line-subtle)] pt-4 text-xs leading-relaxed text-[var(--text-faint)]">
-            {hovered ? t("openPage", { page: hovered }) : t("hint")}
+            {hovered
+              ? pageNames?.[hovered - 1]
+                ? t("openPageNamed", { page: hovered, names: pageNames[hovered - 1] })
+                : t("openPage", { page: hovered })
+              : t("hint")}
           </p>
         </div>
       </div>

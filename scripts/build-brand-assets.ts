@@ -18,8 +18,17 @@ const SOURCE = path.join(ROOT, "brand/ahd-source.png");
 const OUT = path.join(ROOT, "public/brand");
 const APP = path.join(ROOT, "src/app");
 
-/** Ink, matching --surface-base, for assets that need an opaque ground. */
-const INK = { r: 6, g: 9, b: 8, alpha: 1 };
+/**
+ * The ground for assets that cannot be transparent.
+ *
+ * Matches the manifest's `background_color`, and deliberately not the darkest
+ * ink in the palette. A launcher tile and the splash behind it are seen side
+ * by side with everything else on a home screen: at #060908 the icon read as a
+ * black square with something faint in it, and the splash it opened into was a
+ * different, lighter black again. One colour, one step off the page ground,
+ * and the seal sits on a surface rather than in a hole.
+ */
+const INK = { r: 18, g: 32, b: 25, alpha: 1 };
 
 /**
  * Find the seal by colour, not by brightness.
