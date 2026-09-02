@@ -8,6 +8,7 @@ import { requireOnboardedUser } from "@/auth/guard";
 import { localisedSurahs, type QuranLocale } from "@/data/quran/loader";
 import { pagesOfJuz, TOTAL_JUZ, TOTAL_PAGES } from "@/core/quran/mushaf";
 import { AppHeader } from "@/components/app/app-header";
+import { Atmosphere } from "@/components/app/atmosphere";
 import { MushafMosaic } from "@/components/app/mushaf-mosaic";
 import { SurahIndex } from "@/components/quran/surah-index";
 import { Measure } from "@/components/ui/section";
@@ -47,10 +48,11 @@ export default async function AppMushafPage({
   });
 
   return (
-    <div className="min-h-dvh">
+    <div className="relative min-h-dvh">
+      <Atmosphere />
       <AppHeader />
 
-      <Measure className="py-10 sm:py-14">
+      <Measure className="relative z-10 py-10 sm:py-14">
         <div className="animate-rise">
           <h1 className="font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
             {t("title")}

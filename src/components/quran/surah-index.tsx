@@ -90,7 +90,7 @@ export function SurahIndex({
               <li key={s.number}>
                 <Link
                   href={`${basePath}/${s.startPage}`}
-                  className="group flex items-center gap-3.5 rounded-xl border border-[var(--line-subtle)] p-3.5 transition-[border-color,background-color] duration-300 hover:border-[var(--line-strong)] hover:bg-[var(--surface-raised)]/60"
+                  className="group panel panel-interactive flex items-center gap-3.5 rounded-xl p-3.5"
                 >
                   {/* The number in a rotated square, the way a mushaf marks it. */}
                   <span className="relative grid h-9 w-9 shrink-0 place-items-center">
@@ -132,7 +132,7 @@ export function SurahIndex({
             <li key={j.juz}>
               <Link
                 href={`${basePath}/${j.from}`}
-                className="flex items-center justify-between gap-3 rounded-xl border border-[var(--line-subtle)] p-3.5 transition-[border-color,background-color] duration-300 hover:border-[var(--line-strong)] hover:bg-[var(--surface-raised)]/60"
+                className="panel panel-interactive flex items-center justify-between gap-3 rounded-xl p-3.5"
               >
                 <span className="text-sm font-medium text-[var(--text-strong)]">
                   {t("juzNumber", { number: j.juz })}

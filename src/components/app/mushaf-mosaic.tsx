@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 
 import { useRouter } from "@/i18n/navigation";
 import { MosaicGrid, MosaicLegend, type Band } from "@/components/landing/mosaic-grid";
+import { CountUp } from "@/components/ui/count-up";
+import { Corners } from "@/components/ui/ornament";
 
 /**
  * The whole mushaf as 604 tiles, coloured by how strongly each page is held.
@@ -39,13 +41,17 @@ export function MushafMosaic({
   return (
     <section className="mt-10">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start">
-        <div className="rounded-2xl border border-[var(--line-subtle)] bg-[var(--surface-raised)]/50 p-4 sm:p-6">
+        <div className="panel relative overflow-hidden rounded-3xl p-5 sm:p-7">
+          <div aria-hidden className="girih pointer-events-none absolute inset-0 opacity-[0.03]" />
+          <Corners />
+          <div className="relative">
           <MosaicGrid
             strengths={strengths}
             interactive
             onHoverPage={setHovered}
             onSelectPage={(page) => router.push(`${basePath}/${page}`)}
           />
+          </div>
         </div>
 
         <div className="space-y-5">
@@ -65,12 +71,12 @@ export function MushafMosaic({
 
 function Stat({ label, value, suffix }: { label: string; value: number; suffix: string }) {
   return (
-    <div>
-      <p className="font-[family-name:var(--font-display)] text-3xl leading-none font-light text-[var(--text-strong)] tabular-nums">
-        {value}
+    <div className="border-t border-[var(--line-subtle)] pt-3">
+      <p className="font-[family-name:var(--font-display)] text-[2rem] leading-none font-light text-[var(--text-strong)] tabular-nums">
+        <CountUp value={value} />
         <span className="ms-1 text-base text-[var(--text-faint)]">{suffix}</span>
       </p>
-      <p className="mt-1 text-xs text-[var(--text-muted)]">{label}</p>
+      <p className="mt-1.5 text-xs text-[var(--text-muted)]">{label}</p>
     </div>
   );
 }

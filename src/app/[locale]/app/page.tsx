@@ -18,6 +18,8 @@ import { computePace } from "@/core/plan/pace";
 import { countStudyDays as countStudyDaysBetween } from "@/core/plan/schedule";
 import { requireOnboardedUser } from "@/auth/guard";
 import { AppHeader } from "@/components/app/app-header";
+import { Atmosphere } from "@/components/app/atmosphere";
+import { Corners } from "@/components/ui/ornament";
 import { buttonStyles } from "@/components/ui/button";
 import { Measure } from "@/components/ui/section";
 import { Link } from "@/i18n/navigation";
@@ -230,20 +232,22 @@ export default async function AppHomePage({
 
 
   return (
-    <div className="min-h-dvh">
+    <div className="relative min-h-dvh">
+      <Atmosphere />
       <AppHeader />
 
-      <main>
+      <main className="relative z-10">
         <Measure className="py-8 sm:py-12">
           {/* Greeting. The email used to sit here: it is a fact about the
               account, not about today, and a screen opened every morning should
               not spend its best line on it. */}
           <div className="animate-rise flex flex-wrap items-end justify-between gap-4">
             <div className="min-w-0">
-              <p className="font-arabic text-lg text-gold-ink/80" dir="rtl" aria-hidden>
+              <p className="font-arabic flex items-center gap-3 text-lg text-gold-ink/80" dir="rtl" aria-hidden>
                 السلام عليكم
+                <span className="h-px w-10 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--gold)_45%,transparent),transparent)] rtl:bg-[linear-gradient(270deg,color-mix(in_oklab,var(--gold)_45%,transparent),transparent)]" />
               </p>
-              <h1 className="mt-1.5 font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
+              <h1 className="mt-1.5 font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.75rem]">
                 {user.displayName || ta("welcome")}
               </h1>
             </div>
@@ -259,8 +263,19 @@ export default async function AppHomePage({
           {/* The covenant, given the whole width. It is the promise everything
               else exists to keep, and it was sharing a row with a list of
               logged-in devices. */}
-          <section className="animate-rise relative mt-8 overflow-hidden rounded-3xl border border-[var(--line-strong)] bg-[linear-gradient(160deg,var(--surface-raised),var(--surface-base))] [animation-delay:80ms]">
+          <section className="animate-rise sheen panel relative mt-8 overflow-hidden rounded-3xl [animation-delay:80ms]">
             <div aria-hidden className="girih pointer-events-none absolute inset-0 opacity-[0.035]" />
+            <Corners />
+            {/* A wash of the accent in the top corner, so the panel is lit from
+                the same direction as the ground behind it. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-32 -left-24 h-64 w-64 rounded-full opacity-40 blur-3xl"
+              style={{
+                background:
+                  "radial-gradient(circle, color-mix(in oklab, var(--accent) 22%, transparent), transparent 68%)",
+              }}
+            />
 
             {!covenant || !pace ? (
               <div className="relative px-6 py-12 text-center sm:px-8">
@@ -355,7 +370,7 @@ export default async function AppHomePage({
           {/* Today, and what to drill. */}
           {covenant && sheet && (
             <div className="animate-rise mt-6 grid gap-5 [animation-delay:140ms] lg:grid-cols-[1.4fr_1fr] lg:items-start">
-              <section className="rounded-3xl border border-[var(--line-strong)] p-6 sm:p-7">
+              <section className="panel rounded-3xl p-6 sm:p-7">
                 <DailySheet
                   tracks={buildTracks(sheet, ta)}
                   /* The streak is already in the greeting; showing it twice on
@@ -377,7 +392,7 @@ export default async function AppHomePage({
                 {weakSpots.ayahs > 0 && (
                   <Link
                     href="/app/mistakes"
-                    className="group flex items-center gap-4 rounded-2xl border border-[var(--line-strong)] p-5 transition-[border-color,background-color] duration-300 ease-[var(--ease-calm)] hover:border-[var(--accent)]/50 sm:p-6"
+                    className="group panel panel-interactive flex items-center gap-4 rounded-2xl p-5 sm:p-6"
                   >
                     <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[var(--line-subtle)] bg-[var(--surface-overlay)]">
                       <Target className="h-4.5 w-4.5 text-[var(--accent)]" strokeWidth={1.6} />
@@ -402,7 +417,7 @@ export default async function AppHomePage({
                 {held > 0 && (
                   <Link
                     href="/app/quran"
-                    className="group flex items-center gap-4 rounded-2xl border border-[var(--line-strong)] p-5 transition-[border-color,background-color] duration-300 ease-[var(--ease-calm)] hover:border-[var(--accent)]/50 sm:p-6"
+                    className="group panel panel-interactive flex items-center gap-4 rounded-2xl p-5 sm:p-6"
                   >
                     <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[var(--line-subtle)] bg-[var(--surface-overlay)]">
                       <BookOpen className="h-4.5 w-4.5 text-[var(--accent)]" strokeWidth={1.6} />
@@ -437,7 +452,7 @@ export default async function AppHomePage({
 
           {/* Devices, folded away. It matters when it matters, and never on the
               morning of an ordinary day. */}
-          <details className="animate-rise group mt-10 rounded-2xl border border-[var(--line-subtle)] [animation-delay:260ms]">
+          <details className="animate-rise panel group mt-10 rounded-2xl [animation-delay:260ms]">
             <summary className="flex cursor-pointer items-center gap-3 px-5 py-4 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]">
               <Monitor className="h-4 w-4 shrink-0" strokeWidth={1.6} />
               <span className="flex-1">{ta("sessions.title")}</span>

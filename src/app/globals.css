@@ -109,9 +109,16 @@
   /* Ink colour of the girih lattice, applied through a mask. */
   --texture: #ffffff;
 
+  /* A panel has to sit visibly above the ground. On ink that needs a real
+     step, not a nudge: --surface-raised is three hex values off --surface-base
+     and the two are indistinguishable behind a blur. */
+  --panel-from: var(--color-ink-800);
+  --panel-to: var(--color-ink-900);
+
   /* Mushaf-mosaic strength ramp. Reversed between themes so that "stronger"
      always means "more present": brighter on ink, deeper on parchment. */
-  --band-none: color-mix(in oklab, var(--text-strong) 6%, transparent);
+
+  --band-none: color-mix(in oklab, var(--text-strong) 10%, transparent);
   --band-learning: var(--color-emerald-900);
   --band-weak: var(--color-emerald-700);
   --band-strong: var(--color-emerald-400);
@@ -145,6 +152,9 @@
   --danger: var(--color-clay-600);
   --texture: var(--color-ink-900);
 
+  --panel-from: #ffffff;
+  --panel-to: color-mix(in oklab, var(--color-parchment-50) 92%, #ffffff);
+
   --band-none: color-mix(in oklab, var(--text-strong) 8%, transparent);
   --band-learning: var(--color-emerald-200);
   --band-weak: var(--color-emerald-500);
@@ -155,6 +165,9 @@
   color-scheme: light;
 
   --surface-base: #f4ead6;
+  --panel-from: #fdf7ea;
+  --panel-to: var(--color-parchment-100);
+
   --surface-raised: #fbf4e5;
   --surface-overlay: #efe2c8;
   --surface-inset: #e8dabc;
@@ -736,4 +749,270 @@ body:has([data-app-tabbar]) {
 }
 @utility animate-refuse {
   animation: ahd-refuse 0.5s ease-in-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE SIGNED-IN GROUND
+   The landing page has its hero backdrop. Everything behind the sign-in wall
+   used to have a flat colour, which made the dashboard feel like a form and
+   the mushaf like a document. This is the same idea carried inward, but
+   quieter — it sits behind screens that are opened every day, and anything
+   loud would wear out by the third morning.
+
+   It also knows the hour. Someone opening this before Fajr and someone opening
+   it after Isha are in different rooms, and the app is *about* those two
+   moments; the ground warms toward dawn and cools toward night. The daypart is
+   set as an attribute by the client, so the wash is a pure CSS consequence of
+   it and costs nothing to change.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ahd-ground {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* The whole ground fades out down the page, so content lower down sits on
+     plain surface and never has to fight a gradient for contrast. */
+  mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 78%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 78%);
+}
+
+/* Two washes, placed off-centre so the composition is not symmetrical. The
+   hues come from tokens set per daypart below. */
+.ahd-ground-wash {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(100px);
+  will-change: transform;
+}
+
+.ahd-ground-wash-a {
+  inset-block-start: -22rem;
+  inset-inline-start: 12%;
+  height: 40rem;
+  width: 40rem;
+  background: radial-gradient(circle, var(--daypart-a), transparent 64%);
+  animation: ahd-drift-a 29s ease-in-out infinite alternate;
+}
+
+.ahd-ground-wash-b {
+  inset-block-start: -10rem;
+  inset-inline-end: -12rem;
+  height: 32rem;
+  width: 32rem;
+  background: radial-gradient(circle, var(--daypart-b), transparent 66%);
+  animation: ahd-drift-b 43s ease-in-out infinite alternate;
+}
+
+/* The lattice, laid over the wash at a hair's opacity. It is what keeps the
+   blur from reading as a smear: a straight edge somewhere in the frame is how
+   the eye decides a surface is a surface. */
+.ahd-ground-lattice {
+  position: absolute;
+  inset: 0;
+  opacity: 0.028;
+}
+
+/* ── Dayparts ──
+   Defaults are night, because that is what a server render has to guess and
+   because dark is this product's default theme. */
+:root {
+  --daypart-a: color-mix(in oklab, var(--color-emerald-400) 26%, transparent);
+  --daypart-b: color-mix(in oklab, var(--color-gold-500) 17%, transparent);
+}
+
+[data-daypart="dawn"] {
+  --daypart-a: color-mix(in oklab, var(--color-gold-400) 27%, transparent);
+  --daypart-b: color-mix(in oklab, var(--color-clay-400) 18%, transparent);
+}
+
+[data-daypart="morning"] {
+  --daypart-a: color-mix(in oklab, var(--color-gold-300) 24%, transparent);
+  --daypart-b: color-mix(in oklab, var(--color-emerald-300) 18%, transparent);
+}
+
+[data-daypart="afternoon"] {
+  --daypart-a: color-mix(in oklab, var(--color-emerald-300) 23%, transparent);
+  --daypart-b: color-mix(in oklab, var(--color-gold-400) 16%, transparent);
+}
+
+[data-daypart="dusk"] {
+  --daypart-a: color-mix(in oklab, var(--color-clay-400) 26%, transparent);
+  --daypart-b: color-mix(in oklab, var(--color-gold-500) 19%, transparent);
+}
+
+[data-daypart="night"] {
+  --daypart-a: color-mix(in oklab, var(--color-emerald-500) 30%, transparent);
+  --daypart-b: color-mix(in oklab, var(--color-emerald-700) 22%, transparent);
+}
+
+/* On parchment the same washes are far too strong — a light ground shows every
+   bit of colour laid on it. Halved, and the lattice given a little more weight
+   because a pale surface swallows it. */
+:root[data-theme="light"] .ahd-ground,
+:root[data-theme="sepia"] .ahd-ground {
+  opacity: 0.55;
+}
+
+:root[data-theme="light"] .ahd-ground-lattice,
+:root[data-theme="sepia"] .ahd-ground-lattice {
+  opacity: 0.045;
+}
+
+/* ── The illuminated frame ──
+   Four gold brackets. Drawn by components/ui/ornament rather than by pseudo-
+   elements: a box has four corners and an element has two pseudo-elements, and
+   a frame that answers only two of them looks broken rather than restrained.
+   The keyframe lives here because that is where the reduced-motion switch is. */
+@keyframes ahd-corner-in {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Sheen ──
+   One slow pass of light across a panel, once, shortly after it arrives. It
+   says "this is the important thing on the screen" without a border or a
+   colour, and because it never repeats it does not become wallpaper. */
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: -60%;
+  width: 55%;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    color-mix(in oklab, var(--gold) 12%, transparent),
+    transparent
+  );
+  transform: skewX(-14deg);
+  animation: ahd-sheen-pass 1.8s var(--ease-calm) 0.6s 1 both;
+}
+
+@keyframes ahd-sheen-pass {
+  from {
+    inset-inline-start: -60%;
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+  }
+  to {
+    inset-inline-start: 130%;
+    opacity: 0;
+  }
+}
+
+/* ── Tiles arriving ──
+   The mushaf mosaic is 604 squares. Fading them in as one block is a flash;
+   fading them in on a delay that follows the reading order makes the shape
+   assemble, which is the point of showing it at all. */
+@keyframes ahd-tile-in {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── The arc drawing itself ──
+   The covenant ring is the one number that matters, so it is drawn rather than
+   simply present. `--arc-to` is set inline from the real progress. */
+@keyframes ahd-arc-draw {
+  from {
+    stroke-dasharray: 0 var(--arc-circumference);
+  }
+  to {
+    stroke-dasharray: var(--arc-to) var(--arc-circumference);
+  }
+}
+
+.ahd-arc-value {
+  animation: ahd-arc-draw 1.6s var(--ease-settle) 0.25s both;
+}
+
+/* A halo behind the arc, in the arc's own colour, breathing very slowly. It is
+   what makes the ring read as lit rather than drawn. */
+.ahd-arc-halo {
+  animation: ahd-breathe 9s ease-in-out infinite;
+}
+
+/* None of the above carries meaning. */
+@media (prefers-reduced-motion: reduce) {
+  .ahd-ground-wash,
+  .ahd-arc-halo {
+    animation: none;
+  }
+
+  [class*="ahd-corner-in"] {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .sheen::after {
+    animation: none;
+    display: none;
+  }
+
+  .ahd-arc-value {
+    animation: none;
+    stroke-dasharray: var(--arc-to) var(--arc-circumference);
+  }
+}
+
+/* ── Panels ──
+   A bordered rectangle with no fill is a wireframe. These screens are opened
+   in the dark, and what makes a dark interface legible is not more contrast in
+   the text but the sense that the content sits on something. One fill, one
+   hairline of light along the top edge where the ground's light would catch
+   it, and one long shadow underneath. Nothing else. */
+@utility panel {
+  position: relative;
+  border: 1px solid var(--line-strong);
+  background: linear-gradient(158deg, var(--panel-from), var(--panel-to));
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, var(--text-strong) 7%, transparent),
+    0 22px 48px -32px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+/* The same object, made to answer the pointer. Used where the whole panel is
+   a link: the lift is small on purpose — these are read every morning, and a
+   card that jumps is tiring by the third day. */
+@utility panel-interactive {
+  transition:
+    border-color 0.35s var(--ease-calm),
+    box-shadow 0.35s var(--ease-calm),
+    transform 0.35s var(--ease-calm);
+}
+
+.panel-interactive:hover {
+  border-color: color-mix(in oklab, var(--accent) 45%, transparent);
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, var(--text-strong) 9%, transparent),
+    0 26px 54px -30px rgba(0, 0, 0, 0.75),
+    0 0 0 1px color-mix(in oklab, var(--accent) 12%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-interactive:hover {
+    transform: none;
+  }
 }

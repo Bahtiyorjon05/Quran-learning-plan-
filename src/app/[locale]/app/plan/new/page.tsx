@@ -8,6 +8,7 @@ import { requireOnboardedUser } from "@/auth/guard";
 import { todayIn } from "@/core/date/civil";
 import { CovenantWizard } from "@/components/plan/covenant-wizard";
 import { FocusHeader } from "@/components/app/focus-header";
+import { Atmosphere } from "@/components/app/atmosphere";
 import { Measure } from "@/components/ui/section";
 import { redirectTo } from "@/i18n/navigation";
 
@@ -38,10 +39,11 @@ export default async function NewCovenantPage() {
     .limit(1);
 
   return (
-    <div className="min-h-dvh">
+    <div className="relative min-h-dvh">
+      <Atmosphere />
       <FocusHeader />
 
-      <Measure className="py-10 sm:py-14">
+      <Measure className="relative z-10 py-10 sm:py-14">
         <CovenantWizard today={todayIn(profile?.timeZone ?? "Asia/Tashkent")} />
       </Measure>
     </div>

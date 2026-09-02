@@ -4,6 +4,7 @@ import { CircleCheck, Sparkles } from "lucide-react";
 
 import { requireOnboardedUser } from "@/auth/guard";
 import { AppHeader } from "@/components/app/app-header";
+import { Atmosphere } from "@/components/app/atmosphere";
 import { WeakSpots } from "@/components/app/weak-spots";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
@@ -40,9 +41,10 @@ export default async function MistakesPage({
 
   return (
     <>
+      <Atmosphere />
       <AppHeader />
 
-      <main className="py-10 sm:py-14">
+      <main className="relative z-10 py-10 sm:py-14">
         <Measure>
           <header>
             <h1 className="font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">

@@ -64,8 +64,8 @@ function SpotRow({
   return (
     <li
       className={cn(
-        "rounded-2xl border p-4 sm:p-5",
-        spot.confusable ? "border-gold-500/35" : "border-[var(--line-strong)]",
+        "panel rounded-2xl p-4 sm:p-5",
+        spot.confusable && "!border-gold-500/40",
       )}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">

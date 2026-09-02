@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { BookOpen, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, Sparkles } from "lucide-react";
 
 import { requireOnboardedUser } from "@/auth/guard";
 import { AppHeader } from "@/components/app/app-header";
+import { Atmosphere } from "@/components/app/atmosphere";
+import { Corners } from "@/components/ui/ornament";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -41,12 +43,14 @@ export default async function PracticeIndexPage({
   ]);
 
   const shortlist = pages.slice(0, PRACTICE_SHORTLIST);
+  const [featured, ...rest] = shortlist;
 
   return (
-    <>
+    <div className="relative min-h-dvh">
+      <Atmosphere />
       <AppHeader />
 
-      <main className="py-10 sm:py-14">
+      <main className="relative z-10 py-10 sm:py-14">
         <Measure>
           <header>
             <h1 className="font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
@@ -78,17 +82,75 @@ export default async function PracticeIndexPage({
                 {t("weakestFirst", { count: held })}
               </p>
 
-              <ul className="mt-4 space-y-2.5">
-                {shortlist.map((item) => (
+              {/* The weakest page, given its own card. A list of twelve
+                  identical rows makes the reader choose; this answers the
+                  question the screen exists to answer — start here — and the
+                  rest of the list is then a way to disagree with it, not a
+                  decision that has to be made from scratch every morning. */}
+              {featured && (
+                <Link
+                  href={`/app/practice/${featured.page}`}
+                  className={cn(
+                    "group panel panel-interactive relative mt-4 block overflow-hidden rounded-3xl p-6 sm:p-8",
+                    featured.fragile && "!border-gold-500/40 hover:!border-gold-500/70",
+                  )}
+                >
+                  <div aria-hidden className="girih pointer-events-none absolute inset-0 opacity-[0.03]" />
+                  <Corners />
+
+                  <div className="relative flex flex-wrap items-center gap-6 sm:gap-8">
+                    <span
+                      className={cn(
+                        "font-[family-name:var(--font-display)] text-[3.5rem] leading-none font-light tabular-nums sm:text-[4.5rem]",
+                        featured.fragile ? "text-gold-ink" : "text-[var(--accent-strong)]",
+                      )}
+                    >
+                      {featured.page}
+                    </span>
+
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-[family-name:var(--font-display)] text-[1.5rem] leading-tight font-normal text-[var(--text-strong)] sm:text-[1.75rem]">
+                        {featured.surahNames.join(" · ")}
+                      </span>
+                      <span className="mt-1.5 block text-[0.875rem] text-[var(--text-muted)]">
+                        {t("juzNumber", { number: featured.juz })}
+                        {featured.daysSinceReview > 0 && (
+                          <> · {t("daysAgo", { count: featured.daysSinceReview })}</>
+                        )}
+                      </span>
+
+                      <span className="mt-4 flex items-center gap-3">
+                        <span
+                          aria-hidden
+                          className="h-2 max-w-64 flex-1 overflow-hidden rounded-full bg-[var(--line-strong)]"
+                        >
+                          <span
+                            className={cn(
+                              "block h-full rounded-full",
+                              featured.fragile ? "bg-gold-500" : "bg-[var(--accent)]",
+                            )}
+                            style={{ width: `${Math.max(3, featured.strength)}%` }}
+                          />
+                        </span>
+                        <span className="shrink-0 text-[0.75rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
+                          {t("strength")} {featured.strength}
+                        </span>
+                      </span>
+                    </span>
+
+                    <ArrowRight className="h-5 w-5 shrink-0 text-[var(--text-faint)] transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180" />
+                  </div>
+                </Link>
+              )}
+
+              <ul className="mt-3 space-y-2.5">
+                {rest.map((item) => (
                   <li key={item.page}>
                     <Link
                       href={`/app/practice/${item.page}`}
                       className={cn(
-                        "flex items-center gap-4 rounded-2xl border px-4 py-4 sm:px-5",
-                        "transition-[border-color,background-color] duration-300 ease-[var(--ease-calm)]",
-                        item.fragile
-                          ? "border-gold-500/35 hover:border-gold-500/60"
-                          : "border-[var(--line-strong)] hover:border-[var(--accent)]/50",
+                        "panel panel-interactive flex items-center gap-4 rounded-2xl px-4 py-4 sm:px-5",
+                        item.fragile && "!border-gold-500/35 hover:!border-gold-500/60",
                       )}
                     >
                       <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[var(--line-subtle)] bg-[var(--surface-inset)]/60 text-[0.875rem] font-medium text-[var(--text-strong)] tabular-nums">
@@ -122,7 +184,7 @@ export default async function PracticeIndexPage({
           )}
         </Measure>
       </main>
-    </>
+    </div>
   );
 }
 

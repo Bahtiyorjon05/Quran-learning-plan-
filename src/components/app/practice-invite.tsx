@@ -30,11 +30,8 @@ export async function PracticeInvite({
     <Link
       href={weakest ? `/app/practice/${weakest.page}` : "/app/practice"}
       className={cn(
-        "group flex items-center gap-4 rounded-2xl border p-5 sm:p-6",
-        "transition-[border-color,background-color] duration-300 ease-[var(--ease-calm)]",
-        urgent
-          ? "border-gold-500/35 bg-gold-500/[0.06] hover:border-gold-500/60"
-          : "border-[var(--line-strong)] hover:border-[var(--accent)]/50",
+        "group panel panel-interactive flex items-center gap-4 rounded-2xl p-5 sm:p-6",
+        urgent && "!border-gold-500/40 hover:!border-gold-500/70",
       )}
     >
       <span

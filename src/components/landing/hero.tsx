@@ -1,6 +1,8 @@
 import { useTranslations } from "next-intl";
 import { ArrowRight, BookOpen } from "lucide-react";
 
+import { CountUp } from "@/components/ui/count-up";
+
 import { Link } from "@/i18n/navigation";
 import { buttonStyles } from "@/components/ui/button";
 import { HeroBackdrop } from "./hero-backdrop";
@@ -10,11 +12,14 @@ import { cn } from "@/lib/utils";
 export function Hero() {
   const t = useTranslations("landing.hero");
 
+  /* Counted up rather than printed. These four figures are the whole scale of
+     the undertaking, and watching 9,060 arrive says it better than the number
+     sitting there already does. */
   const stats = [
-    { value: "604", label: t("statPages") },
-    { value: "9 060", label: t("statLines") },
-    { value: "30", label: t("statJuz") },
-    { value: "3", label: t("statTracks") },
+    { value: 604, label: t("statPages"), grouped: false },
+    { value: 9060, label: t("statLines"), grouped: true },
+    { value: 30, label: t("statJuz"), grouped: false },
+    { value: 3, label: t("statTracks"), grouped: false },
   ];
 
   return (
@@ -62,9 +67,11 @@ export function Hero() {
               <div key={s.label}>
                 <dt className="sr-only">{s.label}</dt>
                 <dd>
-                  <span className="block font-[family-name:var(--font-display)] text-3xl font-light text-[var(--text-strong)] tabular-nums">
-                    {s.value}
-                  </span>
+                  <CountUp
+                    value={s.value}
+                    grouped={s.grouped}
+                    className="block font-[family-name:var(--font-display)] text-3xl font-light text-[var(--text-strong)] tabular-nums"
+                  />
                   <span className="mt-1 block text-xs tracking-wide text-[var(--text-faint)]">
                     {s.label}
                   </span>
