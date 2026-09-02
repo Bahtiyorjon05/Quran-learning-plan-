@@ -59,6 +59,22 @@ export type FunnelStage = {
   conversion: number | null;
 };
 
+/**
+ * Everything on these screens is about people, and a verification run is not
+ * a person.
+ *
+ * The observers create a real account, walk it through the product and delete
+ * it again, against this same database. While one is running the admin view
+ * counts it — which is how a four-account product came to report twenty-one.
+ * `.test` is reserved by RFC 2606 and can never belong to anybody, so it is
+ * excluded here rather than hoped away: the tidying script only runs when it
+ * is run, and a number that is wrong for ninety seconds is still wrong.
+ */
+const REAL_EMAIL = sql`email not like '%.test'`;
+
+/** The same idea for a child table: rows belonging to real accounts. */
+const REAL_USER_IDS = sql`(select id from ${users} where email not like '%.test')`;
+
 export type DayCount = { date: string; count: number };
 
 export type BandCount = { band: PaceBand; count: number };
@@ -90,18 +106,28 @@ export async function loadOverview(): Promise<AdminOverview> {
        six round trips for six integers. */
     db.execute(sql`
       select
-        (select count(*) from ${users})::int as users,
-        (select count(*) from ${users} where email_verified_at is not null)::int as verified,
-        (select count(*) from ${users} where password_hash is not null)::int as with_password,
-        (select count(*) from ${profiles} where onboarded_at is not null)::int as onboarded,
-        (select count(*) from ${plans} where status = 'active')::int as active_plans,
-        (select count(distinct user_id) from ${plans})::int as ever_planned,
-        (select count(*) from ${memorizationUnits} where state = 'memorized')::int as pages_held,
-        (select count(distinct user_id) from ${memorizationUnits} where state = 'memorized')::int as ever_memorized,
-        (select count(*) from ${reviewLogs})::int as drills,
+        (select count(*) from ${users} where ${REAL_EMAIL})::int as users,
+        (select count(*) from ${users}
+           where ${REAL_EMAIL} and email_verified_at is not null)::int as verified,
+        (select count(*) from ${users}
+           where ${REAL_EMAIL} and password_hash is not null)::int as with_password,
+        (select count(*) from ${profiles}
+           where onboarded_at is not null and user_id in ${REAL_USER_IDS})::int as onboarded,
+        (select count(*) from ${plans}
+           where status = 'active' and user_id in ${REAL_USER_IDS})::int as active_plans,
+        (select count(distinct user_id) from ${plans}
+           where user_id in ${REAL_USER_IDS})::int as ever_planned,
+        (select count(*) from ${memorizationUnits}
+           where state = 'memorized' and user_id in ${REAL_USER_IDS})::int as pages_held,
+        (select count(distinct user_id) from ${memorizationUnits}
+           where state = 'memorized' and user_id in ${REAL_USER_IDS})::int as ever_memorized,
+        (select count(*) from ${reviewLogs}
+           where user_id in ${REAL_USER_IDS})::int as drills,
         (select count(distinct user_id) from ${sessions}
-           where last_seen_at > now() - interval '7 days')::int as active_week,
-        (select count(*) from ${users} where created_at > now() - interval '7 days')::int as signups_week
+           where last_seen_at > now() - interval '7 days'
+             and user_id in ${REAL_USER_IDS})::int as active_week,
+        (select count(*) from ${users}
+           where ${REAL_EMAIL} and created_at > now() - interval '7 days')::int as signups_week
     `),
 
     /* A dense series: days with no signups have to appear as zero, or the
@@ -116,6 +142,7 @@ export async function loadOverview(): Promise<AdminOverview> {
       left join (
         select date_trunc('day', created_at) as d, count(*) as n
         from ${users}
+        where ${REAL_EMAIL}
         group by 1
       ) counts on counts.d = day
       order by day
@@ -134,7 +161,7 @@ export async function loadOverview(): Promise<AdminOverview> {
       })
       .from(plans)
       .leftJoin(profiles, eq(profiles.userId, plans.userId))
-      .where(eq(plans.status, "active")),
+      .where(and(eq(plans.status, "active"), sql`${plans.userId} in ${REAL_USER_IDS}`)),
 
     /* Which passages the whole readership gets wrong. Nothing else in the
        product can answer this, and it is the one report that says something
@@ -146,6 +173,7 @@ export async function loadOverview(): Promise<AdminOverview> {
         count: sql<number>`count(*)::int`,
       })
       .from(mistakes)
+      .where(sql`${mistakes.userId} in ${REAL_USER_IDS}`)
       .groupBy(mistakes.surah, mistakes.ayah)
       .orderBy(desc(sql`count(*)`))
       .limit(10),
@@ -157,6 +185,7 @@ export async function loadOverview(): Promise<AdminOverview> {
         averageQuality: sql<number>`coalesce(round(avg(${reviewLogs.quality}), 2), 0)::float`,
       })
       .from(reviewLogs)
+      .where(sql`${reviewLogs.userId} in ${REAL_USER_IDS}`)
       .groupBy(reviewLogs.type)
       .orderBy(desc(sql`count(*)`)),
 
@@ -168,6 +197,7 @@ export async function loadOverview(): Promise<AdminOverview> {
         detail: authEvents.detail,
       })
       .from(authEvents)
+      .where(sql`${authEvents.email} is null or ${authEvents.email} not like '%.test'`)
       .orderBy(desc(authEvents.createdAt))
       .limit(12),
   ]);
@@ -266,6 +296,35 @@ export type AdminUser = {
   locale: string | null;
   reciter: string | null;
   studyTime: string | null;
+
+  /** The promise itself, so the page can work out whether it is being kept.
+   *  Null for anybody who has not made one. */
+  covenant: {
+    startDate: string;
+    endDate: string;
+    originalEndDate: string;
+    totalLines: number;
+    completedLines: number;
+    studyDaysMask: number;
+    timeZone: string | null;
+  } | null;
+
+  /** Drills finished on each of the last ACTIVITY_DAYS days, oldest first.
+   *  A count on its own says how much; this says whether it is still
+   *  happening, which is the question actually being asked. */
+  activity: number[];
+};
+
+/** How far back the per-person activity strip reaches. */
+export const ACTIVITY_DAYS = 28;
+
+export type UserPage = {
+  people: AdminUser[];
+  /** Accounts matching the search, before paging. */
+  total: number;
+  page: number;
+  perPage: number;
+  pageCount: number;
 };
 
 /**
@@ -275,8 +334,27 @@ export type AdminUser = {
  * the per-row version is invisible at two users and is the classic reason an
  * admin page takes nine seconds at two thousand.
  */
-export async function loadUsers(search: string, limit = 50): Promise<AdminUser[]> {
+export async function loadUsers(
+  search: string,
+  page = 1,
+  perPage = 25,
+): Promise<UserPage> {
   const term = search.trim().toLowerCase();
+
+  /* Real people only, and the same predicate for the count and the page — a
+     total that disagrees with the rows it describes is worse than no total. */
+  const matches =
+    term.length > 0
+      ? and(sql`lower(${users.email}) like ${`%${term}%`}`, sql`${users.email} not like '%.test'`)
+      : sql`${users.email} not like '%.test'`;
+
+  const [[counted]] = await Promise.all([
+    db.select({ n: sql<number>`count(*)::int` }).from(users).where(matches),
+  ]);
+
+  const total = counted?.n ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / perPage));
+  const current = Math.min(Math.max(1, page), pageCount);
 
   const rows = await db
     .select({
@@ -330,14 +408,74 @@ export async function loadUsers(search: string, limit = 50): Promise<AdminUser[]
       locale: profiles.locale,
       reciter: profiles.preferredReciter,
       studyTime: profiles.studyTime,
+      timeZone: profiles.timeZone,
+
+      /* The covenant's own terms, so the caller can work out whether it is
+         being kept rather than only how far along it is. */
+      planStart: sql<string | null>`(
+        select p.start_date::text from ${plans} p
+        where p.user_id = ${users.id} and p.status = 'active' limit 1
+      )`,
+      planEnd: sql<string | null>`(
+        select p.current_end_date::text from ${plans} p
+        where p.user_id = ${users.id} and p.status = 'active' limit 1
+      )`,
+      planOriginalEnd: sql<string | null>`(
+        select p.original_end_date::text from ${plans} p
+        where p.user_id = ${users.id} and p.status = 'active' limit 1
+      )`,
+      planTotalLines: sql<number | null>`(
+        select p.total_lines from ${plans} p
+        where p.user_id = ${users.id} and p.status = 'active' limit 1
+      )`,
+      planCompletedLines: sql<number | null>`(
+        select p.completed_lines from ${plans} p
+        where p.user_id = ${users.id} and p.status = 'active' limit 1
+      )`,
+      planMask: sql<number | null>`(
+        select p.study_days_mask from ${plans} p
+        where p.user_id = ${users.id} and p.status = 'active' limit 1
+      )`,
     })
     .from(users)
     .leftJoin(profiles, eq(profiles.userId, users.id))
-    .where(term.length > 0 ? sql`lower(${users.email}) like ${`%${term}%`}` : undefined)
+    .where(matches)
     .orderBy(desc(users.createdAt))
-    .limit(limit);
+    .limit(perPage)
+    .offset((current - 1) * perPage);
 
-  return rows.map((row) => ({
+  /* One grouped query for the whole page rather than one per person. Restricted
+     to the ids actually being shown, so it stays small however many accounts
+     exist. */
+  const ids = rows.map((row) => row.id);
+  const byUserDay = new Map<string, number>();
+
+  if (ids.length > 0) {
+    const strips = (await db.execute(sql`
+      select user_id::text as user_id,
+             to_char(date_trunc('day', created_at), 'YYYY-MM-DD') as day,
+             count(*)::int as n
+      from ${reviewLogs}
+      where created_at > now() - ${`${ACTIVITY_DAYS} days`}::interval
+        and user_id in ${sql.raw(`('${ids.join("','")}')`)}
+      group by 1, 2
+    `)) as unknown as { rows: { user_id: string; day: string; n: number }[] };
+
+    for (const strip of strips.rows) {
+      byUserDay.set(`${strip.user_id}:${strip.day}`, Number(strip.n));
+    }
+  }
+
+  /* The days of the window, oldest first, so every strip is the same length
+     and the columns line up between one person and the next. */
+  const days: string[] = [];
+  for (let back = ACTIVITY_DAYS - 1; back >= 0; back--) {
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate() - back);
+    days.push(d.toISOString().slice(0, 10));
+  }
+
+  const people = rows.map((row) => ({
     id: row.id,
     email: row.email,
     displayName: row.displayName,
@@ -356,12 +494,32 @@ export async function loadUsers(search: string, limit = 50): Promise<AdminUser[]
     reciter: row.reciter ?? null,
     /* A `time` column arrives as "05:30:00"; the seconds are noise here. */
     studyTime: row.studyTime ? String(row.studyTime).slice(0, 5) : null,
+
+    covenant:
+      row.planStart && row.planEnd && row.planOriginalEnd && row.planTotalLines
+        ? {
+            startDate: String(row.planStart),
+            endDate: String(row.planEnd),
+            originalEndDate: String(row.planOriginalEnd),
+            totalLines: Number(row.planTotalLines),
+            completedLines: Number(row.planCompletedLines ?? 0),
+            studyDaysMask: Number(row.planMask ?? 127),
+            timeZone: row.timeZone ?? null,
+          }
+        : null,
+
+    activity: days.map((day) => byUserDay.get(`${row.id}:${day}`) ?? 0),
   }));
+
+  return { people, total, page: current, perPage, pageCount };
 }
 
 /** How many accounts exist, for the users page header. */
 export async function countUsers(): Promise<number> {
-  const [row] = await db.select({ n: sql<number>`count(*)::int` }).from(users);
+  const [row] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(users)
+    .where(sql`${users.email} not like '%.test'`);
   return row?.n ?? 0;
 }
 
@@ -370,7 +528,13 @@ export async function loadAdmins(): Promise<{ email: string }[]> {
   return db
     .select({ email: users.email })
     .from(users)
-    .where(and(eq(users.role, "admin"), isNotNull(users.emailVerifiedAt)));
+    .where(
+      and(
+        eq(users.role, "admin"),
+        isNotNull(users.emailVerifiedAt),
+        sql`${users.email} not like '%.test'`,
+      ),
+    );
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

@@ -13,8 +13,6 @@
  *
  *   npm run observe:session
  */
-import { createHash, randomBytes } from "node:crypto";
-
 import { config } from "dotenv";
 import { neon } from "@neondatabase/serverless";
 import { chromium, type BrowserContext } from "playwright-core";

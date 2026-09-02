@@ -1,23 +1,31 @@
 import type { Metadata } from "next";
-import { BadgeCheck, Search, ShieldCheck } from "lucide-react";
+import { BadgeCheck, ChevronLeft, ChevronRight, Search, ShieldCheck } from "lucide-react";
 
 import { requireAdmin } from "@/auth/guard";
 import { AdminShell, Panel } from "@/components/admin/admin-shell";
 import { Measure } from "@/components/ui/section";
+import { todayIn, type CivilDate } from "@/core/date/civil";
+import { computePace, type Pace, type PaceBand } from "@/core/plan/pace";
+import { countStudyDays } from "@/core/plan/schedule";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
-import { countUsers, loadUsers, type AdminUser } from "../data";
+import { ACTIVITY_DAYS, loadUsers, type AdminUser } from "../data";
 
 export const metadata: Metadata = {
   title: "People · Admin",
   robots: { index: false, follow: false, nocache: true },
 };
 
+const PER_PAGE = 25;
+
 const WHEN = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "short",
   year: "numeric",
 });
+
+const DAY = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
 
 /** "3 days ago", or "never". Precise dates are noise in a scanned list. */
 function ago(date: Date | null): string {
@@ -30,17 +38,65 @@ function ago(date: Date | null): string {
   return `${Math.floor(days / 365)}y ago`;
 }
 
+/**
+ * How this person's promise is actually going.
+ *
+ * Progress alone cannot answer it: forty per cent is comfortable in year one
+ * of three and desperate in the last month. The same model the reader's own
+ * dashboard uses is run here, so the admin sees exactly what they see.
+ */
+function paceOf(person: AdminUser): { pace: Pace; elapsed: number } | null {
+  const c = person.covenant;
+  if (!c) return null;
+
+  const today = todayIn(c.timeZone ?? "Asia/Tashkent");
+
+  const pace = computePace({
+    totalLines: c.totalLines,
+    completedLines: c.completedLines,
+    /* The portion agreed at signing, recovered from the original deadline, so
+       pressure does not drift when the deadline is pulled closer. */
+    originalDailyLines: Math.max(
+      1,
+      Math.ceil(
+        c.totalLines /
+          Math.max(1, countStudyDays(c.startDate, c.originalEndDate, c.studyDaysMask)),
+      ),
+    ),
+    today,
+    endDate: c.endDate,
+    studyDaysMask: c.studyDaysMask,
+  });
+
+  /* Where the calendar has got to, which is what progress has to be read
+     against. Measured in study days rather than dates, because somebody
+     studying four days a week is not behind on the other three. */
+  const totalDays = Math.max(1, countStudyDays(c.startDate, c.endDate, c.studyDaysMask));
+  const goneDays = countStudyDays(c.startDate, today as CivilDate, c.studyDaysMask);
+  const elapsed = Math.max(0, Math.min(1, goneDays / totalDays));
+
+  return { pace, elapsed };
+}
+
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; page?: string }>;
 }) {
   await requireAdmin();
 
-  const { q } = await searchParams;
+  const { q, page } = await searchParams;
   const search = (q ?? "").slice(0, 120);
+  const requested = Number.parseInt(page ?? "1", 10);
 
-  const [people, total] = await Promise.all([loadUsers(search), countUsers()]);
+  const { people, total, page: current, pageCount } = await loadUsers(
+    search,
+    Number.isFinite(requested) ? requested : 1,
+    PER_PAGE,
+  );
+
+  const from = total === 0 ? 0 : (current - 1) * PER_PAGE + 1;
+  const to = (current - 1) * PER_PAGE + people.length;
 
   return (
     <AdminShell current="users">
@@ -51,9 +107,11 @@ export default async function AdminUsersPage({
               People
             </h1>
             <p className="mt-2 text-[0.875rem] text-[var(--text-muted)]">
-              {search
-                ? `${people.length} matching “${search}” of ${total}`
-                : `${total} ${total === 1 ? "account" : "accounts"}, newest first`}
+              {total === 0
+                ? search
+                  ? `Nobody matches “${search}”`
+                  : "No accounts yet"
+                : `${from}–${to} of ${total}${search ? ` matching “${search}”` : ""}`}
             </p>
           </div>
 
@@ -73,133 +131,25 @@ export default async function AdminUsersPage({
         </header>
 
         <div className="mt-7">
-          <Panel title="Accounts" note={search ? "filtered" : "50 most recent"}>
-            {people.length === 0 ? (
+          {people.length === 0 ? (
+            <Panel title="Accounts">
               <p className="py-10 text-center text-[0.8125rem] text-[var(--text-faint)]">
                 Nobody matches that.
               </p>
-            ) : (
-              <>
-                {/* ── Phones: a card each ──
-                    Nine columns on a 390px screen is a sideways scroll nobody
-                    discovers, and every number worth having ends up past the
-                    right edge. Here each person is a block and their figures
-                    sit under their name, where they can actually be read. */}
-                <ul className="space-y-3 lg:hidden">
-                  {people.map((person) => (
-                    <li
-                      key={person.id}
-                      className="min-w-0 rounded-2xl border border-[var(--line-subtle)] p-4"
-                    >
-                      <Identity person={person} />
+            </Panel>
+          ) : (
+            <ul className="space-y-3">
+              {people.map((person) => (
+                <li key={person.id}>
+                  <PersonPanel person={person} />
+                </li>
+              ))}
+            </ul>
+          )}
 
-                      <dl className="mt-4 grid grid-cols-3 gap-x-3 gap-y-3.5">
-                        <Figure label="Pages" value={person.pagesHeld || "—"} />
-                        <Figure
-                          label="Strength"
-                          value={person.pagesHeld ? `${person.averageStrength}%` : "—"}
-                        />
-                        <Figure label="Drills" value={person.drills || "—"} />
-                        <Figure label="Days kept" value={person.daysKept || "—"} />
-                        <Figure
-                          label="Weak spots"
-                          value={person.openMistakes || "—"}
-                          tone={person.openMistakes > 0 ? "warn" : "plain"}
-                        />
-                        <Figure label="Last seen" value={ago(person.lastSeenAt)} />
-                      </dl>
+          <Pagination current={current} pageCount={pageCount} search={search} />
 
-                      <div className="mt-4 border-t border-[var(--line-subtle)] pt-3">
-                        <Covenant person={person} />
-                      </div>
-
-                      <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.6875rem] text-[var(--text-faint)]">
-                        <span>Joined {WHEN.format(person.createdAt)}</span>
-                        {person.locale && <span>· {person.locale.toUpperCase()}</span>}
-                        {person.reciter && <span>· {person.reciter}</span>}
-                        {person.studyTime && <span>· studies {person.studyTime}</span>}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* ── Laptops: the table ──
-                    Genuinely tabular data, and a table keeps its headers
-                    attached to its cells for a screen reader in a way a stack
-                    of divs cannot. It scrolls inside its own box. */}
-                <div className="-mx-5 hidden overflow-x-auto sm:-mx-6 lg:block">
-                  <table className="w-full min-w-[64rem] border-collapse text-[0.8125rem]">
-                    <thead>
-                      <tr className="border-b border-[var(--line-subtle)] text-start">
-                        {[
-                          "Account",
-                          "Joined",
-                          "Last seen",
-                          "Pages",
-                          "Strength",
-                          "Drills",
-                          "Weak spots",
-                          "Days kept",
-                          "Covenant",
-                        ].map((head, i) => (
-                          <th
-                            key={head}
-                            scope="col"
-                            className={cn(
-                              "px-5 pb-3 text-[0.6875rem] font-semibold tracking-[0.1em] text-[var(--text-faint)] uppercase sm:px-6",
-                              i === 0 ? "text-start" : "text-end",
-                            )}
-                          >
-                            {head}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {people.map((person) => (
-                        <tr
-                          key={person.id}
-                          className="border-b border-[var(--line-subtle)] transition-colors duration-200 last:border-b-0 hover:bg-[var(--surface-overlay)]/40"
-                        >
-                          <td className="px-5 py-3.5 sm:px-6">
-                            <Identity person={person} />
-                          </td>
-
-                          <td className="px-5 py-3.5 text-end text-[var(--text-muted)] tabular-nums sm:px-6">
-                            {WHEN.format(person.createdAt)}
-                          </td>
-
-                          <td
-                            className={cn(
-                              "px-5 py-3.5 text-end tabular-nums sm:px-6",
-                              person.lastSeenAt
-                                ? "text-[var(--text-default)]"
-                                : "text-[var(--text-faint)]",
-                            )}
-                          >
-                            {ago(person.lastSeenAt)}
-                          </td>
-
-                          <Cell value={person.pagesHeld} strong />
-                          <Cell value={person.pagesHeld ? `${person.averageStrength}%` : 0} />
-                          <Cell value={person.drills} />
-                          <Cell value={person.openMistakes} tone="warn" />
-                          <Cell value={person.daysKept} />
-
-                          <td className="px-5 py-3.5 text-end sm:px-6">
-                            <Covenant person={person} />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
-          </Panel>
-
-          <p className="mt-5 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+          <p className="mt-6 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
             These are real people&rsquo;s addresses and real progress. The list
             exists to answer support questions and to see whether the product is
             working — not to be browsed. Nothing here can be edited from this
@@ -211,7 +161,60 @@ export default async function AdminUsersPage({
   );
 }
 
-/** Name, badges and address — the same block in the card and in the table. */
+/**
+ * One person, as a panel rather than a table row.
+ *
+ * A row of nine columns was unreadable on a phone and, worse, had nowhere to
+ * put the two things that actually answer "how is this person doing" — the
+ * covenant against the calendar, and whether they are still turning up. Both
+ * are pictures, and pictures do not fit in a cell.
+ */
+function PersonPanel({ person }: { person: AdminUser }) {
+  const state = paceOf(person);
+
+  return (
+    <div className="min-w-0 rounded-2xl border border-[var(--line-subtle)] p-4 sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <Identity person={person} />
+        {state && <BandChip band={state.pace.band} />}
+      </div>
+
+      <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-7">
+        <div className="min-w-0">
+          <CovenantTrack person={person} state={state} />
+
+          <dl className="mt-5 grid grid-cols-3 gap-x-3 gap-y-3.5 sm:grid-cols-6">
+            <Figure label="Pages" value={person.pagesHeld || "—"} />
+            <Figure
+              label="Strength"
+              value={person.pagesHeld ? `${person.averageStrength}%` : "—"}
+            />
+            <Figure label="Drills" value={person.drills || "—"} />
+            <Figure label="Days kept" value={person.daysKept || "—"} />
+            <Figure
+              label="Weak spots"
+              value={person.openMistakes || "—"}
+              tone={person.openMistakes > 0 ? "warn" : "plain"}
+            />
+            <Figure label="Last seen" value={ago(person.lastSeenAt)} />
+          </dl>
+        </div>
+
+        <ActivityStrip counts={person.activity} />
+      </div>
+
+      <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-[var(--line-subtle)] pt-3 text-[0.6875rem] text-[var(--text-faint)]">
+        <span>Joined {WHEN.format(person.createdAt)}</span>
+        {person.locale && <span>· {person.locale.toUpperCase()}</span>}
+        {person.reciter && <span>· {person.reciter}</span>}
+        {person.studyTime && <span>· studies {person.studyTime}</span>}
+        {!person.onboarded && <span>· never finished onboarding</span>}
+      </p>
+    </div>
+  );
+}
+
+/** Name, badges and address. */
 function Identity({ person }: { person: AdminUser }) {
   return (
     <span className="flex min-w-0 flex-col">
@@ -239,7 +242,180 @@ function Identity({ person }: { person: AdminUser }) {
   );
 }
 
-/** One figure in the phone card. */
+/* Status, never colour alone: every one of these ships its word. */
+const BAND_LABEL: Record<PaceBand, string> = {
+  done: "Finished",
+  ahead: "Ahead",
+  onTrack: "On track",
+  tightening: "Tightening",
+  atRisk: "At risk",
+};
+
+const BAND_CHIP: Record<PaceBand, string> = {
+  done: "border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]",
+  ahead:
+    "border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]",
+  onTrack: "border-[var(--line-strong)] text-[var(--text-muted)]",
+  tightening:
+    "border-[var(--status-warning)]/40 bg-[var(--status-warning)]/10 text-[var(--status-warning-ink)]",
+  atRisk:
+    "border-[var(--status-critical)]/40 bg-[var(--status-critical)]/10 text-[var(--status-critical-ink)]",
+};
+
+const BAND_FILL: Record<PaceBand, string> = {
+  done: "bg-[var(--accent)]",
+  ahead: "bg-[var(--accent)]",
+  onTrack: "bg-[var(--accent)]",
+  tightening: "bg-[var(--status-warning)]",
+  atRisk: "bg-[var(--status-critical)]",
+};
+
+function BandChip({ band }: { band: PaceBand }) {
+  return (
+    <span
+      className={cn(
+        "shrink-0 rounded-full border px-2.5 py-1 text-[0.625rem] font-semibold tracking-[0.1em] uppercase",
+        BAND_CHIP[band],
+      )}
+    >
+      {BAND_LABEL[band]}
+    </span>
+  );
+}
+
+/**
+ * The promise against the calendar.
+ *
+ * One track carrying two quantities: how much of the Qur'an is done (the fill)
+ * and how much of the time is gone (the marker). Where the marker sits ahead
+ * of the fill, this person is behind — and the gap between them is the whole
+ * story, told without a number needing to be read.
+ */
+function CovenantTrack({
+  person,
+  state,
+}: {
+  person: AdminUser;
+  state: { pace: Pace; elapsed: number } | null;
+}) {
+  if (!state || !person.covenant) {
+    return (
+      <p className="text-[0.8125rem] text-[var(--text-faint)]">
+        {person.onboarded ? "No covenant made yet." : "Never finished onboarding."}
+      </p>
+    );
+  }
+
+  const { pace, elapsed } = state;
+  const progress = Math.max(0, Math.min(1, pace.progress));
+  const behind = elapsed - progress;
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <span className="text-[0.75rem] text-[var(--text-muted)]">
+          Finish by{" "}
+          <span className="text-[var(--text-default)]">
+            {WHEN.format(new Date(`${person.covenant.endDate}T00:00:00Z`))}
+          </span>
+        </span>
+        <span className="text-[0.75rem] tabular-nums text-[var(--text-muted)]">
+          <span className="font-medium text-[var(--text-strong)]">
+            {Math.round(progress * 100)}%
+          </span>{" "}
+          done · {Math.round(elapsed * 100)}% of the time gone
+        </span>
+      </div>
+
+      <div className="relative mt-2 h-2.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-strong)_9%,transparent)]">
+        <div
+          className={cn("h-full rounded-full", BAND_FILL[pace.band])}
+          style={{ width: `${Math.max(1, progress * 100)}%` }}
+        />
+        {/* Where the calendar has reached. The 2px surface-coloured ring keeps
+            it legible wherever it lands, including on top of the fill. */}
+        <span
+          aria-hidden
+          className="absolute top-0 h-full w-0.5 bg-[var(--text-strong)] ring-2 ring-[var(--surface-raised)]"
+          style={{ insetInlineStart: `calc(${elapsed * 100}% - 1px)` }}
+        />
+      </div>
+
+      <p className="mt-2 text-[0.75rem] text-[var(--text-muted)]">
+        {pace.complete
+          ? "The whole promise is kept."
+          : behind > 0.02
+            ? `${Math.round(behind * 100)} points behind the calendar · ${pace.requiredDailyLines} lines a day to finish on time`
+            : `${pace.requiredDailyLines} lines a day to finish on time · ${
+                pace.daysBanked >= 0
+                  ? `${pace.daysBanked} days banked`
+                  : `${Math.abs(pace.daysBanked)} days owed`
+              }`}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Whether they are still turning up.
+ *
+ * Twenty-eight columns, one per day, height by drills finished. A total says
+ * how much someone has ever done; this says whether they are doing it now,
+ * which is the difference between a healthy account and one that has quietly
+ * stopped. One hue, because this is a magnitude and nothing else.
+ */
+function ActivityStrip({ counts }: { counts: number[] }) {
+  const peak = Math.max(1, ...counts);
+  const done = counts.reduce((sum, n) => sum + n, 0);
+  const activeDays = counts.filter((n) => n > 0).length;
+
+  const first = new Date();
+  first.setUTCDate(first.getUTCDate() - (ACTIVITY_DAYS - 1));
+
+  return (
+    <div className="min-w-0">
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="text-[0.625rem] font-semibold tracking-[0.1em] text-[var(--text-faint)] uppercase">
+          Drills, last {ACTIVITY_DAYS} days
+        </span>
+        <span className="text-[0.75rem] tabular-nums text-[var(--text-muted)]">
+          {done === 0 ? (
+            <span className="text-[var(--text-faint)]">nothing</span>
+          ) : (
+            <>
+              <span className="font-medium text-[var(--text-strong)]">{done}</span> on{" "}
+              {activeDays} {activeDays === 1 ? "day" : "days"}
+            </>
+          )}
+        </span>
+      </div>
+
+      {/* A 2px gap between columns, and 4px rounded tops anchored to the
+          baseline, so a day with one drill is still visibly a day with one. */}
+      <div className="mt-2.5 flex h-14 items-end gap-[2px]" role="img"
+           aria-label={`${done} drills over the last ${ACTIVITY_DAYS} days`}>
+        {counts.map((n, i) => (
+          <span
+            key={i}
+            title={n > 0 ? `${n}` : undefined}
+            className={cn(
+              "min-w-0 flex-1 rounded-t-[3px]",
+              n > 0 ? "bg-[var(--viz-3)]" : "bg-[color-mix(in_oklab,var(--text-strong)_7%,transparent)]",
+            )}
+            style={{ height: n > 0 ? `${Math.max(12, (n / peak) * 100)}%` : "3px" }}
+          />
+        ))}
+      </div>
+
+      <div className="mt-1.5 flex justify-between text-[0.625rem] text-[var(--text-faint)] tabular-nums">
+        <span>{DAY.format(first)}</span>
+        <span>today</span>
+      </div>
+    </div>
+  );
+}
+
+/** One figure in the summary row. */
 function Figure({
   label,
   value,
@@ -268,56 +444,65 @@ function Figure({
   );
 }
 
-/** One numeric cell in the table. Zero reads as nothing, not as a score. */
-function Cell({
-  value,
-  strong = false,
-  tone = "plain",
+/**
+ * Plain links, not buttons.
+ *
+ * Every page of this list is a real address: it can be bookmarked, opened in a
+ * new tab, and reached with JavaScript off. The search term travels with it,
+ * or paging through a filtered list would silently drop the filter.
+ */
+function Pagination({
+  current,
+  pageCount,
+  search,
 }: {
-  value: string | number;
-  strong?: boolean;
-  tone?: "plain" | "warn";
+  current: number;
+  pageCount: number;
+  search: string;
 }) {
-  const empty = value === 0 || value === "0%";
+  if (pageCount <= 1) return null;
+
+  const href = (page: number) =>
+    `/admin/users?${new URLSearchParams({
+      ...(search ? { q: search } : {}),
+      ...(page > 1 ? { page: String(page) } : {}),
+    })}`;
+
+  const step =
+    "inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-[0.8125rem] transition-colors duration-300";
+
   return (
-    <td
-      className={cn(
-        "px-5 py-3.5 text-end tabular-nums sm:px-6",
-        empty
-          ? "text-[var(--text-faint)]"
-          : tone === "warn"
-            ? "text-[var(--status-warning-ink)]"
-            : strong
-              ? "font-medium text-[var(--text-strong)]"
-              : "text-[var(--text-default)]",
-      )}
+    <nav
+      className="mt-5 flex items-center justify-between gap-3"
+      aria-label="Pages of accounts"
     >
-      {empty ? "—" : value}
-    </td>
-  );
-}
+      {current > 1 ? (
+        <Link href={href(current - 1)} rel="prev" className={cn(step, "border-[var(--line-strong)] text-[var(--text-default)] hover:border-[var(--accent)]/50")}>
+          <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
+          Newer
+        </Link>
+      ) : (
+        <span className={cn(step, "border-transparent text-[var(--text-faint)]")}>
+          <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
+          Newer
+        </span>
+      )}
 
-/** How far into the promise they are, or why there is no bar to draw. */
-function Covenant({ person }: { person: AdminUser }) {
-  if (person.planProgress === null) {
-    return (
-      <span className="text-[0.75rem] text-[var(--text-faint)]">
-        {person.onboarded ? "no covenant" : "not onboarded"}
+      <span className="text-[0.75rem] text-[var(--text-muted)] tabular-nums">
+        Page {current} of {pageCount}
       </span>
-    );
-  }
 
-  return (
-    <span className="inline-flex w-full items-center gap-2 lg:w-auto">
-      <span className="h-1.5 min-w-16 flex-1 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-strong)_8%,transparent)] lg:w-16 lg:flex-none">
-        <span
-          className="block h-full rounded-full bg-[var(--viz-3)]"
-          style={{ width: `${Math.max(2, person.planProgress * 100)}%` }}
-        />
-      </span>
-      <span className="w-9 shrink-0 text-end text-[0.75rem] text-[var(--text-strong)] tabular-nums">
-        {Math.round(person.planProgress * 100)}%
-      </span>
-    </span>
+      {current < pageCount ? (
+        <Link href={href(current + 1)} rel="next" className={cn(step, "border-[var(--line-strong)] text-[var(--text-default)] hover:border-[var(--accent)]/50")}>
+          Older
+          <ChevronRight className="h-4 w-4 rtl:rotate-180" />
+        </Link>
+      ) : (
+        <span className={cn(step, "border-transparent text-[var(--text-faint)]")}>
+          Older
+          <ChevronRight className="h-4 w-4 rtl:rotate-180" />
+        </span>
+      )}
+    </nav>
   );
 }
