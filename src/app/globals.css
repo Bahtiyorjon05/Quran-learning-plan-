@@ -1031,3 +1031,33 @@ body:has([data-app-tabbar]) {
     transform: none;
   }
 }
+
+/* The hairline under the opening seal. A bar that crosses once every second
+   and a half — enough to say the app is doing something, too slow to nag. */
+.ahd-opening-sweep {
+  animation: ahd-opening-sweep 1.5s var(--ease-calm) infinite;
+}
+
+@keyframes ahd-opening-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(400%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ahd-opening-sweep {
+    animation: none;
+    width: 100%;
+  }
+}
+
+/* The verse being recited lights its own play control. Driven by the same
+   attribute the player writes onto the verse, so nothing re-renders to do it. */
+[data-reciting] [data-ayah-play] {
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+  background-color: color-mix(in oklab, var(--accent) 14%, transparent);
+  color: var(--accent-strong);
+}

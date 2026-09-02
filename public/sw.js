@@ -28,7 +28,11 @@ const STATIC = `${VERSION}-static`;
 const AUDIO = `${VERSION}-audio`;
 
 /** Recitation is immutable but not unbounded; a full mushaf is a lot of mp3s. */
-const AUDIO_LIMIT = 300;
+/* Roughly a juz of listening kept on the device. Each ayah is a small mp3,
+   and 300 of them was about twenty pages — enough to be surprised by silence
+   on a train. Still bounded, because an unbounded audio cache on a phone is
+   how an app gets deleted. */
+const AUDIO_LIMIT = 1500;
 
 self.addEventListener("install", (event) => {
   /* The offline page is the one thing worth having before it is needed. */

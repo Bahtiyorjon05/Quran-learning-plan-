@@ -71,7 +71,9 @@ async function main() {
     failures.push("no play button on the reader");
   } else {
     await play.click();
-    await page.waitForTimeout(2500);
+    /* Long enough for the Basmala to finish and the ayah after it to be
+       asked for — the whole point of the check below. */
+    await page.waitForTimeout(9000);
 
     if (requested.length === 0) {
       failures.push("pressing play requested no audio");
@@ -79,10 +81,17 @@ async function main() {
       const url = requested[0];
       console.log(`  requested ${url.replace("https://cdn.islamic.network/quran/audio/", "")}`);
 
-      /* Page 2 opens at 2:1, which is ayah 8 of the whole Qur'an. If the
-         numbering is off, this plays the wrong verse of the Qur'an. */
-      if (!url.endsWith("/8.mp3")) {
-        failures.push(`play started at ${url.split("/").pop()} rather than ayah 8 (2:1)`);
+      /* Page 2 opens Al-Baqara, so the Basmala is asked for first and the ayah
+         follows it. Both are checked: the Basmala is global ayah 1, and 2:1 is
+         ayah 8 — if that numbering is off, the wrong verse of the Qur'an
+         plays. */
+      const second = requested[1] ?? "";
+      if (!url.endsWith("/1.mp3")) {
+        failures.push(`play started at ${url.split("/").pop()} rather than the Basmala`);
+      } else if (!second.endsWith("/8.mp3")) {
+        failures.push(
+          `after the Basmala it played ${second.split("/").pop() || "nothing"} rather than ayah 8 (2:1)`,
+        );
       }
 
       const response = await page.request.get(url);

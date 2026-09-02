@@ -33,6 +33,8 @@
     "observe:pwa": "tsx scripts/observe-pwa.ts",
     "observe:mistakes": "tsx scripts/observe-mistakes.ts",
     "observe:signup": "tsx --require ./scripts/allow-server-only.cjs scripts/observe-signup.ts",
+    "observe:language": "tsx scripts/observe-language.ts",
+    "observe:recitation": "tsx scripts/observe-recitation.ts",
     "observe:session": "tsx --require ./scripts/allow-server-only.cjs scripts/observe-session.ts",
     "shoot": "tsx --require ./scripts/allow-server-only.cjs scripts/shoot-app.ts"
   },

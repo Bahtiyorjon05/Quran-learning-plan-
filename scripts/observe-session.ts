@@ -122,6 +122,13 @@ async function main() {
   /* ── 7. And a lapsed session is asked to sign in again ── */
   await sql`update sessions set expires_at = now() - interval '1 hour' where user_id = ${user.id}`;
   await page.goto(`${BASE}/app`, { waitUntil: "domcontentloaded" });
+  /* The dashboard streams a branded shell before its guard has run, so the URL
+     is /app for a moment even when the answer is "sign in again". Waiting for
+     it to settle is the difference between testing the guard and testing how
+     fast the server is. */
+  await page
+    .waitForURL(/login/, { timeout: 20_000 })
+    .catch(() => {});
   console.log(`  7. after it lapses → ${new URL(page.url()).pathname}`);
   if (!/login/.test(new URL(page.url()).pathname)) {
     failures.push(

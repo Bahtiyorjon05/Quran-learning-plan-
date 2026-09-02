@@ -30,9 +30,12 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: "/",
     display: "standalone",
     orientation: "portrait",
-    /* The ink ground, so the splash screen matches the app's own dark default
-       rather than flashing white before the first paint. */
-    background_color: "#060908",
+    /* The panel ground rather than the page ground. The operating system
+       paints this behind the icon while the app starts, and the deepest ink in
+       the palette read as a black rectangle with a mark floating in it; one
+       step up is still unmistakably night, and the seal sits on it rather than
+       in a hole. It is also the colour the opening screen resolves into. */
+    background_color: "#0f1815",
     theme_color: "#060908",
     categories: ["education", "books", "lifestyle"],
     lang: "uz",

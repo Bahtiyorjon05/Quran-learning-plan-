@@ -35,6 +35,64 @@ import { cn } from "@/lib/utils";
  * is server-rendered and the Arabic must not re-render once a verse.
  */
 
+/**
+ * One <audio>, owned by this module rather than by React.
+ *
+ * Switching language is a route change, and a route change unmounts every
+ * component under it — which killed the recitation stone dead halfway through
+ * an ayah. Nothing about changing the language of the interface should stop
+ * the Qur'an being recited, so the element lives on `document.body`, outside
+ * anything React reconciles, and survives the switch untouched.
+ *
+ * Created lazily and never removed: it is one element for the life of the tab,
+ * which is also why six hundred of them are not created for six hundred
+ * verses.
+ */
+let shared: HTMLAudioElement | null = null;
+
+function sharedAudio(): HTMLAudioElement {
+  if (shared) return shared;
+  shared = document.createElement("audio");
+  shared.preload = "none";
+  /* Findable from a test, and obvious in an inspector. */
+  shared.setAttribute("data-ahd-recitation", "");
+  document.body.append(shared);
+  return shared;
+}
+
+/**
+ * Whether a recitation of this ayah should open with the Basmala.
+ *
+ * Every surah but At-Tawbah opens with it, and in all of them except
+ * Al-Fatiha it is not a numbered ayah — so the audio file for ayah 1 begins at
+ * the first word of the surah and the opening is simply missing. Reciters do
+ * not begin that way and neither should this.
+ *
+ * Al-Fatiha 1:1 *is* the Basmala, so it supplies the audio in the same
+ * reciter's own voice: no second source, no mismatch of room or register.
+ * At-Tawbah is the exception the tradition itself makes, and Al-Fatiha needs
+ * no help because its first ayah already is the words.
+ */
+function opensWithBasmala(surah: number, ayah: number): boolean {
+  return ayah === 1 && surah !== 1 && surah !== 9;
+}
+
+/** Identity of the page being recited, so a remount knows what it is hearing. */
+function pageKeyOf(ayahs: PlayableAyah[]): string {
+  return ayahs.length === 0 ? "" : `${ayahs[0].k}:${ayahs.length}`;
+}
+
+/**
+ * How long the audio may outlive its player before it is stopped.
+ *
+ * The player unmounts for two very different reasons and the element cannot
+ * tell them apart: a language switch, which remounts it a moment later on the
+ * same page, and a navigation away, after which nothing can control it. So it
+ * keeps playing briefly, and a remount on the same page cancels the stop.
+ */
+const ORPHAN_GRACE_MS = 1500;
+let orphanTimer: ReturnType<typeof setTimeout> | null = null;
+
 const RECITER_KEY = "ahd-reciter";
 const REPEAT_KEY = "ahd-repeat-ayah";
 const FOLLOW_KEY = "ahd-follow-recitation";
@@ -79,6 +137,134 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
   const [duration, setDuration] = useState(0);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const pageKey = pageKeyOf(ayahs);
+
+  /* Adopt the shared element: attach the handlers that used to be JSX props,
+     and — when this is a remount after a language switch — pick the recitation
+     up exactly where it still is rather than showing a stopped player over
+     audio that is audibly still going. */
+  useEffect(() => {
+    const audio = sharedAudio();
+    audioRef.current = audio;
+
+    if (orphanTimer) {
+      clearTimeout(orphanTimer);
+      orphanTimer = null;
+    }
+
+    const adopting = audio.dataset.pageKey === pageKey && Boolean(audio.src);
+
+    if (!adopting && audio.src) {
+      /* A different page. Whatever was playing belongs to somewhere else. */
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+      delete audio.dataset.index;
+    }
+    audio.dataset.pageKey = pageKey;
+
+    const onAdopt = () => {
+      const at = Number(audio.dataset.index);
+      if (Number.isInteger(at) && at >= 0 && at < ayahs.length) setIndex(at);
+    };
+    const onMeta = () => setDuration(audio.duration || 0);
+    const onTime = () => setPosition(audio.currentTime);
+    const onPlay = () => setPaused(false);
+    const onPause = () => setPaused(true);
+    const onPlaying = () => setLoading(false);
+    const onWaiting = () => setLoading(true);
+    const onError = () => {
+      setLoading(false);
+      setFailed(true);
+    };
+
+    audio.addEventListener("ahd-adopt", onAdopt);
+    audio.addEventListener("loadedmetadata", onMeta);
+    audio.addEventListener("timeupdate", onTime);
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+    audio.addEventListener("playing", onPlaying);
+    audio.addEventListener("waiting", onWaiting);
+    audio.addEventListener("error", onError);
+
+    /* Catching up after a language switch, without setting state from inside
+       an effect. The element already knows whether it is playing, where it has
+       reached and which ayah is sounding; asking it to say so again routes
+       that through the same handlers any real playback would use, so there is
+       one path into this component's state rather than two. */
+    if (adopting) {
+      audio.dispatchEvent(new Event("ahd-adopt"));
+      audio.dispatchEvent(new Event(audio.paused ? "pause" : "play"));
+      if (Number.isFinite(audio.duration)) audio.dispatchEvent(new Event("loadedmetadata"));
+      audio.dispatchEvent(new Event("timeupdate"));
+    }
+
+    return () => {
+      audio.removeEventListener("ahd-adopt", onAdopt);
+      audio.removeEventListener("loadedmetadata", onMeta);
+      audio.removeEventListener("timeupdate", onTime);
+      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("pause", onPause);
+      audio.removeEventListener("playing", onPlaying);
+      audio.removeEventListener("waiting", onWaiting);
+      audio.removeEventListener("error", onError);
+
+      /* Not stopped here: this unmount may be a language switch, and the mount
+         that follows cancels the timer. If nothing remounts, the recitation
+         has genuinely been left behind and is stopped. */
+      if (orphanTimer) clearTimeout(orphanTimer);
+      orphanTimer = setTimeout(() => {
+        orphanTimer = null;
+        audio.pause();
+      }, ORPHAN_GRACE_MS);
+    };
+  }, [pageKey, ayahs.length]);
+
+  /* `ended` carries state that changes between renders, so it is bound
+     separately from the handlers above rather than re-attaching all of them. */
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const onEnded = () => {
+      if (index === null) return;
+
+      /* The Basmala has just finished; the ayah it opens comes next, at the
+         same index rather than the one after it. */
+      if (audio.dataset.basmala === "1") {
+        delete audio.dataset.basmala;
+        setLoading(true);
+        audio.src = sourceFor(reciter.id, index);
+        void audio.play().catch(() => {
+          setLoading(false);
+          setFailed(true);
+        });
+        return;
+      }
+
+      /* A surah file has already played the whole chapter, so there is nothing
+         after it. A verse file moves on, or repeats. */
+      if (!perAyah) return setIndex(null);
+      playAt(repeatOne ? index : index + 1, !repeatOne);
+    };
+
+    audio.addEventListener("ended", onEnded);
+    return () => audio.removeEventListener("ended", onEnded);
+  });
+
+  /* "Recite from here", asked for by a button beside a verse. Listened for on
+     the document rather than passed down as a callback, so the six hundred
+     verses of a page stay server-rendered and inert. */
+  useEffect(() => {
+    const onRequest = (event: Event) => {
+      const key = (event as CustomEvent<string>).detail;
+      const at = ayahs.findIndex((ayah) => ayah.k === key);
+      if (at >= 0) playAt(at);
+    };
+
+    document.addEventListener("ahd-play-ayah", onRequest);
+    return () => document.removeEventListener("ahd-play-ayah", onRequest);
+  });
 
   /* playbackRate is a property of the element, not of the file, so it has to
      be set again after every new src. */
@@ -117,12 +303,20 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
     });
   }, [index, ayahs, follow]);
 
-  /* Nothing left marked when the page turns. */
+  /* Nothing left marked when the page turns. Deferred for the same reason the
+     audio is: an unmount may be a language switch, and clearing the mark there
+     would blank the verse being recited for as long as the switch takes. */
   useEffect(
     () => () => {
-      for (const node of document.querySelectorAll("[data-reciting]")) {
-        node.removeAttribute("data-reciting");
-      }
+      setTimeout(() => {
+        if (document.querySelector("[data-ahd-recitation]") instanceof HTMLAudioElement) {
+          const audio = document.querySelector("[data-ahd-recitation]") as HTMLAudioElement;
+          if (!audio.paused) return;
+        }
+        for (const node of document.querySelectorAll("[data-reciting]")) {
+          node.removeAttribute("data-reciting");
+        }
+      }, 0);
     },
     [],
   );
@@ -134,7 +328,9 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
       : surahAudioUrl(id, ayahs[at].s);
   }
 
-  function playAt(next: number) {
+  /** `withBasmala` is false when looping one ayah: the opening belongs to
+   *  arriving at a surah, not to every repetition of its first verse. */
+  function playAt(next: number, withBasmala = true) {
     if (next < 0 || next >= ayahs.length) {
       setIndex(null);
       return;
@@ -147,7 +343,21 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
 
     const audio = audioRef.current;
     if (!audio) return;
-    audio.src = sourceFor(reciter.id, next);
+
+    /* Only for a reciter read verse by verse. A whole-surah file has already
+       said the Basmala in its own opening seconds. */
+    const target = ayahs[next];
+    const basmala =
+      perAyah && withBasmala && opensWithBasmala(target.s, target.a);
+
+    audio.src = basmala ? ayahAudioUrl(reciter.id, 1, 1) : sourceFor(reciter.id, next);
+    /* Written to the element, because the element is what survives a language
+       switch — the React state does not. */
+    audio.dataset.index = String(next);
+    audio.dataset.pageKey = pageKey;
+    if (basmala) audio.dataset.basmala = "1";
+    else delete audio.dataset.basmala;
+
     void audio.play().catch(() => {
       setLoading(false);
       setFailed(true);
@@ -170,7 +380,8 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
     const audio = audioRef.current;
     if (index === null || !audio) return;
     const wasPlaying = !paused;
-    audio.src = sourceFor(id, index);
+    audio.src =
+      audio.dataset.basmala === "1" ? ayahAudioUrl(id, 1, 1) : sourceFor(id, index);
     if (wasPlaying) void audio.play().catch(() => setFailed(true));
   }
 
@@ -178,32 +389,11 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
 
   return (
     <div className="rounded-2xl border border-[var(--line-strong)] bg-[var(--surface-raised)]/40 p-4 sm:p-5">
-      <audio
-        ref={audioRef}
-        preload="none"
-        onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 0)}
-        onTimeUpdate={(event) => setPosition(event.currentTarget.currentTime)}
-        onPlay={() => setPaused(false)}
-        onPause={() => setPaused(true)}
-        onPlaying={() => setLoading(false)}
-        onWaiting={() => setLoading(true)}
-        onError={() => {
-          setLoading(false);
-          setFailed(true);
-        }}
-        onEnded={() => {
-          if (index === null) return;
-          /* A surah file has already played the whole chapter, so there is
-             nothing after it. A verse file moves on, or repeats. */
-          if (!perAyah) return setIndex(null);
-          playAt(repeatOne ? index : index + 1);
-        }}
-      />
-
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={toggle}
+          data-recitation-toggle
           aria-label={started && !paused ? t("pause") : t("play")}
           className="inline-grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--accent-ground)] text-[var(--on-accent)] transition-[background-color] duration-300 hover:bg-[var(--accent-strong)]"
         >

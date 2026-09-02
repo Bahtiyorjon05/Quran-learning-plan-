@@ -9,6 +9,8 @@ import {
 import type { Locale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
+import { AyahPlay } from "./ayah-play";
+
 /** Ayah numbers are set in Arabic-Indic digits, as they are in the mushaf. */
 const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
 
@@ -99,6 +101,7 @@ export async function PageView({
   locale: Locale;
 }) {
   const t = await getTranslations("quran.reader");
+  const ta = await getTranslations("quran.audio");
 
   return (
     <article className="mx-auto max-w-2xl">
@@ -133,17 +136,27 @@ export async function PageView({
                 </p>
               )}
 
-              {/* Hidden by a data attribute on <html> rather than by unmounting,
-                  so toggling the translation never re-renders the Arabic. */}
-              <p
-                data-translation
-                className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]"
-              >
-                <span className="me-2 text-xs text-[var(--text-faint)] tabular-nums">
-                  {ayah.s}:{ayah.a}
+              {/* The reference, the way to hear it, and the meaning — one row,
+                  so the control sits where the eye already goes at the end of
+                  an ayah rather than hiding in the player at the top. */}
+              <div className="mt-3 flex items-start gap-2.5">
+                <span className="flex shrink-0 items-center gap-2 pt-0.5">
+                  <AyahPlay ayahKey={ayah.k} label={ta("play")} />
+                  <span className="text-xs text-[var(--text-faint)] tabular-nums">
+                    {ayah.s}:{ayah.a}
+                  </span>
                 </span>
-                {translation}
-              </p>
+
+                {/* Hidden by a data attribute on <html> rather than by
+                    unmounting, so toggling the translation never re-renders
+                    the Arabic. */}
+                <p
+                  data-translation
+                  className="min-w-0 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]"
+                >
+                  {translation}
+                </p>
+              </div>
             </div>
           </div>
         );
