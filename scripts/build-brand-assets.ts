@@ -21,14 +21,14 @@ const APP = path.join(ROOT, "src/app");
 /**
  * The ground for assets that cannot be transparent.
  *
- * Matches the manifest's `background_color`, and deliberately not the darkest
- * ink in the palette. A launcher tile and the splash behind it are seen side
- * by side with everything else on a home screen: at #060908 the icon read as a
- * black square with something faint in it, and the splash it opened into was a
- * different, lighter black again. One colour, one step off the page ground,
- * and the seal sits on a surface rather than in a hole.
+ * Matches the manifest's `background_color`. Deliberately a real colour and
+ * not the page ground: a launcher tile sits among a screenful of other icons,
+ * and any near-black reads there as a hole rather than as a mark. Emerald-800
+ * is the deepest green in the palette that is still unmistakably green, and
+ * the cream seal carries on it. The splash behind the icon is the same value,
+ * so the tile and the screen it opens into are one surface.
  */
-const INK = { r: 18, g: 32, b: 25, alpha: 1 };
+const INK = { r: 11, g: 72, b: 58, alpha: 1 };
 
 /**
  * Find the seal by colour, not by brightness.

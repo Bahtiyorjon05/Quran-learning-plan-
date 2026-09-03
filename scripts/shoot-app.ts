@@ -20,7 +20,10 @@ config({ path: ".env.local", quiet: true });
 const CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
 const BASE = process.env.VERIFY_BASE_URL ?? "http://localhost:3000";
 const DOMAIN = "@shoot.ahd.test";
-const OUT = "C:/Users/tolip/AppData/Local/Temp/claude/d--100-great-python-projects-Quran-learning-plan/a79ce044-8baa-4eea-ab69-767afb96cfa8/scratchpad/shots";
+/* Inside the project, not a system temp directory: screenshots are something
+   you want to open, compare and keep for as long as a design change takes.
+   Ignored by git — see .gitignore. */
+const OUT = "screenshots";
 
 const sql = neon(process.env.DATABASE_URL!);
 

@@ -30,15 +30,14 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: "/",
     display: "standalone",
     orientation: "portrait",
-    /* The panel ground rather than the page ground. The operating system
-       paints this behind the icon while the app starts, and the deepest ink in
-       the palette read as a black rectangle with a mark floating in it; one
-       step up is still unmistakably night, and the seal sits on it rather than
-       in a hole. It is also the colour the opening screen resolves into, and
-       the same value is given to `theme_color` so the status bar does not draw
-       a darker stripe across the top of it. */
-    background_color: "#122019",
-    theme_color: "#122019",
+    /* Emerald, not ink. The operating system paints this behind the icon while
+       the app starts, and a near-black splash is indistinguishable from a phone
+       that has not woken up — which is exactly what it looked like. This is the
+       deepest green in the palette that is still plainly a green, it matches
+       the launcher tile so the two are one surface, and `theme_color` is given
+       the same value so the status bar does not stripe across the top of it. */
+    background_color: "#0b483a",
+    theme_color: "#0b483a",
     categories: ["education", "books", "lifestyle"],
     lang: "uz",
     dir: "ltr",

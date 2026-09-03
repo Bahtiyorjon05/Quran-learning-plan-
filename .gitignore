@@ -47,3 +47,6 @@ next-env.d.ts
 *.tsbuildinfo
 
 .vercel
+
+# Screenshots from `npm run shoot` — look at them, do not commit them.
+screenshots/

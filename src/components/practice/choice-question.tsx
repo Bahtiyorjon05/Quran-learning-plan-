@@ -97,7 +97,12 @@ export function ChoiceQuestion({
                 {review && (selected || isAnswer) && <Verdict correct={isAnswer} />}
 
                 <span className="min-w-0 flex-1">
-                  {choice.ref && (
+                  {/* In the duel the reference *is* the answer, so it is always
+                      shown. Everywhere else it is the answer's giveaway: asking
+                      which ayah follows 2:4 and then printing "2:5" above the
+                      right one is not a question. It appears once the answer is
+                      marked, where knowing the place is the lesson. */}
+                  {choice.ref && (duel || review) && (
                     <span
                       className={cn(
                         "block text-[0.9375rem] font-medium",

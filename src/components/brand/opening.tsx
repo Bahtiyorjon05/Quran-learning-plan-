@@ -25,21 +25,31 @@ export function Opening() {
 
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-center bg-[var(--surface-base)]"
+      className="fixed inset-0 z-50 grid place-items-center"
       role="status"
       aria-live="polite"
+      /* Emerald, and the same emerald the launcher tile and the system splash
+         are painted in, so the sequence from home screen to opened app is one
+         surface deepening rather than three different darks. The page ground
+         it finally settles into is the bottom of this gradient. */
+      style={{
+        background:
+          "linear-gradient(165deg, #0e5c4a 0%, #0b483a 38%, #08342a 68%, var(--surface-base) 100%)",
+      }}
     >
-      {/* The same two washes the signed-in ground uses, so the screen the app
-          opens on and the screen it becomes are lit from the same direction. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        {/* Light from above, as on the landing page — the seal is lit rather
+            than merely placed. */}
         <div
-          className="absolute start-1/2 top-1/2 h-[36rem] w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[100px]"
+          className="absolute start-1/2 top-1/2 h-[38rem] w-[38rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[110px]"
           style={{
             background:
-              "radial-gradient(circle, color-mix(in oklab, var(--accent) 22%, transparent), transparent 66%)",
+              "radial-gradient(circle, color-mix(in oklab, var(--color-emerald-300) 26%, transparent), transparent 68%)",
           }}
         />
-        <div className="girih absolute inset-0 opacity-[0.035]" />
+        <div className="girih absolute inset-0 opacity-[0.06]" />
+        {/* The grain that stops a large gradient banding into visible steps. */}
+        <div className="ahd-grain absolute inset-0" />
       </div>
 
       <div className="animate-rise relative flex flex-col items-center px-6 text-center">
@@ -56,16 +66,16 @@ export function Opening() {
           <AhdMark size={92} priority className="relative" />
         </span>
 
-        <p className="mt-7 font-[family-name:var(--font-display)] text-[1.5rem] leading-tight font-light text-[var(--text-strong)] sm:text-[1.75rem]">
+        <p className="mt-7 font-[family-name:var(--font-display)] text-[1.5rem] leading-tight font-light text-[#f2f6f4] sm:text-[1.75rem]">
           {t("tagline")}
         </p>
 
         {/* A hairline that fills, rather than a spinner that turns. */}
         <span
           aria-hidden
-          className="mt-7 block h-px w-40 overflow-hidden rounded-full bg-[var(--line-strong)]"
+          className="mt-7 block h-px w-40 overflow-hidden rounded-full bg-[color-mix(in_oklab,#f2f6f4_22%,transparent)]"
         >
-          <span className="ahd-opening-sweep block h-full w-1/3 rounded-full bg-[var(--accent)]" />
+          <span className="ahd-opening-sweep block h-full w-1/3 rounded-full bg-[var(--color-gold-300)]" />
         </span>
       </div>
     </div>

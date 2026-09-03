@@ -401,14 +401,22 @@ function shuffleQuestions(input: GenerateInput, rng: Rng): Question[] {
  * passages differing by a letter, and no way to tell them apart except knowing
  * where each belongs. The passage is shown and the reciter names it.
  */
+/**
+ * How many places to choose between.
+ *
+ * Two was not a question, it was a coin. Four is the smallest number that asks
+ * the reciter to actually know where the passage sits.
+ */
+const MUTASHABIHAT_CHOICES = 4;
+
 function mutashabihatQuestions(input: GenerateInput, rng: Rng): Question[] {
   return confusablePairs(input)
     .slice(0, MAX_QUESTIONS)
     .map(({ ayah, partners }) => {
       const answer: Choice = { id: ayah.k, text: "", ref: refOf(ayah) };
-      const distractors: Choice[] = partners
-        .slice(0, 3)
-        .map((partner) => ({ id: partner.k, text: "", ref: refOf(partner) }));
+      const distractors: Choice[] = placesToConfuseWith(ayah, partners, input, rng).map(
+        (place) => ({ id: place.k, text: "", ref: refOf(place) }),
+      );
 
       return {
         kind: "choice" as const,
@@ -422,6 +430,58 @@ function mutashabihatQuestions(input: GenerateInput, rng: Rng): Question[] {
         answerId: ayah.k,
       };
     });
+}
+
+/**
+ * The other places this passage might be, chosen so the surah is not the tell.
+ *
+ * A passage from Al-Baqara offered against Ya-Sin is answered by recognising
+ * the surah, which is not the skill being tested — the difficulty of
+ * mutashabihat is *which verse of the same surah* it was. So the true
+ * confusable partners come first, those within the surah before those outside
+ * it, and if none of them shares the surah then one neighbour from it is
+ * brought in deliberately, to take that shortcut away.
+ *
+ * Partners from other surahs are still offered: they are the real thing, the
+ * pairs a hafiz actually slips between. They just may not be the only choices.
+ */
+function placesToConfuseWith(
+  ayah: SourceAyah,
+  partners: (AyahRef & { score: number; t?: string })[],
+  input: GenerateInput,
+  rng: Rng,
+): AyahRef[] {
+  const wanted = MUTASHABIHAT_CHOICES - 1;
+  const seen = new Set([ayah.k]);
+  const picked: AyahRef[] = [];
+
+  const add = (candidates: AyahRef[]) => {
+    for (const candidate of candidates) {
+      if (picked.length >= wanted) return;
+      if (seen.has(candidate.k)) continue;
+      seen.add(candidate.k);
+      picked.push(refOf(candidate));
+    }
+  };
+
+  const here = partners.filter((partner) => partner.s === ayah.s);
+  const elsewhere = partners.filter((partner) => partner.s !== ayah.s);
+  const neighbours = shuffle(
+    input.ayahs.filter((other) => other.s === ayah.s && other.k !== ayah.k),
+    rng,
+  );
+
+  /* If every real partner is in another surah, one verse of this one goes in
+     first — otherwise the answer is "the surah it obviously is". */
+  if (here.length === 0) add(neighbours.slice(0, 1));
+
+  add(here);
+  add(elsewhere);
+  add(neighbours);
+  /* Last resort, so a short surah still gets a full set of choices. */
+  add(shuffle([...input.ayahs], rng));
+
+  return picked;
 }
 
 function confusablePairs(input: GenerateInput) {

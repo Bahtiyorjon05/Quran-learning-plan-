@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { loadJuz, loadPage, PAGES, SURAHS } from "@/data/quran/loader";
+import { confusableOnPage, loadJuz, loadPage, PAGES, SURAHS } from "@/data/quran/loader";
 import { displayWords, normalizeArabic } from "./quran/arabic";
 import { availableModes, generateDrill } from "./drill/generate";
 import type { Question } from "./drill/types";
@@ -177,6 +177,66 @@ describe("every drill, over the whole mushaf", () => {
       }
     }
   }
+
+  it("asks the duel inside the surah, and offers a real choice", async () => {
+    /* Two failures this guards against, both of which make the hardest drill in
+       the product trivial:
+
+         · two choices is a coin, not a question;
+         · and a passage from Al-Baqara offered against Ya-Sin is answered by
+           recognising the surah, which is not the skill. What makes
+           mutashabihat hard is knowing *which verse of the same surah* it was.
+
+       The second can only be promised where the page actually holds another
+       verse of that surah — the generator sees one page, not the whole book —
+       so that is exactly what is asserted. */
+    const wrong: string[] = [];
+
+    for (let page = 1; page <= 604; page++) {
+      const { ayahs } = await loadPage(page);
+      if (ayahs.length === 0) continue;
+
+      const base = {
+        ayahs,
+        page,
+        seed: page,
+        level: 0.5,
+        confusable: await confusableOnPage(ayahs),
+      };
+      if (!availableModes(base).includes("mutashabihat")) continue;
+
+      for (const question of generateDrill("mutashabihat", base).questions) {
+        if (question.kind !== "choice") continue;
+
+        const answer = question.choices.find((c) => c.id === question.answerId);
+        if (!answer?.ref) {
+          wrong.push(`page ${page}: the duel has no answer among its choices`);
+          continue;
+        }
+
+        const candidates = new Set(ayahs.map((a) => a.k));
+        const possible = Math.min(4, candidates.size);
+        if (question.choices.length < possible) {
+          wrong.push(
+            `page ${page}: the duel offered ${question.choices.length} places where ${possible} were available`,
+          );
+        }
+
+        const surah = answer.ref.s;
+        const alsoHere = ayahs.some((a) => a.s === surah && a.k !== answer.id);
+        if (alsoHere) {
+          const sharing = question.choices.filter((c) => c.ref?.s === surah).length;
+          if (sharing < 2) {
+            wrong.push(
+              `page ${page}: only the answer came from surah ${surah}, so the surah gives it away`,
+            );
+          }
+        }
+      }
+    }
+
+    expect([...new Set(wrong)].slice(0, 15)).toEqual([]);
+  }, 300_000);
 
   it("never shows a word the Qur'an does not say", async () => {
     const all = await wholeQuran();
