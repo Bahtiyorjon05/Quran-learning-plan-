@@ -1062,58 +1062,6 @@ body:has([data-app-tabbar]) {
   color: var(--accent-strong);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   READING WITHOUT THE FURNITURE
-   Scrolling down through a page of the Qur'an takes the bars away; scrolling
-   up brings them back. Driven by an attribute the reader writes on <html>, so
-   nothing re-renders — see components/quran/reader-chrome.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* `:root` in front only to outrank the Tailwind transition utility the public
-   header already carries — without it the header would jump rather than
-   slide, because that utility lists colours and not transform. */
-:root [data-chrome-hide] {
-  transition: transform 0.3s var(--ease-calm);
-  will-change: transform;
-}
-
-:root[data-chrome="hidden"] [data-chrome-hide] {
-  /* 110% rather than 100%: the bars carry a shadow and a blurred edge, and the
-     last few pixels of those stay visible at exactly 100%. */
-  transform: translateY(-110%);
-}
-
-/**
- * The player stays.
- *
- * It is the one control wanted *while* reading — pause, repeat, speed — so it
- * does not leave with the bars. It sits below them when they are there and
- * slides into their place when they go.
- */
-@utility reader-player {
-  position: sticky;
-  z-index: 35;
-  top: 7.75rem;
-  transition: top 0.3s var(--ease-calm);
-}
-
-@media (min-width: 640px) {
-  .reader-player {
-    top: 8.25rem;
-  }
-}
-
-:root[data-chrome="hidden"] .reader-player {
-  top: 0.5rem;
-}
-
-/* Opaque enough that a line of Arabic scrolling underneath does not read
-   through it, which was the first thing wrong with making it stick. */
-.reader-player > * {
-  background-color: color-mix(in oklab, var(--surface-base) 92%, transparent);
-  backdrop-filter: blur(12px);
-}
-
 /* The Basmala is lit the same way an ayah is while it is being recited. */
 [data-basmala][data-reciting] {
   background-color: color-mix(in oklab, var(--accent) 8%, transparent);

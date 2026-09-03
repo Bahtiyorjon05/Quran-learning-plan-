@@ -29,7 +29,7 @@ export async function AppHeader() {
 
   return (
     <>
-      <header data-chrome-hide className="sticky top-0 z-40 border-b border-[var(--line-subtle)] bg-[color-mix(in_oklab,var(--surface-base)_88%,transparent)] backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-[var(--line-subtle)] bg-[color-mix(in_oklab,var(--surface-base)_88%,transparent)] backdrop-blur-xl">
         <Measure className="flex h-16 items-center justify-between gap-3 sm:h-18 sm:gap-4">
           <div className="flex min-w-0 items-center gap-5">
             <Link href="/app" aria-label="Ahd" className="shrink-0">

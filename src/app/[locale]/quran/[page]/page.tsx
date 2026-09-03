@@ -15,7 +15,6 @@ import { Footer } from "@/components/site/footer";
 import { PageView } from "@/components/quran/page-view";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
-import { ReaderChrome } from "@/components/quran/reader-chrome";
 import { AutoReadMark } from "@/components/quran/auto-read-mark";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
@@ -58,9 +57,7 @@ export default async function QuranPage({ params }: Params) {
       <main id="main" className="pt-16 sm:pt-18">
         {/* Where you are, and how to leave. Sticks under the header so the page
             number and the next/previous controls are always within reach. */}
-        <ReaderChrome />
-
-        <div data-chrome-hide className="sticky top-16 z-30 border-b border-[var(--line-subtle)] bg-[color-mix(in_oklab,var(--surface-base)_88%,transparent)] backdrop-blur-xl sm:top-18">
+        <div className="sticky top-16 z-30 border-b border-[var(--line-subtle)] bg-[color-mix(in_oklab,var(--surface-base)_88%,transparent)] backdrop-blur-xl sm:top-18">
           <Measure className="flex h-14 items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <Link
@@ -103,23 +100,14 @@ export default async function QuranPage({ params }: Params) {
           </Measure>
         </div>
 
-        <Measure className="pt-6">
-          <div className="mx-auto flex max-w-2xl justify-end">
-            <ReaderControls />
+        <Measure className="py-6">
+          <div className="mx-auto max-w-2xl space-y-4">
+            <div className="flex justify-end">
+              <ReaderControls />
+            </div>
+            <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
           </div>
         </Measure>
-
-        {/* A direct child of <main> on purpose. A sticky element sticks only
-            within its own parent's box, so nested inside the short wrapper
-            above it the player slid away with that wrapper after a screenful.
-            Its parent has to be the thing it should stay over: the page. */}
-        <div className="reader-player py-3">
-          <Measure>
-            <div className="mx-auto max-w-2xl">
-              <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
-            </div>
-          </Measure>
-        </div>
 
         <Measure className="pb-16">
           <PageView ayahs={ayahs} locale={locale as Locale} />

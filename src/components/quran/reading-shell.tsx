@@ -5,7 +5,6 @@ import { Footer } from "@/components/site/footer";
 import { PageView } from "@/components/quran/page-view";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
-import { ReaderChrome } from "@/components/quran/reader-chrome";
 import { OfflineAudio } from "@/components/quran/offline-audio";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
@@ -52,9 +51,7 @@ export function ReadingShell({
     <>
       <Header />
       <main id="main" className="pt-16 sm:pt-18">
-        <ReaderChrome />
-
-        <div data-chrome-hide className="sticky top-16 z-30 border-b border-[var(--line-subtle)] bg-[color-mix(in_oklab,var(--surface-base)_88%,transparent)] backdrop-blur-xl sm:top-18">
+        <div className="sticky top-16 z-30 border-b border-[var(--line-subtle)] bg-[color-mix(in_oklab,var(--surface-base)_88%,transparent)] backdrop-blur-xl sm:top-18">
           <Measure className="flex h-14 items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <Link
@@ -95,7 +92,7 @@ export function ReadingShell({
           </Measure>
         </div>
 
-        <Measure className="pt-6">
+        <Measure className="py-6">
           <div className="mx-auto max-w-2xl space-y-4">
             {/* The same place, read three ways. Whichever you are in is marked,
                 so this reads as where you are rather than as a menu. */}
@@ -120,21 +117,8 @@ export function ReadingShell({
               <ReaderControls />
             </div>
 
-          </div>
-        </Measure>
+            <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
 
-        {/* A direct child of <main>: sticky sticks only within its own parent,
-            and one wrapper deeper the player left with it after a screenful. */}
-        <div className="reader-player py-3">
-          <Measure>
-            <div className="mx-auto max-w-2xl">
-              <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
-            </div>
-          </Measure>
-        </div>
-
-        <Measure className="pb-2">
-          <div className="mx-auto max-w-2xl">
             <OfflineAudio unit={offlineUnit} ayahs={ayahs.map((a) => ({ s: a.s, a: a.a }))} />
           </div>
         </Measure>
