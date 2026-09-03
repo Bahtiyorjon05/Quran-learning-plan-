@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { LogOut, ShieldCheck } from "lucide-react";
+import { LogOut, Settings, ShieldCheck } from "lucide-react";
 
 import { Wordmark } from "@/components/brand/logo";
 import { InstallButton } from "@/components/site/install-app";
@@ -49,6 +49,14 @@ export async function AppHeader() {
                 <ShieldCheck className="h-4 w-4" />
               </Link>
             )}
+            <Link
+              href="/app/settings"
+              aria-label={tn("settings")}
+              title={tn("settings")}
+              className="inline-grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[var(--line-subtle)] text-[var(--text-muted)] transition-colors duration-300 hover:border-[var(--line-strong)] hover:text-[var(--text-strong)]"
+            >
+              <Settings className="h-4 w-4" strokeWidth={1.7} />
+            </Link>
             <InstallButton />
             <LanguageSwitcher />
             <ThemeToggle />
