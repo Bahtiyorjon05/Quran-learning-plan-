@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { confusableOnPage, loadJuz, loadPage, PAGES, SURAHS } from "@/data/quran/loader";
+import {
+  confusableOnPage,
+  loadJuz,
+  loadPage,
+  loadSurahAyahs,
+  PAGES,
+  SURAHS,
+} from "@/data/quran/loader";
 import { displayWords, normalizeArabic } from "./quran/arabic";
 import { availableModes, generateDrill } from "./drill/generate";
 import type { Question } from "./drill/types";
@@ -196,12 +203,19 @@ describe("every drill, over the whole mushaf", () => {
       const { ayahs } = await loadPage(page);
       if (ayahs.length === 0) continue;
 
+      /* The pool matters here: it is what the product passes, and it changes
+         which places the duel offers. Testing without it would be testing a
+         drill nobody is given. */
+      const surahs = [...new Set(ayahs.map((a) => a.s))].sort((x, y) => x - y);
+      const pool = (await Promise.all(surahs.map(loadSurahAyahs))).flat();
+
       const base = {
         ayahs,
         page,
         seed: page,
         level: 0.5,
         confusable: await confusableOnPage(ayahs),
+        pool,
       };
       if (!availableModes(base).includes("mutashabihat")) continue;
 
@@ -214,7 +228,7 @@ describe("every drill, over the whole mushaf", () => {
           continue;
         }
 
-        const candidates = new Set(ayahs.map((a) => a.k));
+        const candidates = new Set(pool.map((a) => a.k));
         const possible = Math.min(4, candidates.size);
         if (question.choices.length < possible) {
           wrong.push(
@@ -223,7 +237,7 @@ describe("every drill, over the whole mushaf", () => {
         }
 
         const surah = answer.ref.s;
-        const alsoHere = ayahs.some((a) => a.s === surah && a.k !== answer.id);
+        const alsoHere = pool.some((a) => a.s === surah && a.k !== answer.id);
         if (alsoHere) {
           const sharing = question.choices.filter((c) => c.ref?.s === surah).length;
           if (sharing < 2) {

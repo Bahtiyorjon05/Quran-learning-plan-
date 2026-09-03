@@ -12,6 +12,7 @@ import { seedFrom } from "@/core/drill/random";
 import type { Drill, DrillMode } from "@/core/drill/types";
 import {
   confusableOnPage,
+  loadSurahAyahs,
   loadPage,
   pageMeta,
   surahTitle,
@@ -127,15 +128,8 @@ export async function buildSession(input: {
   const { meta, ayahs } = await loadPage(input.page);
   if (ayahs.length === 0) return null;
 
-  const confusable = await confusableOnPage(ayahs);
-
-  const generateInput: GenerateInput = {
-    page: input.page,
-    ayahs: ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a, p: a.p, t: a.t })),
-    confusable,
-    level: input.level ?? 0,
-    seed: 0,
-  };
+  const generateInput = await drillInputFor(ayahs, input.page, input.level ?? 0, 0);
+  const confusable = generateInput.confusable ?? {};
 
   const modes = availableModes(generateInput);
   if (modes.length === 0) return null;
@@ -184,13 +178,45 @@ export async function rebuildDrill(input: {
     `${input.userId}:${input.page}:${input.mode}:${input.level}:${input.nonce}`,
   );
 
-  return generateDrill(input.mode, {
-    page: input.page,
-    ayahs: ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a, p: a.p, t: a.t })),
-    confusable: await confusableOnPage(ayahs),
-    level: input.level,
-    seed,
+  return generateDrill(input.mode, await drillInputFor(ayahs, input.page, input.level, seed));
+}
+
+/**
+ * The one place a drill's input is assembled.
+ *
+ * Built twice — once to show the questions, once to grade the answers — and
+ * the two must agree exactly or the server marks a different drill from the
+ * one that was answered. Sharing the builder is what makes that true by
+ * construction rather than by both copies being edited together.
+ */
+async function drillInputFor(
+  ayahs: Awaited<ReturnType<typeof loadPage>>["ayahs"],
+  page: number,
+  level: number | undefined,
+  seed: number,
+): Promise<GenerateInput> {
+  const asSource = (a: (typeof ayahs)[number]) => ({
+    k: a.k,
+    s: a.s,
+    a: a.a,
+    p: a.p,
+    t: a.t,
   });
+
+  /* Every surah the page touches, whole, so the duel can offer verses that
+     actually resemble the passage rather than whatever shares its page. The
+     juz files these come from are already cached by the page load. */
+  const surahs = [...new Set(ayahs.map((a) => a.s))].sort((x, y) => x - y);
+  const pool = (await Promise.all(surahs.map(loadSurahAyahs))).flat().map(asSource);
+
+  return {
+    page,
+    ayahs: ayahs.map(asSource),
+    confusable: await confusableOnPage(ayahs),
+    pool,
+    level,
+    seed,
+  };
 }
 
 export { FRAGILE_BELOW };

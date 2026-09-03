@@ -10,7 +10,12 @@
  * stored the question.
  */
 
-import { displayWords, normalizeArabic } from "@/core/quran/arabic";
+import {
+  displayWords,
+  normalizeArabic,
+  normalizedWords,
+  similarity,
+} from "@/core/quran/arabic";
 
 import { pick, rngFrom, sampleIndices, shuffle, type Rng } from "./random";
 import type {
@@ -62,6 +67,19 @@ export type GenerateInput = {
    * of imports that only exist on the server.
    */
   confusable?: Record<string, (AyahRef & { score: number; t?: string })[]>;
+  /**
+   * Every ayah of the surahs this page touches, for choosing distractors.
+   *
+   * The page alone is a bad pool. Asked where a passage from Al-Baqara sits,
+   * the only other verses available were the nine or ten sharing its page —
+   * which is how 2:6 came to be offered against 2:10 and 2:11, neither of
+   * which shares a word with it. Given the surah, the drill can put up verses
+   * that could genuinely be mistaken for it.
+   *
+   * Optional, and the page is used when it is absent: the module stays pure
+   * and the caller decides how much to load.
+   */
+  pool?: SourceAyah[];
   /**
    * How far through the drill's difficulty the reciter is, 0 to 1.
    *
@@ -425,8 +443,16 @@ function mutashabihatQuestions(input: GenerateInput, rng: Rng): Question[] {
         prompt: ayah.t,
         /* The choices are references, not text — the text is what is being
            shown, so offering it again would give the answer away. Naming is
-           left to the caller, which has the surah names in the right language. */
-        choices: shuffle([answer, ...distractors], rng),
+           left to the caller, which has the surah names in the right language.
+
+           Listed in the order they occur in the mushaf rather than shuffled.
+           These are places, and a list of places that jumps 2:6, 2:11, 2:10
+           looks like an accident; in order it reads as a list of somewhere this
+           passage could be. The answer's position is still unpredictable,
+           because it depends on where its neighbours fall. */
+        choices: [answer, ...distractors].sort(
+          (a, b) => (a.ref!.s - b.ref!.s) || (a.ref!.a - b.ref!.a),
+        ),
         answerId: ayah.k,
       };
     });
@@ -466,18 +492,29 @@ function placesToConfuseWith(
 
   const here = partners.filter((partner) => partner.s === ayah.s);
   const elsewhere = partners.filter((partner) => partner.s !== ayah.s);
-  const neighbours = shuffle(
-    input.ayahs.filter((other) => other.s === ayah.s && other.k !== ayah.k),
-    rng,
-  );
 
-  /* If every real partner is in another surah, one verse of this one goes in
-     first — otherwise the answer is "the surah it obviously is". */
-  if (here.length === 0) add(neighbours.slice(0, 1));
+  /* The rest of the surah, ranked by how much it actually resembles the
+     passage rather than by how close it happens to sit.
+   *
+   * This is the difference between a question and a formality. Offering 2:6
+   * against 2:10 and 2:11 — its neighbours on the page, sharing not a word
+   * with it — leaves one option anybody can pick by elimination. Ranking by
+   * word overlap puts up the verses that could genuinely be mistaken for it,
+   * which is the whole premise of the drill. */
+  const target = normalizedWords(ayah.t);
+  const alike = (input.pool ?? input.ayahs)
+    .filter((other) => other.s === ayah.s && other.k !== ayah.k)
+    .map((other) => ({ other, score: similarity(target, normalizedWords(other.t)) }))
+    .sort((a, b) => b.score - a.score)
+    .map((ranked) => ranked.other);
+
+  /* If every real partner is in another surah, the likeliest verse of this one
+     goes in first — otherwise the answer is "the surah it obviously is". */
+  if (here.length === 0) add(alike.slice(0, 1));
 
   add(here);
   add(elsewhere);
-  add(neighbours);
+  add(alike);
   /* Last resort, so a short surah still gets a full set of choices. */
   add(shuffle([...input.ayahs], rng));
 
