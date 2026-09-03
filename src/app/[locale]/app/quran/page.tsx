@@ -5,7 +5,12 @@ import { getTranslations } from "next-intl/server";
 import { db } from "@/db/client";
 import { memorizationUnits } from "@/db/schema";
 import { requireOnboardedUser } from "@/auth/guard";
-import { localisedSurahs, pageSurahNames, type QuranLocale } from "@/data/quran/loader";
+import {
+  localisedSurahs,
+  pageSurahNames,
+  surahProgress,
+  type QuranLocale,
+} from "@/data/quran/loader";
 import { pagesOfJuz, TOTAL_JUZ, TOTAL_PAGES } from "@/core/quran/mushaf";
 import { AppHeader } from "@/components/app/app-header";
 import { Atmosphere } from "@/components/app/atmosphere";
@@ -75,6 +80,7 @@ export default async function AppMushafPage({
             {t("browse")}
           </h2>
           <SurahIndex
+            progress={surahProgress(strengths)}
             surahs={localisedSurahs(locale as QuranLocale)}
             juzStartPages={juz}
             basePath="/app/quran"

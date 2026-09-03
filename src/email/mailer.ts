@@ -105,8 +105,36 @@ function sendViaConsole(mail: Mail) {
  * "resend code" a minute later. Failing the whole sign-up because an SMTP
  * server hiccuped would be a worse outcome than a delayed code.
  */
+/**
+ * Addresses that can never receive mail, and must never be posted to.
+ *
+ * RFC 2606 and RFC 6761 set these aside precisely so nothing tries to deliver
+ * to them, and the verification scripts use `.test` for exactly that reason.
+ * Handing one to a real SMTP server does not fail quietly: the server accepts
+ * the message, fails to resolve the domain, and mails a bounce back to the
+ * sending account — so every run of the sign-up check dropped a "message not
+ * delivered" into the inbox Ahd sends from.
+ *
+ * Refused here rather than in the tests, because it is true of the product:
+ * posting to a reserved domain is guaranteed to bounce whoever asks for it.
+ */
+const UNDELIVERABLE = /\.(test|invalid|example|localhost)$/i;
+
+function isUndeliverable(address: string): boolean {
+  const domain = address.split("@").pop() ?? "";
+  return UNDELIVERABLE.test(domain.trim().toLowerCase());
+}
+
 export async function sendMail(mail: Mail): Promise<{ sent: boolean; via: TransportName }> {
   const via = activeTransport();
+
+  if (isUndeliverable(mail.to)) {
+    /* Written to the console so a test can still read the code out of it, and
+       reported as sent because from the caller's side nothing went wrong. */
+    console.log(`[email] ${mail.to} is a reserved domain — not delivering.`);
+    sendViaConsole(mail);
+    return { sent: true, via: "console" };
+  }
 
   try {
     if (via === "smtp") await sendViaSmtp(mail);

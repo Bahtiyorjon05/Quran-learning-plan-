@@ -290,3 +290,37 @@ export function pageSurahNames(locale: QuranLocale): string[] {
     page.surahs.map((number) => localisedSurah(number, locale).title).join(" · "),
   );
 }
+
+/**
+ * How much of each surah is held, from a 604-long strength array.
+ *
+ * A page that straddles two surahs counts for both, because there is no honest
+ * way to split it: the reader either holds that page or does not, and both
+ * surahs are partly on it. That makes a long surah's count generous by at most
+ * one page at each end, which is the right direction to be wrong in — it never
+ * claims a surah is finished when its own pages are not.
+ */
+export function surahProgress(
+  strengths: readonly number[],
+): Record<number, { held: number; total: number; strength: number }> {
+  const out: Record<number, { held: number; total: number; strength: number }> = {};
+
+  for (const surah of SURAHS) {
+    let held = 0;
+    let sum = 0;
+    for (let page = surah.startPage; page <= surah.endPage; page++) {
+      const strength = strengths[page - 1] ?? 0;
+      if (strength > 0) {
+        held += 1;
+        sum += strength;
+      }
+    }
+    out[surah.number] = {
+      held,
+      total: surah.endPage - surah.startPage + 1,
+      strength: held > 0 ? Math.round(sum / held) : 0,
+    };
+  }
+
+  return out;
+}

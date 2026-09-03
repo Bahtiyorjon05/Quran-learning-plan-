@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Search } from "lucide-react";
+import { Check, Search } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import type { LocalisedSurah } from "@/data/quran/loader";
@@ -23,11 +23,21 @@ export function SurahIndex({
   juzStartPages,
   basePath = "/quran",
   continuous = false,
+  progress,
 }: {
   surahs: LocalisedSurah[];
   juzStartPages: { juz: number; from: number; to: number }[];
   /** "/quran" in public, "/app/quran" for a signed-in reader. */
   basePath?: string;
+  /**
+   * How much of each surah the reader holds, keyed by surah number.
+   *
+   * Only the signed-in index has this. A list of 114 identical rows tells
+   * somebody a hundred surahs into their hifz nothing about where they are;
+   * with it, the ones they carry are visible at a glance and the list becomes
+   * a picture of the work rather than a table of contents.
+   */
+  progress?: Record<number, { held: number; total: number; strength: number }>;
   /**
    * Open a surah or a juz whole, rather than at the page it begins on.
    *
@@ -39,6 +49,7 @@ export function SurahIndex({
   continuous?: boolean;
 }) {
   const t = useTranslations("quran.index");
+  const tm = useTranslations("app.mushaf");
   const [tab, setTab] = useState<"surahs" | "juz">("surahs");
   const [query, setQuery] = useState("");
 
@@ -96,21 +107,46 @@ export function SurahIndex({
           <p className="mt-10 text-center text-sm text-[var(--text-muted)]">{t("noResults")}</p>
         ) : (
           <ul className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((s) => (
+            {filtered.map((s) => {
+              const held = progress?.[s.number];
+              const share = held && held.total > 0 ? held.held / held.total : 0;
+              const whole = share >= 1;
+              const some = share > 0 && !whole;
+
+              return (
               <li key={s.number}>
                 <Link
                   href={continuous ? `${basePath}/surah/${s.number}` : `${basePath}/${s.startPage}`}
-                  className="group panel panel-interactive flex items-center gap-3.5 rounded-xl p-3.5"
+                  className={cn(
+                    "group panel panel-interactive flex items-center gap-3.5 rounded-xl p-3.5",
+                    /* A surah carried whole is marked on the row itself, not by
+                       a badge tucked in a corner — it is the thing worth seeing
+                       when the list is scanned. */
+                    whole && "!border-[var(--accent)]/45",
+                  )}
                 >
-                  {/* The number in a rotated square, the way a mushaf marks it. */}
+                  {/* The number in a rotated square, the way a mushaf marks it.
+                      Filled once the surah is held entire. */}
                   <span className="relative grid h-9 w-9 shrink-0 place-items-center">
                     <span
                       aria-hidden
-                      className="absolute inset-0 rotate-45 rounded-[6px] border border-[var(--line-strong)] transition-colors group-hover:border-[var(--accent)]/50"
+                      className={cn(
+                        "absolute inset-0 rotate-45 rounded-[6px] border transition-colors",
+                        whole
+                          ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]"
+                          : "border-[var(--line-strong)] group-hover:border-[var(--accent)]/50",
+                      )}
                     />
-                    <span className="relative text-xs text-[var(--text-muted)] tabular-nums">
-                      {s.number}
-                    </span>
+                    {whole ? (
+                      <Check
+                        className="relative h-3.5 w-3.5 text-[var(--accent-strong)]"
+                        strokeWidth={2.4}
+                      />
+                    ) : (
+                      <span className="relative text-xs text-[var(--text-muted)] tabular-nums">
+                        {s.number}
+                      </span>
+                    )}
                   </span>
 
                   <span className="min-w-0 flex-1">
@@ -126,14 +162,37 @@ export function SurahIndex({
                         {s.name}
                       </span>
                     </span>
-                    <span className="mt-0.5 block truncate text-[0.6875rem] text-[var(--text-faint)]">
-                      {s.gloss ? `${s.gloss} · ` : ""}
-                      {t("ayahs", { count: s.ayahs })}
+                    <span className="mt-0.5 flex items-center gap-2">
+                      <span className="min-w-0 flex-1 truncate text-[0.6875rem] text-[var(--text-faint)]">
+                        {s.gloss ? `${s.gloss} · ` : ""}
+                        {t("ayahs", { count: s.ayahs })}
+                      </span>
+
+                      {/* Part of the way through gets a bar, because "some of
+                          it" is a quantity; all the way through gets the word,
+                          because that is an achievement and not a measurement. */}
+                      {whole && (
+                        <span className="shrink-0 text-[0.625rem] font-semibold tracking-[0.08em] text-[var(--accent-strong)] uppercase">
+                          {tm("memorized")}
+                        </span>
+                      )}
+                      {some && (
+                        <span
+                          aria-hidden
+                          className="h-1 w-10 shrink-0 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-strong)_10%,transparent)]"
+                        >
+                          <span
+                            className="block h-full rounded-full bg-[var(--accent)]"
+                            style={{ width: `${Math.max(8, share * 100)}%` }}
+                          />
+                        </span>
+                      )}
                     </span>
                   </span>
                 </Link>
               </li>
-            ))}
+              );
+            })}
           </ul>
         )
       ) : (
