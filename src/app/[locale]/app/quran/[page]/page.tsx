@@ -19,6 +19,8 @@ import { PageView } from "@/components/quran/page-view";
 import { MemorizeToggle } from "@/components/quran/memorize-toggle";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
+import { ReaderChrome } from "@/components/quran/reader-chrome";
+import { OfflineAudio } from "@/components/quran/offline-audio";
 import { AutoReadMark } from "@/components/quran/auto-read-mark";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
@@ -78,7 +80,9 @@ export default async function AppQuranPage({ params }: Params) {
     <div className="min-h-dvh">
       <AppHeader />
 
-      <div className="sticky top-16 z-30 border-b border-[var(--line-subtle)] bg-[color-mix(in_oklab,var(--surface-base)_88%,transparent)] backdrop-blur-xl sm:top-18">
+      <ReaderChrome />
+
+        <div data-chrome-hide className="sticky top-16 z-30 border-b border-[var(--line-subtle)] bg-[color-mix(in_oklab,var(--surface-base)_88%,transparent)] backdrop-blur-xl sm:top-18">
         <Measure className="flex h-14 items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
             <Link
@@ -121,7 +125,7 @@ export default async function AppQuranPage({ params }: Params) {
         </Measure>
       </div>
 
-      <Measure className="py-6">
+      <Measure className="pt-6">
         <div className="mx-auto max-w-2xl">
           {/* The same controls as the public reader, so size and translation
               cannot drift between the two. What is extra here is the marking,
@@ -130,9 +134,29 @@ export default async function AppQuranPage({ params }: Params) {
             <ReaderControls />
             <MemorizeToggle page={page} memorized={Boolean(unit)} />
           </div>
-          <div className="mt-4">
+        </div>
+      </Measure>
+
+      {/* A direct child of the page on purpose: a sticky element sticks only
+          within its own parent's box, and nested one wrapper deeper the player
+          slid away after a screenful of verses. */}
+      <div className="reader-player py-3">
+        <Measure>
+          <div className="mx-auto max-w-2xl">
             <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
           </div>
+        </Measure>
+      </div>
+
+      <Measure className="pb-2">
+        <div className="mx-auto max-w-2xl">
+          {/* Signed-in readers were the only ones who could not keep a page for
+              later, which is backwards — they are the ones revising it every
+              week. */}
+          <OfflineAudio
+            unit={`page-${page}`}
+            ayahs={ayahs.map((a) => ({ s: a.s, a: a.a }))}
+          />
         </div>
       </Measure>
 

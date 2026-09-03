@@ -78,6 +78,30 @@ async function main() {
     failures.push(`Al-Fatiha began with ${fatiha}, not its own first ayah`);
   }
 
+  /* ── The Basmala is lit while it is the thing being recited ── */
+  await page.goto(`${BASE}/quran/2`, { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("[data-recitation-toggle]", { timeout: 15_000 });
+  await page.evaluate(() => {
+    const el = document.querySelector("audio");
+    if (el) el.muted = true;
+  });
+  await page.locator("[data-recitation-toggle]").click();
+  await page.waitForTimeout(2500);
+
+  const litDuringBasmala = await page.evaluate(() => {
+    const marked = document.querySelector("[data-reciting]");
+    if (!marked) return "nothing";
+    return marked.hasAttribute("data-basmala")
+      ? `basmala of surah ${marked.getAttribute("data-basmala")}`
+      : `ayah ${marked.getAttribute("data-ayah")}`;
+  });
+  console.log(`  6. while the Basmala sounds → ${litDuringBasmala} is lit`);
+  if (!litDuringBasmala.startsWith("basmala")) {
+    failures.push(
+      `the Basmala was sounding but ${litDuringBasmala} was lit — the page marks a verse that is not being recited yet`,
+    );
+  }
+
   /* ── The control beside a verse starts that verse ── */
   await page.goto(`${BASE}/quran/3`, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("[data-ayah-play]", { timeout: 15_000 });

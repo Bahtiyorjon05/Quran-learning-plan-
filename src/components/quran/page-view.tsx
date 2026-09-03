@@ -72,12 +72,16 @@ async function SurahHeading({ number, locale }: { number: number; locale: QuranL
         </p>
       </div>
 
-      {/* At-Tawbah is the one surah that opens without the basmala. */}
+      {/* At-Tawbah is the one surah that opens without the basmala.
+          `data-basmala` is how the player finds this line: it is recited before
+          the surah's first ayah and is not an ayah, so it has no key of its own
+          to be marked by. */}
       {info.basmala && (
         <p
           dir="rtl"
           lang="ar"
-          className="font-quran mt-6 text-center text-[calc(1.5rem*var(--arabic-scale,1))] leading-[2] text-[var(--text-strong)]"
+          data-basmala={number}
+          className="font-quran mt-6 rounded-lg px-3 text-center text-[calc(1.5rem*var(--arabic-scale,1))] leading-[2] text-[var(--text-strong)]"
         >
           {BASMALA}
         </p>

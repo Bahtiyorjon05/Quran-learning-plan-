@@ -154,6 +154,10 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
      during render is the ref access React forbids, and it would not re-render
      when the audio pauses anyway. */
   const [paused, setPaused] = useState(true);
+  /* Whether what is sounding is the Basmala rather than the ayah it opens.
+     Kept in state because the mark has to move to a different element, and set
+     only from event handlers — never from inside an effect. */
+  const [sayingBasmala, setSayingBasmala] = useState(false);
 
   /* Position, for the seek bar. Kept in state because it has to be drawn, and
      updated from the element's own timeupdate rather than a timer — the
@@ -191,6 +195,7 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
     const onAdopt = () => {
       const at = Number(audio.dataset.index);
       if (Number.isInteger(at) && at >= 0 && at < ayahs.length) setIndex(at);
+      setSayingBasmala(audio.dataset.basmala === "1");
     };
     const onMeta = () => setDuration(audio.duration || 0);
     const onTime = () => setPosition(audio.currentTime);
@@ -258,6 +263,7 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
          same index rather than the one after it. */
       if (audio.dataset.basmala === "1") {
         delete audio.dataset.basmala;
+        setSayingBasmala(false);
         setLoading(true);
         audio.src = sourceFor(reciter.id, index);
         if (index + 1 < ayahs.length) warm([sourceFor(reciter.id, index + 1)]);
@@ -303,13 +309,30 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
   useEffect(() => {
     const current = index === null ? null : ayahs[index];
 
+    /* While the Basmala sounds the mark belongs on the Basmala, not on the
+       ayah it opens — otherwise the page highlights a verse that is not being
+       recited yet, which is exactly the thing following along cannot survive. */
+    const onBasmala = sayingBasmala && current !== null;
+
     for (const node of document.querySelectorAll("[data-ayah]")) {
-      node.toggleAttribute("data-reciting", node.getAttribute("data-ayah") === current?.k);
+      node.toggleAttribute(
+        "data-reciting",
+        !onBasmala && node.getAttribute("data-ayah") === current?.k,
+      );
+    }
+
+    for (const node of document.querySelectorAll("[data-basmala]")) {
+      node.toggleAttribute(
+        "data-reciting",
+        onBasmala && node.getAttribute("data-basmala") === String(current?.s),
+      );
     }
 
     if (!follow || !current) return;
 
-    const node = document.querySelector(`[data-ayah="${current.k}"]`);
+    const node = onBasmala
+      ? document.querySelector(`[data-basmala="${current.s}"]`)
+      : document.querySelector(`[data-ayah="${current.k}"]`);
     if (!(node instanceof HTMLElement)) return;
 
     /* Only scroll when the verse is not already comfortably on screen. A
@@ -327,7 +350,7 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
         ? "auto"
         : "smooth",
     });
-  }, [index, ayahs, follow]);
+  }, [index, ayahs, follow, sayingBasmala]);
 
   /* Nothing left marked when the page turns. Deferred for the same reason the
      audio is: an unmount may be a language switch, and clearing the mark there
@@ -383,6 +406,7 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
     audio.dataset.pageKey = pageKey;
     if (basmala) audio.dataset.basmala = "1";
     else delete audio.dataset.basmala;
+    setSayingBasmala(basmala);
 
     void audio.play().catch(() => {
       setLoading(false);

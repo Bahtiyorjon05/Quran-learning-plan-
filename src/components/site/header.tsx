@@ -53,6 +53,7 @@ export function Header() {
       </a>
 
       <header
+        data-chrome-hide
         className={cn(
           "fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500 ease-[var(--ease-calm)]",
           scrolled

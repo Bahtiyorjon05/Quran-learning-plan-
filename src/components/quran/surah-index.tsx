@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import type { LocalisedSurah } from "@/data/quran/loader";
@@ -137,16 +137,18 @@ export function SurahIndex({
                           : "border-[var(--line-strong)] group-hover:border-[var(--accent)]/50",
                       )}
                     />
-                    {whole ? (
-                      <Check
-                        className="relative h-3.5 w-3.5 text-[var(--accent-strong)]"
-                        strokeWidth={2.4}
-                      />
-                    ) : (
-                      <span className="relative text-xs text-[var(--text-muted)] tabular-nums">
-                        {s.number}
-                      </span>
-                    )}
+                    {/* The number stays. It is how a surah is found, looked up
+                        and talked about; swapping it for a tick took away the
+                        one thing the row is indexed by. Being held is said in
+                        words further along the row instead. */}
+                    <span
+                      className={cn(
+                        "relative text-xs tabular-nums",
+                        whole ? "font-medium text-[var(--accent-strong)]" : "text-[var(--text-muted)]",
+                      )}
+                    >
+                      {s.number}
+                    </span>
                   </span>
 
                   <span className="min-w-0 flex-1">
