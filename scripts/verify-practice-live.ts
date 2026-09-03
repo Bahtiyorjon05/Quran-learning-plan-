@@ -27,6 +27,31 @@ const PAGE = 2;
 const sql = neon(process.env.DATABASE_URL!);
 
 /**
+ * This one only works against the build sitting in .next.
+ *
+ * Server action ids are hashes of a particular build's output, and the id is
+ * read out of the local manifest below. Point this at production and every
+ * POST comes back 404 — not because anything is broken, but because the ids
+ * belong to a different build. It once reported fifteen failures that way and
+ * looked exactly like a broken product, so it now refuses instead.
+ */
+function refuseRemote() {
+  const base = BASE.replace(/\/$/, "");
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(base)) return;
+
+  console.error(
+    `\nThis check only works against a local build.\n` +
+      `  asked for : ${base}\n` +
+      `  reason    : server action ids come from .next, and a deployed build\n` +
+      `              hashes them differently — every POST would 404.\n\n` +
+      `Run it against localhost after \`npm run build && npm run start\`.\n` +
+      `To see a deployed build end to end, use observe:practice, which drives\n` +
+      `the real browser and needs no action ids.`,
+  );
+  process.exit(2);
+}
+
+/**
  * The action's id, found by the file it lives in.
  *
  * Never by matching a path fragment against the manifest keys: doing that once
@@ -53,6 +78,8 @@ async function actionId(fileFragment: string, exportName: string): Promise<strin
 }
 
 async function main() {
+  refuseRemote();
+
   if (process.env.NODE_ENV === "production") throw new Error("never against production");
 
   /* ── an account that holds page 2 ── */
