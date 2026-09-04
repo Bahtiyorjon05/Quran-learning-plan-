@@ -58,6 +58,8 @@ export default async function SurahReadingPage({ params }: Params) {
             { length: info.endPage - info.startPage + 1 },
             (_, i) => info.startPage + i,
           ),
+          /* This page itself, so it opens again with the network gone. */
+          routes: [`/quran/surah/${n}`],
         },
       ]}
       previous={

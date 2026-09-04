@@ -46,6 +46,8 @@ export default async function JuzReadingPage({ params }: Params) {
           kind: "juz",
           ayahs: ayahs.map((a) => ({ s: a.s, a: a.a })),
           pages: QURAN_META.pages.filter((p) => p.juz === n).map((p) => p.page),
+          /* This page itself, so it opens again with the network gone. */
+          routes: [`/quran/juz/${n}`],
         },
       ]}
       previous={n > 1 ? { href: `/quran/juz/${n - 1}`, label: t("prevJuz") } : undefined}

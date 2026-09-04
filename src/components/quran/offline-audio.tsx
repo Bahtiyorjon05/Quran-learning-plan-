@@ -52,6 +52,8 @@ export type OfflineScope = {
   ayahs: { s: number; a: number }[];
   /** Mushaf pages this covers, so the text can be read as well as heard. */
   pages: number[];
+  /** Whole-surah and whole-juz reading routes, which are separate addresses. */
+  routes: string[];
 };
 
 export function OfflineAudio({ scopes }: { scopes: OfflineScope[] }) {
@@ -96,7 +98,14 @@ export function OfflineAudio({ scopes }: { scopes: OfflineScope[] }) {
      during render, which turned every page of the reader into a 500. `fetch`
      and `cache.put` both resolve a path against the document, so the key ends
      up as the same absolute URL the browser will later ask for. */
-  const pageUrls = scope.pages.map((page) => `${prefix}/quran/${page}`);
+  const pageUrls = [
+    ...scope.pages.map((page) => `${prefix}/quran/${page}`),
+    /* The surah read whole lives at its own address, and the index of surahs
+       links there rather than to page one of it. Without this a reader offline
+       could open the index, tap a surah they had downloaded, and land on the
+       offline notice — which is exactly what happened. */
+    ...scope.routes.map((route) => `${prefix}${route}`),
+  ];
 
   /* Every file the player will ask for, which is not quite every ayah: a surah
      that opens with the Basmala asks for that first, and a download without it

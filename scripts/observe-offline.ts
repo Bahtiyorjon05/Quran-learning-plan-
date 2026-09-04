@@ -125,6 +125,26 @@ async function main() {
     failures.push("a downloaded page that had never been visited does not open offline");
   }
 
+  /* And the journey a reader actually takes offline: open the index of surahs
+     — which is precached, so it works — and tap the surah they downloaded.
+     That lands on a different address from any single page, and keeping only
+     the pages left this step showing the offline notice instead of the words. */
+  await page.goto(`${BASE}/quran`, { waitUntil: "domcontentloaded" }).catch(() => {});
+  await page.waitForTimeout(1200);
+  const indexWorks = (await page.locator("a[href*='/quran/']").count().catch(() => 0)) > 0;
+  console.log(` 10. surah index offline → ${indexWorks ? "opens" : "BLANK"}`);
+  if (!indexWorks) failures.push("the index of surahs does not open offline");
+
+  await page.goto(`${BASE}/quran/surah/78`, { waitUntil: "domcontentloaded" }).catch(() => {});
+  await page.waitForTimeout(1500);
+  const surahOffline = await page.locator("[data-ayah]").count().catch(() => 0);
+  console.log(` 11. the surah, read whole → ${surahOffline > 0 ? `${surahOffline} ayahs` : "BLANK"}`);
+  if (surahOffline !== 40) {
+    failures.push(
+      `tapping the downloaded surah offline showed ${surahOffline} ayahs, expected An-Naba's 40`,
+    );
+  }
+
   await page.evaluate(() => {
     const el = document.querySelector("audio");
     if (el) el.muted = true;

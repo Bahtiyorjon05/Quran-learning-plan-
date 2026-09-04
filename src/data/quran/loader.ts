@@ -338,7 +338,13 @@ export function surahProgress(
  * its opening ayahs belong to.
  */
 export async function offlineScopesForPage(page: number): Promise<
-  { unit: string; kind: "page" | "surah" | "juz"; ayahs: { s: number; a: number }[]; pages: number[] }[]
+  {
+    unit: string;
+    kind: "page" | "surah" | "juz";
+    ayahs: { s: number; a: number }[];
+    pages: number[];
+    routes: string[];
+  }[]
 > {
   const info = pageMeta(page);
   const { ayahs } = await loadPage(page);
@@ -348,6 +354,11 @@ export async function offlineScopesForPage(page: number): Promise<
     kind: "page" | "surah" | "juz";
     ayahs: { s: number; a: number }[];
     pages: number[];
+    /* Reading routes this scope also has to bring down, locale prefix aside.
+       The index of surahs is precached, so offline a reader reaches it and taps
+       a surah — and landed on nothing, because a surah read whole lives at its
+       own address and only the individual pages had been kept. */
+    routes: string[];
   };
 
   const scopes: Scope[] = [
@@ -356,6 +367,7 @@ export async function offlineScopesForPage(page: number): Promise<
       kind: "page",
       ayahs: ayahs.map((a) => ({ s: a.s, a: a.a })),
       pages: [page],
+      routes: [],
     },
   ];
 
@@ -368,6 +380,7 @@ export async function offlineScopesForPage(page: number): Promise<
       kind: "surah",
       ayahs: surahAyahs.map((a) => ({ s: a.s, a: a.a })),
       pages: range(meta.startPage, meta.endPage),
+      routes: [`/quran/surah/${first}`],
     });
   }
 
@@ -378,6 +391,7 @@ export async function offlineScopesForPage(page: number): Promise<
     kind: "juz",
     ayahs: juzAyahs.map((a) => ({ s: a.s, a: a.a })),
     pages: juzPages,
+    routes: [`/quran/juz/${info.juz}`],
   });
 
   return scopes;

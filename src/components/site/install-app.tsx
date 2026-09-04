@@ -217,6 +217,47 @@ export function InstallButton({ className }: { className?: string }) {
   );
 }
 
+/**
+ * The same offer, as a row inside the account menu.
+ *
+ * The header used to carry a standalone install button, which on a phone was
+ * one more round icon in a row that had already run out of room. Inside the
+ * menu it can afford a word instead of a glyph — and where there is no prompt
+ * to fire, the explanation unfolds in place rather than opening a popover on
+ * top of the popover it was launched from.
+ */
+export function InstallMenuItem({ className }: { className?: string }) {
+  const t = useTranslations("install");
+  const { possible, ios, canPrompt, install } = useInstall();
+  const [showing, setShowing] = useState(false);
+
+  if (!possible) return null;
+
+  const explains = ios || !canPrompt;
+
+  return (
+    <>
+      <button
+        type="button"
+        role="menuitem"
+        onClick={() => (explains ? setShowing((open) => !open) : void install())}
+        aria-expanded={explains ? showing : undefined}
+        className={cn(className, "w-full")}
+      >
+        <ArrowDownToLine className="h-4 w-4 shrink-0 text-[var(--text-faint)]" strokeWidth={1.7} />
+        {t("title")}
+      </button>
+
+      {explains && showing && (
+        <p className="px-3 pt-1 pb-2 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+          {ios ? t("iosHow") : t("menuHow")}
+          {ios && <IosSteps t={t} />}
+        </p>
+      )}
+    </>
+  );
+}
+
 function IosSteps({ t }: { t: (key: string) => string }) {
   return (
     <p className="mt-3 flex flex-wrap items-center gap-2 text-[0.75rem] text-[var(--text-faint)]">
