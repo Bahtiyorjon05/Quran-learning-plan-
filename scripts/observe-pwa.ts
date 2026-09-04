@@ -53,6 +53,21 @@ async function main() {
     failures.push("the install offer rendered in a browser that cannot install");
   }
 
+  /* ── But the header icon is there regardless ──
+     The card waits for a prompt; the icon does not. Chrome fires
+     `beforeinstallprompt` at most once per page load and never once the app is
+     installed, so an icon that waited for it vanished for everybody who had
+     ever installed the app — the exact disappearance that was reported. From a
+     tab, installing is always possible, and with no prompt in hand the button
+     explains where the browser keeps its own menu item. */
+  const iconOnHome = await page
+    .getByRole("button", { name: /Ahd ilovasini|Install Ahd|Установите Ahd/ })
+    .count();
+  console.log(`  install button in the header: ${iconOnHome > 0 ? "present ✓" : "MISSING ✗"}`);
+  if (iconOnHome === 0) {
+    failures.push("the header install button is missing in a plain browser tab");
+  }
+
   /* ── And it appears once the browser says it can ── */
   await page.evaluate(() => {
     const event = new Event("beforeinstallprompt") as Event & {

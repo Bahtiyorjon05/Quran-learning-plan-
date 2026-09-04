@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Keeping a recitation on the device.
+ * Keeping a recitation — and the pages it belongs to — on the device.
  *
  * The service worker already keeps whatever has been played, but only what has
  * been played, and only until the rolling cache evicts it. That is no use to
@@ -174,7 +174,16 @@ export async function saveForOffline(
 
       const already = await cache.match(url);
       if (!already) {
-        const response = await fetch(url, { mode: "no-cors", signal });
+        /* Pages of this site are same-origin and can be read; the recitation
+           CDN sends no CORS header and cannot, so it is fetched opaque. Asking
+           for a page opaque would work and then store something React could
+           never render. */
+        /* A path is ours; anything absolute is the recitation CDN. */
+        const ours = url.startsWith("/");
+        const response = await fetch(
+          url,
+          ours ? { signal, credentials: "omit" } : { mode: "no-cors", signal },
+        );
 
         /* An opaque response reports status 0 and hides everything else, so
            "did it work" is the only question that can be asked of it. A 206 is
@@ -187,7 +196,21 @@ export async function saveForOffline(
           throw new Error(`${url} came back ${response.type} ${response.status}`);
         }
 
-        await cache.put(url, response);
+        /* A response that arrived via a redirect cannot be handed to
+           `cache.put` — the Cache API refuses it outright, and the rejection
+           took the whole download with it after the recitation had already
+           been stored. Locale routing means every page of this site is reached
+           that way, so a page is rebuilt from its body before it is kept. */
+        await cache.put(
+          url,
+          response.redirected
+            ? new Response(await response.blob(), {
+                status: 200,
+                statusText: "OK",
+                headers: response.headers,
+              })
+            : response,
+        );
       }
 
       done += 1;

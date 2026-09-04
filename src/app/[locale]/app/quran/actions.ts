@@ -5,10 +5,15 @@ import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
-import { memorizationUnits, plans } from "@/db/schema";
+import { memorizationUnits } from "@/db/schema";
 import { requireOnboardedUser } from "@/auth/guard";
-import { LINES_PER_PAGE, TOTAL_PAGES } from "@/core/quran/mushaf";
+import { TOTAL_PAGES } from "@/core/quran/mushaf";
 import type { MarkState } from "@/core/plan/mark-state";
+/* One definition of "how far through the covenant", not two. This file used
+   to keep its own, which counted every memorized page anywhere in scope while
+   today's counted the unbroken run from its start — so the same reader saw 2%
+   or 4% depending only on which of the two had written last. */
+import { recomputeProgress } from "@/app/[locale]/app/today";
 
 const schema = z.object({
   page: z.coerce.number().int().min(1).max(TOTAL_PAGES),
@@ -66,7 +71,7 @@ export async function setPageMemorized(
         .where(and(eq(memorizationUnits.userId, user.id), eq(memorizationUnits.page, page)));
     }
 
-    await recomputePlanProgress(user.id);
+    await recomputeProgress(user.id);
   } catch (error) {
     console.error("[quran] could not mark page:", error);
     return { status: "error" };
@@ -76,39 +81,4 @@ export async function setPageMemorized(
   return { status: "ok", memorized };
 }
 
-/**
- * Keeps the covenant's progress in step with what has actually been memorized.
- *
- * Marking a page is the only way completed_lines moves, and it is recomputed
- * from the units rather than incremented — an increment drifts the moment
- * anything is marked twice or unmarked, and the pace gauge is the number people
- * trust most.
- */
-async function recomputePlanProgress(userId: string) {
-  const [plan] = await db
-    .select({
-      id: plans.id,
-      fromPage: plans.scopeFromPage,
-      toPage: plans.scopeToPage,
-      totalLines: plans.totalLines,
-    })
-    .from(plans)
-    .where(and(eq(plans.userId, userId), eq(plans.status, "active")))
-    .limit(1);
 
-  if (!plan) return;
-
-  const [row] = await db
-    .select({ pages: sql<number>`count(*)::int` })
-    .from(memorizationUnits)
-    .where(
-      and(
-        eq(memorizationUnits.userId, userId),
-        eq(memorizationUnits.state, "memorized"),
-        sql`${memorizationUnits.page} between ${plan.fromPage} and ${plan.toPage}`,
-      ),
-    );
-
-  const completed = Math.min((row?.pages ?? 0) * LINES_PER_PAGE, plan.totalLines);
-  await db.update(plans).set({ completedLines: completed }).where(eq(plans.id, plan.id));
-}

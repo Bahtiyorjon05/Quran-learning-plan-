@@ -40,7 +40,14 @@ export default async function JuzReadingPage({ params }: Params) {
       subtitle={`${t("wholeJuz")} · ${t("ayahCount", { count: ayahs.length })}`}
       ayahs={ayahs}
       locale={locale as Locale}
-      offlineUnit={`juz-${n}`}
+      offlineScopes={[
+        {
+          unit: `juz-${n}`,
+          kind: "juz",
+          ayahs: ayahs.map((a) => ({ s: a.s, a: a.a })),
+          pages: QURAN_META.pages.filter((p) => p.juz === n).map((p) => p.page),
+        },
+      ]}
       previous={n > 1 ? { href: `/quran/juz/${n - 1}`, label: t("prevJuz") } : undefined}
       next={n < 30 ? { href: `/quran/juz/${n + 1}`, label: t("nextJuz") } : undefined}
       alsoBy={[

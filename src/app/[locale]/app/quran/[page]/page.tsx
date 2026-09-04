@@ -20,6 +20,7 @@ import { MemorizeToggle } from "@/components/quran/memorize-toggle";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
 import { OfflineAudio } from "@/components/quran/offline-audio";
+import { offlineScopesForPage } from "@/data/quran/loader";
 import { AutoReadMark } from "@/components/quran/auto-read-mark";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
@@ -133,15 +134,15 @@ export default async function AppQuranPage({ params }: Params) {
           </div>
 
           <div className="mt-4 space-y-4">
-            <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
+            <Recitation
+              ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))}
+              nextHref={page < TOTAL_PAGES ? `/app/quran/${page + 1}` : undefined}
+            />
 
             {/* Signed-in readers were the only ones who could not keep a page
                 for later, which is backwards — they are the ones revising it
                 every week. */}
-            <OfflineAudio
-              unit={`page-${page}`}
-              ayahs={ayahs.map((a) => ({ s: a.s, a: a.a }))}
-            />
+            <OfflineAudio scopes={await offlineScopesForPage(page)} />
           </div>
         </div>
       </Measure>

@@ -13,6 +13,7 @@ import {
   surahAudioUrl,
 } from "@/lib/reciters";
 import { useLocalValue, writeLocal } from "@/lib/client-store";
+import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 /**
@@ -129,9 +130,23 @@ type Speed = (typeof SPEEDS)[number];
 
 export type PlayableAyah = { k: string; s: number; a: number };
 
-export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
+export function Recitation({
+  ayahs,
+  nextHref,
+}: {
+  ayahs: PlayableAyah[];
+  /**
+   * Where the text carries on, if it does.
+   *
+   * A page of the mushaf is a unit of print, not of recitation — nobody stops
+   * mid-surah because the paper ran out. Given this, the last ayah of a page
+   * turns to the next one and keeps going.
+   */
+  nextHref?: string;
+}) {
   const t = useTranslations("quran.audio");
   const locale = useLocale() as "uz" | "en" | "ru";
+  const router = useRouter();
 
   const reciter = reciterById(useLocalValue(RECITER_KEY) ?? "");
   const repeatOne = useLocalValue(REPEAT_KEY) === "true";
@@ -182,8 +197,9 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
     }
 
     const adopting = audio.dataset.pageKey === pageKey && Boolean(audio.src);
+    const turningOver = audio.dataset.autostart === "1";
 
-    if (!adopting && audio.src) {
+    if (!adopting && !turningOver && audio.src) {
       /* A different page. Whatever was playing belongs to somewhere else. */
       audio.pause();
       audio.removeAttribute("src");
@@ -197,6 +213,14 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
       if (Number.isInteger(at) && at >= 0 && at < ayahs.length) setIndex(at);
       setSayingBasmala(audio.dataset.basmala === "1");
     };
+
+    /* Arriving on a page the recitation turned to by itself. Routed through an
+       event for the same reason as adopting: it puts the start on the same
+       path as any other, rather than setting state from inside an effect. */
+    const onAutostart = () => {
+      delete audio.dataset.autostart;
+      if (ayahs.length > 0) playAt(0);
+    };
     const onMeta = () => setDuration(audio.duration || 0);
     const onTime = () => setPosition(audio.currentTime);
     const onPlay = () => setPaused(false);
@@ -209,6 +233,7 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
     };
 
     audio.addEventListener("ahd-adopt", onAdopt);
+    audio.addEventListener("ahd-autostart", onAutostart);
     audio.addEventListener("loadedmetadata", onMeta);
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("play", onPlay);
@@ -222,7 +247,9 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
        reached and which ayah is sounding; asking it to say so again routes
        that through the same handlers any real playback would use, so there is
        one path into this component's state rather than two. */
-    if (adopting) {
+    if (turningOver) {
+      audio.dispatchEvent(new Event("ahd-autostart"));
+    } else if (adopting) {
       audio.dispatchEvent(new Event("ahd-adopt"));
       audio.dispatchEvent(new Event(audio.paused ? "pause" : "play"));
       if (Number.isFinite(audio.duration)) audio.dispatchEvent(new Event("loadedmetadata"));
@@ -231,6 +258,7 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
 
     return () => {
       audio.removeEventListener("ahd-adopt", onAdopt);
+      audio.removeEventListener("ahd-autostart", onAutostart);
       audio.removeEventListener("loadedmetadata", onMeta);
       audio.removeEventListener("timeupdate", onTime);
       audio.removeEventListener("play", onPlay);
@@ -248,6 +276,12 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
         audio.pause();
       }, ORPHAN_GRACE_MS);
     };
+    /* `playAt` is deliberately not a dependency. It is rebuilt on every render,
+       so listing it would tear down and re-attach every listener on this shared
+       element several times a second — and the only thing that reads it here is
+       the autostart, which fires once, on mount, from this render's closure.
+       The values it captures are this page's, which is exactly what is wanted. */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageKey, ayahs.length]);
 
   /* `ended` carries state that changes between renders, so it is bound
@@ -277,6 +311,16 @@ export function Recitation({ ayahs }: { ayahs: PlayableAyah[] }) {
       /* A surah file has already played the whole chapter, so there is nothing
          after it. A verse file moves on, or repeats. */
       if (!perAyah) return setIndex(null);
+
+      /* The end of the page, with more text after it: turn over and keep
+         reciting. The flag rides on the element because the component that
+         reads it is not this one — it is the next page's. */
+      if (!repeatOne && index + 1 >= ayahs.length && nextHref) {
+        audio.dataset.autostart = "1";
+        router.push(nextHref);
+        return;
+      }
+
       playAt(repeatOne ? index : index + 1, !repeatOne);
     };
 

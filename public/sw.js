@@ -49,9 +49,20 @@ const SAVED = "ahd-audio-saved";
 const AUDIO_LIMIT = 1500;
 
 self.addEventListener("install", (event) => {
-  /* The offline page is the one thing worth having before it is needed. */
+  /* Two pages worth having before they are needed: the one that explains what
+     has happened, and the index it sends people to. Without the second, the
+     only button on the offline page led somewhere that had never been cached,
+     so pressing it did nothing at all. */
   event.waitUntil(
-    caches.open(PAGES).then((cache) => cache.add("/offline")).catch(() => {}),
+    caches
+      .open(PAGES)
+      .then((cache) =>
+        Promise.all([
+          cache.add("/offline").catch(() => {}),
+          cache.add("/quran").catch(() => {}),
+        ]),
+      )
+      .catch(() => {}),
   );
   self.skipWaiting();
 });
@@ -143,15 +154,55 @@ self.addEventListener("fetch", (event) => {
       (async () => {
         try {
           const response = await fetch(request);
+          /* `cache.put` refuses a redirected response, and locale routing means
+             plenty of these arrive that way — so the copy that is kept is
+             rebuilt from the body. Without this the put rejected quietly and
+             the page was never cached at all, which is why a reader who had
+             opened a page still found nothing there offline. */
           if (response.ok) {
             const cache = await caches.open(PAGES);
-            cache.put(request, response.clone());
+            const copy = response.clone();
+            const keep = copy.redirected
+              ? new Response(await copy.blob(), {
+                  status: 200,
+                  statusText: "OK",
+                  headers: copy.headers,
+                })
+              : copy;
+            cache.put(request, keep).catch(() => {});
           }
           return response;
         } catch {
+          /* Downloaded on purpose first, then merely visited, then the page
+             that explains what has happened.
+
+             The first of those is the whole point of a download: a reader who
+             asked for a surah before getting on a train has never opened most
+             of its pages, so "seen before" would have nothing for them. */
+          const saved = await caches.open(SAVED);
+          const kept = await saved.match(request, { ignoreSearch: true });
+          if (kept) return kept;
+
+          /* A signed-in reader's links point at /app/quran/N, but what a
+             download stores is the public /quran/N — deliberately, because the
+             signed-in page is personalised and caching it would put one
+             person's progress in front of whoever picks up the device next.
+             The words are the same either way, so offline the public copy
+             stands in rather than nothing at all. */
+          const app = url.pathname.match(/^(?:\/(?:en|ru))?\/app\/quran\/(\d+)$/);
+          if (app) {
+            const locale = url.pathname.startsWith("/en")
+              ? "/en"
+              : url.pathname.startsWith("/ru")
+                ? "/ru"
+                : "";
+            const publicCopy = await saved.match(`${url.origin}${locale}/quran/${app[1]}`, {
+              ignoreSearch: true,
+            });
+            if (publicCopy) return publicCopy;
+          }
+
           const cache = await caches.open(PAGES);
-          /* This page if it has been seen, otherwise the one that explains
-             what has happened. */
           return (
             (await cache.match(request)) ??
             (await cache.match("/offline")) ??

@@ -5,7 +5,7 @@ import { Footer } from "@/components/site/footer";
 import { PageView } from "@/components/quran/page-view";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
-import { OfflineAudio } from "@/components/quran/offline-audio";
+import { OfflineAudio, type OfflineScope } from "@/components/quran/offline-audio";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -31,7 +31,7 @@ export function ReadingShell({
   subtitle,
   ayahs,
   locale,
-  offlineUnit,
+  offlineScopes,
   previous,
   next,
   alsoBy,
@@ -40,8 +40,8 @@ export function ReadingShell({
   subtitle: string;
   ayahs: Ayah[];
   locale: Locale;
-  /** Stable name for the offline download: "juz-30", "surah-36". */
-  offlineUnit: string;
+  /** What can be kept for offline here — one scope: this whole surah or juz. */
+  offlineScopes: OfflineScope[];
   previous?: { href: string; label: string };
   next?: { href: string; label: string };
   /** The other ways to read this same place. */
@@ -119,7 +119,7 @@ export function ReadingShell({
 
             <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
 
-            <OfflineAudio unit={offlineUnit} ayahs={ayahs.map((a) => ({ s: a.s, a: a.a }))} />
+            <OfflineAudio scopes={offlineScopes} />
           </div>
         </Measure>
 

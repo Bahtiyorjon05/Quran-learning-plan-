@@ -8,6 +8,7 @@ import {
   TOTAL_PAGES,
   loadPage,
   localisedSurah,
+  offlineScopesForPage,
   type QuranLocale,
 } from "@/data/quran/loader";
 import { Header } from "@/components/site/header";
@@ -15,6 +16,7 @@ import { Footer } from "@/components/site/footer";
 import { PageView } from "@/components/quran/page-view";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
+import { OfflineAudio } from "@/components/quran/offline-audio";
 import { AutoReadMark } from "@/components/quran/auto-read-mark";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
@@ -105,7 +107,12 @@ export default async function QuranPage({ params }: Params) {
             <div className="flex justify-end">
               <ReaderControls />
             </div>
-            <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
+            <Recitation
+              ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))}
+              nextHref={page < TOTAL_PAGES ? `/quran/${page + 1}` : undefined}
+            />
+
+            <OfflineAudio scopes={await offlineScopesForPage(page)} />
           </div>
         </Measure>
 

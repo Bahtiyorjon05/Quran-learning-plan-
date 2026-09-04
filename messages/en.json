@@ -716,7 +716,12 @@
       "failed": "The download did not finish. Check your connection.",
       "hint": "Downloaded once, it plays without a connection in this reciter's voice.",
       "reciterNote": "For the chosen reciter only: {reciter}",
-      "unsupported": "This browser cannot store recitation offline."
+      "unsupported": "This browser cannot store recitation offline.",
+      "scopePage": "This page",
+      "scopeSurah": "This surah",
+      "scopeJuz": "This juz",
+      "pages": "{count} pages",
+      "readable": "The pages come too, so you can read it with no connection."
     }
   },
   "pages": {
@@ -1016,7 +1021,8 @@
     "dismiss": "Not now",
     "iosHow": "Add it to your home screen and it opens like an app, with the pages you have read available offline.",
     "iosShare": "Share",
-    "iosAdd": "Add to Home Screen"
+    "iosAdd": "Add to Home Screen",
+    "menuHow": "Open the browser menu and choose “Install app” or “Add to Home screen”."
   },
   "offline": {
     "badge": "No connection",

@@ -49,7 +49,17 @@ export default async function SurahReadingPage({ params }: Params) {
       subtitle={`${t("wholeSurah")} · ${t("ayahCount", { count: info.ayahs })}`}
       ayahs={ayahs}
       locale={locale as Locale}
-      offlineUnit={`surah-${n}`}
+      offlineScopes={[
+        {
+          unit: `surah-${n}`,
+          kind: "surah",
+          ayahs: ayahs.map((a) => ({ s: a.s, a: a.a })),
+          pages: Array.from(
+            { length: info.endPage - info.startPage + 1 },
+            (_, i) => info.startPage + i,
+          ),
+        },
+      ]}
       previous={
         n > 1
           ? { href: `/quran/surah/${n - 1}`, label: t("prevSurah") }

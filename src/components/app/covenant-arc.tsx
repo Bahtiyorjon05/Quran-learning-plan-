@@ -39,15 +39,29 @@ const TICKS = 16;
 
 export function CovenantArc({
   pace,
+  fill,
   label,
   caption,
 }: {
   pace: Pace;
+  /**
+   * How full to draw it, 0 to 1.
+   *
+   * Given rather than taken from the pace, because the two numbers the pace
+   * carries are not interchangeable. Its own `progress` is the frontier the
+   * schedule has reached — the unbroken run from the start of the scope, which
+   * is what decides tomorrow's sabaq. What a reader counts is every page they
+   * hold, wherever it sits. Someone who began with juz 30 holds real pages the
+   * frontier does not know about, and drawing the frontier under a number that
+   * says "pages held" is how the same dashboard came to report two percent and
+   * twenty-three pages at once.
+   */
+  fill: number;
   /** The big number in the middle. */
   label: string;
   caption: string;
 }) {
-  const progress = Math.max(0, Math.min(1, pace.progress));
+  const progress = Math.max(0, Math.min(1, fill));
   const color = BAND_COLOR[pace.band];
 
   /* The label is a formatted percentage; counting it up needs the number, and

@@ -71,9 +71,15 @@ export function ServiceWorker() {
 /**
  * Everything both surfaces need to know.
  *
- * `offer` is true only when there is genuinely something to do: the browser
- * has offered a prompt, or this is an iPhone where the reader can do it by
- * hand — and in neither case is the app already installed.
+ * The two surfaces answer two different questions, so they get two flags:
+ *
+ *   `offer`     is there something to *do* right now — a prompt in hand, or an
+ *               iPhone where the reader can add it by hand. The card, which
+ *               takes up real room and makes a claim, waits for this.
+ *
+ *   `possible`  could this browser be carrying the app at all — which is true
+ *               of every browser tab and false only inside the installed app.
+ *               The header icon, which costs one button, uses this.
  */
 function useInstall() {
   const standalone = useStandalone();
@@ -116,7 +122,21 @@ function useInstall() {
     return outcome;
   }
 
-  return { offer: !installed && (Boolean(prompt) || ios), ios, canPrompt: Boolean(prompt), install };
+  /* The header icon used to wait for `beforeinstallprompt` too, which Chrome
+   * fires at most once per load and not at all once the app is installed — so
+   * it vanished for anybody who had installed the app, and usually stayed gone
+   * after they deleted it again. From a browser tab installing is always
+   * possible: if the prompt is in hand the button spends it, and if it is not
+   * the button says where the browser keeps its own menu item. The card keeps
+   * the stricter test, because an explaining paragraph nobody can act on is
+   * worse than no paragraph. */
+  return {
+    offer: !installed && (Boolean(prompt) || ios),
+    possible: !installed,
+    ios,
+    canPrompt: Boolean(prompt),
+    install,
+  };
 }
 
 /**
@@ -151,19 +171,23 @@ function useDismissed(): boolean {
  */
 export function InstallButton({ className }: { className?: string }) {
   const t = useTranslations("install");
-  const { offer, ios, install } = useInstall();
+  const { possible, ios, canPrompt, install } = useInstall();
   const [showing, setShowing] = useState(false);
 
-  if (!offer) return null;
+  if (!possible) return null;
+
+  /* Chrome hands over a prompt; everything else has to be told where its own
+     menu item lives. */
+  const explains = ios || !canPrompt;
 
   return (
     <div className="relative">
       <button
         type="button"
-        onClick={() => (ios ? setShowing((open) => !open) : void install())}
+        onClick={() => (explains ? setShowing((open) => !open) : void install())}
         aria-label={t("title")}
         title={t("title")}
-        aria-expanded={ios ? showing : undefined}
+        aria-expanded={explains ? showing : undefined}
         className={cn(
           "inline-grid h-9 w-9 shrink-0 place-items-center rounded-full border",
           "border-[var(--accent)]/40 text-[var(--accent-strong)]",
@@ -174,8 +198,9 @@ export function InstallButton({ className }: { className?: string }) {
         <ArrowDownToLine className="h-4 w-4" />
       </button>
 
-      {/* iOS cannot be prompted, so the button explains instead. */}
-      {ios && showing && (
+      {/* Where there is no prompt to fire — iOS always, Chrome once it has
+          already offered — the button explains instead of doing nothing. */}
+      {explains && showing && (
         <div
           role="dialog"
           aria-label={t("title")}
@@ -183,9 +208,9 @@ export function InstallButton({ className }: { className?: string }) {
         >
           <p className="text-[0.8125rem] font-medium text-[var(--text-strong)]">{t("title")}</p>
           <p className="mt-1.5 text-[0.75rem] leading-relaxed text-[var(--text-muted)]">
-            {t("iosHow")}
+            {ios ? t("iosHow") : t("menuHow")}
           </p>
-          <IosSteps t={t} />
+          {ios && <IosSteps t={t} />}
         </div>
       )}
     </div>

@@ -324,3 +324,67 @@ export function surahProgress(
 
   return out;
 }
+
+/**
+ * The units a reader might want to keep for offline: this page, its surah,
+ * its juz.
+ *
+ * Built on the server because it needs the text, and because the alternative —
+ * shipping the whole index to the browser so it can work out which pages a
+ * surah covers — is four megabytes to answer a question the server already
+ * knows the answer to.
+ *
+ * A page that straddles two surahs offers the first of them, which is the one
+ * its opening ayahs belong to.
+ */
+export async function offlineScopesForPage(page: number): Promise<
+  { unit: string; kind: "page" | "surah" | "juz"; ayahs: { s: number; a: number }[]; pages: number[] }[]
+> {
+  const info = pageMeta(page);
+  const { ayahs } = await loadPage(page);
+
+  type Scope = {
+    unit: string;
+    kind: "page" | "surah" | "juz";
+    ayahs: { s: number; a: number }[];
+    pages: number[];
+  };
+
+  const scopes: Scope[] = [
+    {
+      unit: `page-${page}`,
+      kind: "page",
+      ayahs: ayahs.map((a) => ({ s: a.s, a: a.a })),
+      pages: [page],
+    },
+  ];
+
+  const first = info.surahs[0];
+  if (first) {
+    const surahAyahs = await loadSurahAyahs(first);
+    const meta = surah(first);
+    scopes.push({
+      unit: `surah-${first}`,
+      kind: "surah",
+      ayahs: surahAyahs.map((a) => ({ s: a.s, a: a.a })),
+      pages: range(meta.startPage, meta.endPage),
+    });
+  }
+
+  const juzAyahs = await loadJuzAyahs(info.juz);
+  const juzPages = PAGES.filter((p) => p.juz === info.juz).map((p) => p.page);
+  scopes.push({
+    unit: `juz-${info.juz}`,
+    kind: "juz",
+    ayahs: juzAyahs.map((a) => ({ s: a.s, a: a.a })),
+    pages: juzPages,
+  });
+
+  return scopes;
+}
+
+function range(from: number, to: number): number[] {
+  const out: number[] = [];
+  for (let n = from; n <= to; n++) out.push(n);
+  return out;
+}

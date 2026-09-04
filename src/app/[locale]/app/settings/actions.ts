@@ -78,3 +78,39 @@ export async function saveSettings(
   revalidatePath("/[locale]/app", "layout");
   return { status: "saved" };
 }
+
+/**
+ * Move the day boundary to where the reader now is.
+ *
+ * Called by the dashboard when the browser's zone no longer matches the stored
+ * one — somebody has travelled. Deliberately not part of the settings form:
+ * this is a fact being reported, not a preference being chosen, and it should
+ * not wait for anybody to notice their streak breaking at 3am.
+ */
+export async function syncTimeZone(zone: string): Promise<void> {
+  const user = await requireOnboardedUser();
+
+  const wanted = zone.trim();
+  if (!wanted || wanted.length > 64) return;
+
+  /* Whatever the browser reports still has to be a zone this runtime knows,
+     or every date computed from it afterwards is wrong. */
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: wanted });
+  } catch {
+    return;
+  }
+
+  const [profile] = await db
+    .select({ timeZone: profiles.timeZone })
+    .from(profiles)
+    .where(eq(profiles.userId, user.id))
+    .limit(1);
+
+  if (!profile || profile.timeZone === wanted) return;
+
+  await db.update(profiles).set({ timeZone: wanted }).where(eq(profiles.userId, user.id));
+  console.log(`[settings] ${user.id} moved from ${profile.timeZone} to ${wanted}`);
+
+  revalidatePath("/[locale]/app", "layout");
+}

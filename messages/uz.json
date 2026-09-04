@@ -716,7 +716,12 @@
       "failed": "Yuklab boʻlmadi. Internetni tekshiring.",
       "hint": "Bir marta yuklab olsangiz, internetsiz ham shu qori bilan tinglaysiz.",
       "reciterNote": "Faqat tanlangan qori uchun: {reciter}",
-      "unsupported": "Bu brauzer oflayn saqlashni qoʻllab-quvvatlamaydi."
+      "unsupported": "Bu brauzer oflayn saqlashni qoʻllab-quvvatlamaydi.",
+      "scopePage": "Bu sahifa",
+      "scopeSurah": "Bu sura",
+      "scopeJuz": "Bu juz",
+      "pages": "{count} sahifa",
+      "readable": "Sahifalar ham yuklanadi — internetsiz oʻqiy olasiz."
     }
   },
   "pages": {
@@ -1016,7 +1021,8 @@
     "dismiss": "Hozir emas",
     "iosHow": "Bosh ekranga qoʻshsangiz, ilovadek ochiladi va oʻqigan sahifalaringiz internetsiz ham ishlaydi.",
     "iosShare": "Ulashish",
-    "iosAdd": "Bosh ekranga qoʻshish"
+    "iosAdd": "Bosh ekranga qoʻshish",
+    "menuHow": "Brauzer menyusini oching va «Ilovani oʻrnatish» yoki «Bosh ekranga qoʻshish» ni tanlang."
   },
   "offline": {
     "badge": "Aloqa yoʻq",

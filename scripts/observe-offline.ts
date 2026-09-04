@@ -56,61 +56,74 @@ async function main() {
     return;
   }
 
-  /* ── Download it ── */
-  /* Wait for it rather than asking once: the panel is client-rendered, and a
-     check that lands before hydration reports a missing button on a page that
-     has one. */
-  const download = page.getByRole("button", { name: /Yuklab olish|Download|Скачать/ });
-  await download.first().waitFor({ state: "visible", timeout: 20_000 }).catch(() => {});
-
-  /* Visible is not the same as working. The panel is server-rendered, so the
-     button exists in the HTML before React has attached anything to it, and a
-     click that lands in that gap does nothing at all — which is exactly how
-     this reported a download that never started. */
+  /* ── Download a whole surah, not just the page in front of us ── */
+  await page.goto(`${BASE}/quran/582`, { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("[data-ayah]", { timeout: 20_000 });
   await page.waitForLoadState("networkidle").catch(() => {});
   await page.waitForTimeout(2000);
 
-  if ((await download.count()) === 0) {
-    failures.push("no way to download this surah for offline listening");
+  const surahScope = page.getByRole("button", { name: /This surah|Bu sura|Эта сура/ });
+  const hasScopes = (await surahScope.count()) > 0;
+  console.log(`  4. scope chooser   → ${hasScopes ? "page, surah and juz offered" : "MISSING"}`);
+  if (!hasScopes) {
+    failures.push("there is no way to download more than the page in front of you");
     await finish(browser);
     return;
   }
+  await surahScope.first().click();
+  await page.waitForTimeout(300);
 
+  const download = page.getByRole("button", { name: /Yuklab olish|Download|Скачать/ });
+  await download.first().waitFor({ state: "visible", timeout: 20_000 }).catch(() => {});
   await download.first().click();
+
   await page
     .getByText(/Yuklab olingan|Downloaded|Загружено/)
-    .waitFor({ timeout: 60_000 })
+    .waitFor({ timeout: 120_000 })
     .catch(() => {});
 
   const savedLabel = await page
     .getByText(/Yuklab olingan|Downloaded|Загружено/)
     .textContent()
     .catch(() => null);
-  console.log(`  4. downloaded      → ${savedLabel?.trim() ?? "NOTHING"}`);
+  console.log(`  5. downloaded      → ${savedLabel?.trim() ?? "NOTHING"}`);
   if (!savedLabel) failures.push("the download never reported itself as finished");
 
-  const keptFiles = await page.evaluate(async () => {
+  const kept = await page.evaluate(async () => {
     const cache = await caches.open("ahd-audio-saved");
     const keys = await cache.keys();
-    return keys.filter((request) => request.url.endsWith(".mp3")).length;
+    return {
+      audio: keys.filter((r) => r.url.endsWith(".mp3")).length,
+      pages: keys.filter((r) => /\/quran\/\d+$/.test(new URL(r.url).pathname)).length,
+    };
   });
-  console.log(`  5. files kept      → ${keptFiles}`);
-  /* Four, not three: Al-Kawthar opens with the Basmala, and a download that
-     leaves it out is silent from its very first request. */
-  if (keptFiles < 4) {
+  console.log(`  6. kept            → ${kept.audio} recitations, ${kept.pages} pages`);
+  if (kept.audio < 40) failures.push(`only ${kept.audio} recitations kept; An-Naba has 40 ayahs`);
+  if (kept.pages < 2) {
     failures.push(
-      `only ${keptFiles} files were kept; Al-Kawthar needs 3 ayahs and the Basmala`,
+      `only ${kept.pages} page(s) kept — a surah downloaded without its pages can be heard but not read`,
     );
   }
 
-  /* ── Now take the network away and listen ── */
+  /* ── Now take the network away ── */
   await context.setOffline(true);
-  console.log(`  6. network         → off`);
+  console.log(`  7. network         → off`);
 
+  /* The page it was downloaded from, refreshed. */
   await page.reload({ waitUntil: "domcontentloaded" }).catch(() => {});
-  const stillThere = await page.locator("[data-ayah]").count().catch(() => 0);
-  console.log(`  7. page offline    → ${stillThere > 0 ? `${stillThere} ayahs` : "BLANK"}`);
-  if (stillThere === 0) failures.push("the surah does not open at all with the network off");
+  const here = await page.locator("[data-ayah]").count().catch(() => 0);
+  console.log(`  8. same page       → ${here > 0 ? `${here} ayahs` : "BLANK"}`);
+  if (here === 0) failures.push("the downloaded page does not open with the network off");
+
+  /* And the page it carries on to, which was never opened online. This is the
+     one that was broken: audio was kept and the text was not. */
+  await page.goto(`${BASE}/quran/583`, { waitUntil: "domcontentloaded" }).catch(() => {});
+  await page.waitForTimeout(1500);
+  const unseen = await page.locator("[data-ayah]").count().catch(() => 0);
+  console.log(`  9. a page never opened → ${unseen > 0 ? `${unseen} ayahs` : "BLANK"}`);
+  if (unseen === 0) {
+    failures.push("a downloaded page that had never been visited does not open offline");
+  }
 
   await page.evaluate(() => {
     const el = document.querySelector("audio");
@@ -122,10 +135,10 @@ async function main() {
   const heard = await page.evaluate(() => {
     const el = document.querySelector("audio");
     if (!el) return null;
-    return { paused: el.paused, time: el.currentTime, error: el.error?.code ?? null };
+    return { paused: el.paused, time: el.currentTime };
   });
   console.log(
-    `  8. recitation      → ${
+    ` 10. recitation      → ${
       heard && !heard.paused && heard.time > 0
         ? `playing offline, at ${heard.time.toFixed(1)}s`
         : `SILENT ${JSON.stringify(heard)}`

@@ -19,6 +19,7 @@ import { countStudyDays as countStudyDaysBetween } from "@/core/plan/schedule";
 import { requireOnboardedUser } from "@/auth/guard";
 import { AppHeader } from "@/components/app/app-header";
 import { Atmosphere } from "@/components/app/atmosphere";
+import { TimeZoneSync } from "@/components/app/timezone-sync";
 import { Corners } from "@/components/ui/ornament";
 import { buttonStyles } from "@/components/ui/button";
 import { Measure } from "@/components/ui/section";
@@ -220,6 +221,19 @@ export default async function AppHomePage({
   for (const item of pages) strengths[item.page - 1] = item.strength;
 
   const held = pages.length;
+
+  /* What the arc draws. The pace's own progress is the schedule's frontier —
+     the unbroken run from the start of the scope — and it belongs to deciding
+     tomorrow's portion, not to reporting how much of the Qur'an somebody
+     holds. Reported against the pages the covenant actually covers, so a juz
+     plan is measured against its juz rather than against all 604. */
+  const scopePages = covenant
+    ? Math.max(1, covenant.scopeToPage - covenant.scopeFromPage + 1)
+    : TOTAL_PAGES;
+  const heldInScope = covenant
+    ? pages.filter((p) => p.page >= covenant.scopeFromPage && p.page <= covenant.scopeToPage).length
+    : held;
+  const memorisedShare = Math.min(1, heldInScope / scopePages);
   const averageStrength = held
     ? Math.round(pages.reduce((sum, p) => sum + p.strength, 0) / held)
     : 0;
@@ -235,6 +249,7 @@ export default async function AppHomePage({
     <div className="relative min-h-dvh">
       <Atmosphere />
       <AppHeader />
+      <TimeZoneSync current={profile?.timeZone ?? "Asia/Tashkent"} />
 
       <main className="relative z-10">
         <Measure className="py-8 sm:py-12">
@@ -298,10 +313,11 @@ export default async function AppHomePage({
                 <div className="flex flex-col items-center gap-8 sm:flex-row sm:gap-10">
                   <CovenantArc
                     pace={pace}
+                    fill={memorisedShare}
                     label={`${
-                      pace.progress > 0 && pace.progress < 0.01
-                        ? (pace.progress * 100).toFixed(1)
-                        : Math.round(pace.progress * 100)
+                      memorisedShare > 0 && memorisedShare < 0.01
+                        ? (memorisedShare * 100).toFixed(1)
+                        : Math.round(memorisedShare * 100)
                     }%`}
                     caption={tp("memorised")}
                   />
