@@ -17,8 +17,6 @@ dist/
 # vercel / turbo
 .vercel
 .turbo
-website.html
-website2.html
 # testing
 coverage/
 playwright-report/
