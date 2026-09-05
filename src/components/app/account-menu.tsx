@@ -71,6 +71,11 @@ export function AccountMenu({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={t("account")}
+        /* Server-rendered, so "was this browser told it belongs to an admin"
+           can be asked of the HTML. The admin link itself only exists once the
+           menu is opened, which leaves nothing to check without driving a
+           browser — and the answer to that question is worth checking. */
+        data-admin={isAdmin ? "true" : undefined}
         className={cn(
           "inline-flex h-9 shrink-0 items-center gap-2 rounded-full border ps-1 pe-2.5",
           "border-[var(--line-subtle)] transition-colors duration-300",

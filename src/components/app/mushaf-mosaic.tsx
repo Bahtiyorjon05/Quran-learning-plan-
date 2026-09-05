@@ -43,7 +43,7 @@ export function MushafMosaic({
 
   return (
     <section className="mt-10">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem]">
         <div className="panel relative overflow-hidden rounded-3xl p-5 sm:p-7">
           <div aria-hidden className="girih pointer-events-none absolute inset-0 opacity-[0.03]" />
           <Corners />
@@ -58,13 +58,15 @@ export function MushafMosaic({
           </div>
         </div>
 
-        <div className="space-y-5">
+        {/* A column, so the reading hint can fall to the foot of the tiles
+            rather than leaving a well of empty ground beneath it. */}
+        <div className="flex flex-col gap-5">
           <Stat label={t("pagesHeld", { count: held })} value={held} suffix="/ 604" />
           <Stat label={t("strength")} value={averageStrength} suffix="%" />
 
           <MosaicLegend labels={labels} className="flex-col !items-start gap-2" />
 
-          <p className="border-t border-[var(--line-subtle)] pt-4 text-xs leading-relaxed text-[var(--text-faint)]">
+          <p className="mt-auto border-t border-[var(--line-subtle)] pt-4 text-xs leading-relaxed text-[var(--text-faint)]">
             {hovered
               ? pageNames?.[hovered - 1]
                 ? t("openPageNamed", { page: hovered, names: pageNames[hovered - 1] })

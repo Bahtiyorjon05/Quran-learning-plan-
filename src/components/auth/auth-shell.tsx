@@ -34,7 +34,10 @@ export function AuthShell({
   return (
     <div className="grid min-h-dvh lg:grid-cols-[1fr_minmax(0,34rem)]">
       {/* ── The reason you are signing up (desktop only) ── */}
-      <aside className="relative hidden overflow-hidden bg-[var(--surface-raised)]/40 lg:block">
+      {/* The seam is drawn. In dark mode a raised surface at 40% over a near
+          black ground is indistinguishable from the ground, so the two halves
+          read as one empty field with a form floating in the right of it. */}
+      <aside className="relative hidden overflow-hidden border-e border-[var(--line-subtle)] bg-[var(--surface-raised)]/40 lg:block">
         <div aria-hidden className="pointer-events-none absolute inset-0">
           <div className="animate-breathe absolute start-[-6rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,var(--halo),transparent_65%)] blur-3xl" />
           <div className="absolute end-[-10rem] bottom-[-10rem] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--color-gold-500)_12%,transparent),transparent_68%)] blur-3xl" />

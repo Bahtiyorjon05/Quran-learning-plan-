@@ -154,7 +154,7 @@ export default async function AdminOverviewPage() {
           Where they go
         </h2>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Panel
             title="Where people stop"
             note="all accounts, ever"
@@ -175,7 +175,7 @@ export default async function AdminOverviewPage() {
           </Panel>
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Panel title="How the covenants are holding" note="active plans">
             <PaceBands
               bands={bands}
@@ -204,7 +204,7 @@ export default async function AdminOverviewPage() {
           Whether it is working
         </h2>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Panel title="Retention" note="by signup week">
             <Cohorts
               cohorts={depth.cohorts}
@@ -221,7 +221,7 @@ export default async function AdminOverviewPage() {
           </Panel>
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Panel title="Pages committed to memory" note="last 30 days">
             <DailyBars
               data={depth.memorized}
@@ -248,7 +248,7 @@ export default async function AdminOverviewPage() {
           Who they are
         </h2>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-3 lg:items-start">
+        <div className="mt-4 grid gap-4 lg:grid-cols-3">
           <Panel title="Language" note="chosen at signup">
             <Split
               slices={depth.locales}
@@ -293,7 +293,7 @@ export default async function AdminOverviewPage() {
           The Qur&rsquo;an, and the last twelve things that happened
         </h2>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-2 lg:items-start">
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Panel title="Hardest passages" note="most missed, everyone">
             <RankedBars
               rows={hardest.map((row) => ({

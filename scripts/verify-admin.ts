@@ -100,15 +100,20 @@ async function main() {
 
   /* ── And the way in must be shown to nobody else ── */
   const readerApp = await visit("/app", reader.token);
-  if (readerApp.body.includes('href="/admin"')) {
-    failures.push("an ordinary reader is shown a link to /admin");
+  /* The link moved inside the account menu, which is only rendered once the
+     menu is opened — so the anchor is in nobody's server HTML any more. What
+     is there either way is the flag the menu decides on, sent down as a prop.
+     Same question, asked one level earlier: was this browser told it belongs
+     to an admin. */
+  if (readerApp.body.includes('data-admin="true"') || readerApp.body.includes('href="/admin"')) {
+    failures.push("an ordinary reader is told they are an admin");
   } else {
     console.log("\n  ✓ no admin link for an ordinary reader");
   }
 
   const adminApp = await visit("/app", admin.token);
-  if (!adminApp.body.includes('href="/admin"')) {
-    failures.push("an admin is not shown a link to /admin");
+  if (!adminApp.body.includes('data-admin="true"') && !adminApp.body.includes('href="/admin"')) {
+    failures.push("an admin is not offered the way in");
   } else {
     console.log("  ✓ the admin is shown the way in");
   }

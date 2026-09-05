@@ -46,54 +46,71 @@ export default async function MistakesPage({
 
       <main className="relative z-10 py-10 sm:py-14">
         <Measure>
-          <header>
-            <h1 className="font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
-              {t("title")}
-            </h1>
-            <p className="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
-              {t("subtitle")}
-            </p>
-          </header>
+          {/* Held to a reading measure. These cards carry whole ayahs, and an
+              ayah set across fourteen hundred pixels is a line the eye has to
+              travel rather than read — the Arabic especially, which is the
+              only thing on the page that matters. */}
+          <div className="mx-auto max-w-4xl">
+            <header>
+              <h1 className="font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
+                {t("title")}
+              </h1>
+              <p className="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+                {t("subtitle")}
+              </p>
+            </header>
 
-          {spots.length === 0 ? (
-            <div className="mt-10 rounded-3xl border border-dashed border-[var(--line-strong)] px-6 py-14 text-center">
-              <CircleCheck className="mx-auto h-6 w-6 text-[var(--accent)]" strokeWidth={1.5} />
-              <p className="mt-4 text-[0.9375rem] text-[var(--text-strong)]">
-                {summary.resolved > 0 ? t("allClear") : t("nothingYet")}
-              </p>
-              <p className="mx-auto mt-2 max-w-sm text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
-                {summary.resolved > 0
-                  ? t("allClearBody", { count: summary.resolved })
-                  : t("nothingYetBody")}
-              </p>
-              <Link
-                href="/app/practice"
-                className={buttonStyles({ size: "lg", className: "mt-6 group" })}
-              >
-                <Sparkles className="h-4 w-4" />
-                {t("goPractise")}
-              </Link>
-            </div>
-          ) : (
-            <>
-              <p className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8125rem] text-[var(--text-faint)]">
-                <span>{t("openCount", { ayahs: summary.ayahs, times: summary.open })}</span>
-                {summary.resolved > 0 && (
-                  <span className="text-[var(--accent-strong)]">
-                    {t("resolvedCount", { count: summary.resolved })}
-                  </span>
-                )}
-              </p>
-
-              <div className="mt-5">
-                <WeakSpots spots={spots} />
+            {spots.length === 0 ? (
+              <div className="mt-10 rounded-3xl border border-dashed border-[var(--line-strong)] px-6 py-14 text-center">
+                <CircleCheck
+                  className="mx-auto h-6 w-6 text-[var(--accent)]"
+                  strokeWidth={1.5}
+                />
+                <p className="mt-4 text-[0.9375rem] text-[var(--text-strong)]">
+                  {summary.resolved > 0 ? t("allClear") : t("nothingYet")}
+                </p>
+                <p className="mx-auto mt-2 max-w-sm text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+                  {summary.resolved > 0
+                    ? t("allClearBody", { count: summary.resolved })
+                    : t("nothingYetBody")}
+                </p>
+                <Link
+                  href="/app/practice"
+                  className={buttonStyles({
+                    size: "lg",
+                    className: "mt-6 group",
+                  })}
+                >
+                  <Sparkles className="h-4 w-4" />
+                  {t("goPractise")}
+                </Link>
               </div>
+            ) : (
+              <>
+                <p className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8125rem] text-[var(--text-faint)]">
+                  <span>
+                    {t("openCount", {
+                      ayahs: summary.ayahs,
+                      times: summary.open,
+                    })}
+                  </span>
+                  {summary.resolved > 0 && (
+                    <span className="text-[var(--accent-strong)]">
+                      {t("resolvedCount", { count: summary.resolved })}
+                    </span>
+                  )}
+                </p>
 
-              <p className="mt-8 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
-                {t("footnote")}
-              </p>
-            </>
-          )}
+                <div className="mt-5">
+                  <WeakSpots spots={spots} />
+                </div>
+
+                <p className="mt-8 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+                  {t("footnote")}
+                </p>
+              </>
+            )}
+          </div>
         </Measure>
       </main>
     </>

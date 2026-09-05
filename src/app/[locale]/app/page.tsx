@@ -188,7 +188,14 @@ export default async function AppHomePage({
           1,
           Math.ceil(
             covenant.totalLines /
-              Math.max(1, countStudyDaysBetween(covenant.startDate, covenant.originalEndDate, covenant.studyDaysMask)),
+              Math.max(
+                1,
+                countStudyDaysBetween(
+                  covenant.startDate,
+                  covenant.originalEndDate,
+                  covenant.studyDaysMask,
+                ),
+              ),
           ),
         ),
         today,
@@ -205,16 +212,16 @@ export default async function AppHomePage({
     practicablePages(user.id, locale as QuranLocale),
     loadSummary(user.id),
     db
-    .select({
-      id: sessions.id,
-      userAgent: sessions.userAgent,
-      ip: sessions.ip,
-      lastSeenAt: sessions.lastSeenAt,
-    })
-    .from(sessions)
-    .where(eq(sessions.userId, user.id))
-    .orderBy(desc(sessions.lastSeenAt))
-    .limit(10),
+      .select({
+        id: sessions.id,
+        userAgent: sessions.userAgent,
+        ip: sessions.ip,
+        lastSeenAt: sessions.lastSeenAt,
+      })
+      .from(sessions)
+      .where(eq(sessions.userId, user.id))
+      .orderBy(desc(sessions.lastSeenAt))
+      .limit(10),
   ]);
 
   const strengths = new Array<number>(TOTAL_PAGES).fill(0);
@@ -231,7 +238,10 @@ export default async function AppHomePage({
     ? Math.max(1, covenant.scopeToPage - covenant.scopeFromPage + 1)
     : TOTAL_PAGES;
   const heldInScope = covenant
-    ? pages.filter((p) => p.page >= covenant.scopeFromPage && p.page <= covenant.scopeToPage).length
+    ? pages.filter(
+        (p) =>
+          p.page >= covenant.scopeFromPage && p.page <= covenant.scopeToPage,
+      ).length
     : held;
   const memorisedShare = Math.min(1, heldInScope / scopePages);
   const averageStrength = held
@@ -243,7 +253,6 @@ export default async function AppHomePage({
     user.locale === "uz" ? "uz-UZ" : user.locale === "ru" ? "ru-RU" : "en-US",
     { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" },
   );
-
 
   return (
     <div className="relative min-h-dvh">
@@ -258,7 +267,11 @@ export default async function AppHomePage({
               not spend its best line on it. */}
           <div className="animate-rise flex flex-wrap items-end justify-between gap-4">
             <div className="min-w-0">
-              <p className="font-arabic flex items-center gap-3 text-lg text-gold-ink/80" dir="rtl" aria-hidden>
+              <p
+                className="font-arabic flex items-center gap-3 text-lg text-gold-ink/80"
+                dir="rtl"
+                aria-hidden
+              >
                 السلام عليكم
                 <span className="h-px w-10 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--gold)_45%,transparent),transparent)] rtl:bg-[linear-gradient(270deg,color-mix(in_oklab,var(--gold)_45%,transparent),transparent)]" />
               </p>
@@ -279,7 +292,10 @@ export default async function AppHomePage({
               else exists to keep, and it was sharing a row with a list of
               logged-in devices. */}
           <section className="animate-rise sheen panel relative mt-8 overflow-hidden rounded-3xl [animation-delay:80ms]">
-            <div aria-hidden className="girih pointer-events-none absolute inset-0 opacity-[0.035]" />
+            <div
+              aria-hidden
+              className="girih pointer-events-none absolute inset-0 opacity-[0.035]"
+            />
             <Corners />
             {/* A wash of the accent in the top corner, so the panel is lit from
                 the same direction as the ground behind it. */}
@@ -302,7 +318,10 @@ export default async function AppHomePage({
                 </p>
                 <Link
                   href="/app/plan/new"
-                  className={buttonStyles({ size: "lg", className: "group mt-7" })}
+                  className={buttonStyles({
+                    size: "lg",
+                    className: "group mt-7",
+                  })}
                 >
                   {ta("covenant.start")}
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 rtl:rotate-180" />
@@ -346,7 +365,9 @@ export default async function AppHomePage({
                     <p className="mt-2 text-[0.9375rem] text-[var(--text-muted)]">
                       {tp("finishBy")}{" "}
                       <span className="font-medium text-[var(--text-strong)]">
-                        {dateFormat.format(new Date(`${covenant.currentEndDate}T00:00:00Z`))}
+                        {dateFormat.format(
+                          new Date(`${covenant.currentEndDate}T00:00:00Z`),
+                        )}
                       </span>
                     </p>
 
@@ -357,10 +378,21 @@ export default async function AppHomePage({
                         tone={pace.pressure > 1.15 ? "warn" : "plain"}
                       />
                       <Stat value={String(held)} label={tp("statHeld")} />
-                      <Stat value={String(pace.remainingStudyDays)} label={tp("statDays")} />
                       <Stat
-                        value={pace.daysBanked >= 0 ? `+${pace.daysBanked}` : String(pace.daysBanked)}
-                        label={pace.daysBanked >= 0 ? tp("statBanked") : tp("statOwed")}
+                        value={String(pace.remainingStudyDays)}
+                        label={tp("statDays")}
+                      />
+                      <Stat
+                        value={
+                          pace.daysBanked >= 0
+                            ? `+${pace.daysBanked}`
+                            : String(pace.daysBanked)
+                        }
+                        label={
+                          pace.daysBanked >= 0
+                            ? tp("statBanked")
+                            : tp("statOwed")
+                        }
                         tone={pace.daysBanked >= 0 ? "good" : "warn"}
                       />
                     </div>
@@ -385,7 +417,7 @@ export default async function AppHomePage({
 
           {/* Today, and what to drill. */}
           {covenant && sheet && (
-            <div className="animate-rise mt-6 grid gap-5 [animation-delay:140ms] lg:grid-cols-[1.4fr_1fr] lg:items-start">
+            <div className="animate-rise mt-6 grid gap-5 [animation-delay:140ms] lg:grid-cols-[1.4fr_1fr]">
               <section className="panel rounded-3xl p-6 sm:p-7">
                 <DailySheet
                   tracks={buildTracks(sheet, ta)}
@@ -405,8 +437,12 @@ export default async function AppHomePage({
                   shortcuts scrolled out of reach almost immediately and left a
                   column of empty ground beside the thing you were reading.
                   They now travel with it. */}
-              <div className="space-y-5 lg:sticky lg:top-24">
-                <PracticeInvite weakest={pages[0] ?? null} fragileCount={fragile} held={held} />
+              <div className="flex flex-col gap-5">
+                <PracticeInvite
+                  weakest={pages[0] ?? null}
+                  fragileCount={fragile}
+                  held={held}
+                />
 
                 {/* Only shown where it can actually be acted on: the component
                     draws nothing at all in a browser that cannot install. */}
@@ -416,7 +452,10 @@ export default async function AppHomePage({
                     className="group panel panel-interactive flex items-center gap-4 rounded-2xl p-5 sm:p-6"
                   >
                     <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[var(--line-subtle)] bg-[var(--surface-overlay)]">
-                      <Target className="h-4.5 w-4.5 text-[var(--accent)]" strokeWidth={1.6} />
+                      <Target
+                        className="h-4.5 w-4.5 text-[var(--accent)]"
+                        strokeWidth={1.6}
+                      />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
@@ -441,19 +480,103 @@ export default async function AppHomePage({
                     className="group panel panel-interactive flex items-center gap-4 rounded-2xl p-5 sm:p-6"
                   >
                     <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-[var(--line-subtle)] bg-[var(--surface-overlay)]">
-                      <BookOpen className="h-4.5 w-4.5 text-[var(--accent)]" strokeWidth={1.6} />
+                      <BookOpen
+                        className="h-4.5 w-4.5 text-[var(--accent)]"
+                        strokeWidth={1.6}
+                      />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
                         {ta("mushaf.title")}
                       </span>
                       <span className="mt-1 block text-[0.8125rem] text-[var(--text-muted)]">
-                        {ta("mushaf.heldSummary", { held, average: averageStrength })}
+                        {ta("mushaf.heldSummary", {
+                          held,
+                          average: averageStrength,
+                        })}
                       </span>
                     </span>
                     <ArrowRight className="h-4 w-4 shrink-0 text-[var(--text-faint)] transition-transform duration-300 group-hover:translate-x-0.5 rtl:rotate-180" />
                   </Link>
                 )}
+
+                {/* Devices, folded away. It matters when it matters, and never on the
+                morning of an ordinary day. */}
+                <details className="panel group mt-auto rounded-2xl">
+                  <summary className="flex cursor-pointer items-center gap-3 px-5 py-4 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]">
+                    <Monitor className="h-4 w-4 shrink-0" strokeWidth={1.6} />
+                    <span className="flex-1">{ta("sessions.title")}</span>
+                    <span className="text-[0.75rem] text-[var(--text-faint)] tabular-nums">
+                      {active.length}
+                    </span>
+                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-300 group-open:rotate-180" />
+                  </summary>
+
+                  <div className="border-t border-[var(--line-subtle)] px-5 py-4">
+                    <ul className="space-y-1">
+                      {active.map((session) => {
+                        const current = session.id === user.sessionId;
+                        const DeviceIcon = isPhone(session.userAgent)
+                          ? Smartphone
+                          : Monitor;
+                        return (
+                          <li
+                            key={session.id}
+                            className={cn(
+                              "flex items-center gap-3 rounded-xl px-3 py-2.5",
+                              current &&
+                                "bg-[color-mix(in_oklab,var(--accent)_9%,transparent)]",
+                            )}
+                          >
+                            <DeviceIcon
+                              className={cn(
+                                "h-4 w-4 shrink-0",
+                                current
+                                  ? "text-[var(--accent)]"
+                                  : "text-[var(--text-faint)]",
+                              )}
+                              strokeWidth={1.6}
+                            />
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate text-sm text-[var(--text-default)]">
+                                {describeDevice(
+                                  session.userAgent,
+                                  ta("sessions.unknownDevice"),
+                                )}
+                              </span>
+                              {current && (
+                                <span className="text-[0.6875rem] text-[var(--accent)]">
+                                  {ta("sessions.thisDevice")}
+                                </span>
+                              )}
+                            </span>
+                            <span className="shrink-0 font-mono text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+                              {session.ip ?? "\u2014"}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+
+                    <form
+                      action={logoutEverywhereAction}
+                      className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line-subtle)] pt-5"
+                    >
+                      <p className="min-w-0 flex-1 text-xs leading-relaxed text-[var(--text-faint)]">
+                        {ta("sessions.note")}
+                      </p>
+                      <button
+                        type="submit"
+                        className={buttonStyles({
+                          variant: "outline",
+                          size: "sm",
+                        })}
+                      >
+                        {ta("sessions.signOutEverywhere")}
+                      </button>
+                    </form>
+                  </div>
+                </details>
               </div>
             </div>
           )}
@@ -471,70 +594,6 @@ export default async function AppHomePage({
               />
             </div>
           )}
-
-          {/* Devices, folded away. It matters when it matters, and never on the
-              morning of an ordinary day. */}
-          <details className="animate-rise panel group mt-10 rounded-2xl [animation-delay:260ms]">
-            <summary className="flex cursor-pointer items-center gap-3 px-5 py-4 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]">
-              <Monitor className="h-4 w-4 shrink-0" strokeWidth={1.6} />
-              <span className="flex-1">{ta("sessions.title")}</span>
-              <span className="text-[0.75rem] text-[var(--text-faint)] tabular-nums">
-                {active.length}
-              </span>
-              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-300 group-open:rotate-180" />
-            </summary>
-
-            <div className="border-t border-[var(--line-subtle)] px-5 py-4">
-              <ul className="space-y-1">
-                {active.map((session) => {
-                  const current = session.id === user.sessionId;
-                  const DeviceIcon = isPhone(session.userAgent) ? Smartphone : Monitor;
-                  return (
-                    <li
-                      key={session.id}
-                      className={cn(
-                        "flex items-center gap-3 rounded-xl px-3 py-2.5",
-                        current && "bg-[color-mix(in_oklab,var(--accent)_9%,transparent)]",
-                      )}
-                    >
-                      <DeviceIcon
-                        className={cn(
-                          "h-4 w-4 shrink-0",
-                          current ? "text-[var(--accent)]" : "text-[var(--text-faint)]",
-                        )}
-                        strokeWidth={1.6}
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm text-[var(--text-default)]">
-                          {describeDevice(session.userAgent, ta("sessions.unknownDevice"))}
-                        </span>
-                        {current && (
-                          <span className="text-[0.6875rem] text-[var(--accent)]">
-                            {ta("sessions.thisDevice")}
-                          </span>
-                        )}
-                      </span>
-                      <span className="shrink-0 font-mono text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
-                        {session.ip ?? "\u2014"}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-
-              <form
-                action={logoutEverywhereAction}
-                className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line-subtle)] pt-5"
-              >
-                <p className="min-w-0 flex-1 text-xs leading-relaxed text-[var(--text-faint)]">
-                  {ta("sessions.note")}
-                </p>
-                <button type="submit" className={buttonStyles({ variant: "outline", size: "sm" })}>
-                  {ta("sessions.signOutEverywhere")}
-                </button>
-              </form>
-            </div>
-          </details>
         </Measure>
       </main>
     </div>

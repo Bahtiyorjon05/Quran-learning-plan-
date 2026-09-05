@@ -106,7 +106,7 @@ export function SurahIndex({
         filtered.length === 0 ? (
           <p className="mt-10 text-center text-sm text-[var(--text-muted)]">{t("noResults")}</p>
         ) : (
-          <ul className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-6 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((s) => {
               const held = progress?.[s.number];
               const share = held && held.total > 0 ? held.held / held.total : 0;
@@ -118,7 +118,7 @@ export function SurahIndex({
                 <Link
                   href={continuous ? `${basePath}/surah/${s.number}` : `${basePath}/${s.startPage}`}
                   className={cn(
-                    "group panel panel-interactive flex items-center gap-3.5 rounded-xl p-3.5",
+                    "group panel panel-interactive flex items-center gap-4 rounded-2xl p-4",
                     /* A surah carried whole is marked on the row itself, not by
                        a badge tucked in a corner — it is the thing worth seeing
                        when the list is scanned. */
@@ -127,7 +127,7 @@ export function SurahIndex({
                 >
                   {/* The number in a rotated square, the way a mushaf marks it.
                       Filled once the surah is held entire. */}
-                  <span className="relative grid h-9 w-9 shrink-0 place-items-center">
+                  <span className="relative grid h-10 w-10 shrink-0 place-items-center">
                     <span
                       aria-hidden
                       className={cn(
@@ -143,7 +143,7 @@ export function SurahIndex({
                         words further along the row instead. */}
                     <span
                       className={cn(
-                        "relative text-xs tabular-nums",
+                        "relative text-[0.8125rem] tabular-nums",
                         whole ? "font-medium text-[var(--accent-strong)]" : "text-[var(--text-muted)]",
                       )}
                     >
@@ -153,11 +153,11 @@ export function SurahIndex({
 
                   <span className="min-w-0 flex-1">
                     <span className="flex items-baseline justify-between gap-2">
-                      <span className="truncate text-sm font-medium text-[var(--text-strong)]">
+                      <span className="truncate text-[0.9375rem] font-medium text-[var(--text-strong)]">
                         {s.title}
                       </span>
                       <span
-                        className="font-arabic shrink-0 text-base text-gold-ink"
+                        className="font-arabic shrink-0 text-lg text-gold-ink"
                         dir="rtl"
                         aria-hidden
                       >
@@ -198,7 +198,7 @@ export function SurahIndex({
           </ul>
         )
       ) : (
-        <ul className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-6 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
           {juzStartPages.map((j) => (
             <li key={j.juz}>
               <Link

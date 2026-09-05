@@ -183,7 +183,12 @@ export function Panel({
            practice — pushes the track wider than the viewport and the whole
            page slides sideways under the thumb. Measured at 583px in a 390px
            phone before this. */
-        "panel min-w-0 rounded-2xl p-5 sm:p-6",
+        /* A column that fills its grid track. Panels used to be measured to
+           their own content while the grid was told `items-start`, so a
+           six-row funnel sat beside a three-row chart and the row ruled off
+           ragged, with a well of empty ground under the shorter one. They
+           stretch now, and the body takes up the slack. */
+        "panel flex min-w-0 flex-col rounded-2xl p-5 sm:p-6",
         className,
       )}
     >
@@ -193,7 +198,7 @@ export function Panel({
           <span className="shrink-0 text-[0.6875rem] text-[var(--text-faint)]">{note}</span>
         )}
       </div>
-      <div className="mt-5">{children}</div>
+      <div className="mt-5 flex flex-1 flex-col justify-center">{children}</div>
     </section>
   );
 }
