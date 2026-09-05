@@ -33,6 +33,7 @@ const { db } = await import("@/db/client");
 const { users, sessions, profiles, emailVerificationCodes } = await import("@/db/schema");
 const {
   login,
+  checkResetCode,
   requestPasswordReset,
   resendVerification,
   resetPassword,
@@ -420,11 +421,56 @@ describe("logging in", () => {
 });
 
 describe("resetting a password", () => {
-  it("says nothing about whether the address exists", async () => {
+  it("says when no account uses the address, and sends nothing", async () => {
+    /* The policy changed deliberately. Answering identically either way hides
+       who has an account, at the cost of a reader who mistyped their address
+       waiting on an email that is never coming — the far likelier event here.
+       Enumeration is held down by the limiter instead, which is asserted
+       below. Either way, no mail goes to an address with no account. */
     await expect(
       requestPasswordReset({ email: uniqueEmail("nobody"), locale: "uz", ctx }),
-    ).resolves.toEqual({ ok: true });
+    ).resolves.toEqual({ ok: true, found: false });
     expect(outbox).toHaveLength(0);
+  });
+
+  it("will not say it twice past the limit, so it cannot be used to harvest", async () => {
+    const identity = freshCtx();
+    const results: boolean[] = [];
+
+    /* Three per address, ten per IP. Well before a list could be walked, every
+       answer becomes the same one — the reassuring one — so a refusal can
+       never be read as "no such account". */
+    for (let i = 0; i < BUCKETS.reset.perIp + 2; i++) {
+      const { found } = await requestPasswordReset({
+        email: uniqueEmail(`harvest-${i}`),
+        locale: "uz",
+        ctx: identity,
+      });
+      results.push(found);
+    }
+
+    expect(results.slice(0, BUCKETS.reset.perIp)).not.toContain(true);
+    expect(results.at(-1)).toBe(true);
+  });
+
+  it("checks a code without spending it, and counts a wrong guess", async () => {
+    const { email } = await activate("checkcode");
+    outbox.length = 0;
+    await requestPasswordReset({ email, locale: "uz", ctx });
+    const code = lastCode();
+
+    await expect(
+      checkResetCode({ email, code: "000000", ctx }),
+    ).rejects.toMatchObject({ code: "codeInvalid" });
+
+    /* The right code still works after a wrong guess, and checking it leaves
+       it usable — the password step comes afterwards and needs it again. */
+    await expect(checkResetCode({ email, code, ctx })).resolves.toEqual({ ok: true });
+    await expect(checkResetCode({ email, code, ctx })).resolves.toEqual({ ok: true });
+
+    await expect(
+      resetPassword({ email, code, password: "a-new-covenant-2026", ctx }),
+    ).resolves.toMatchObject({ userId: expect.any(String) });
   });
 
   it("changes the password and signs every other device out", async () => {

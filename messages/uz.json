@@ -309,7 +309,7 @@
       "email": "Elektron pochta",
       "submit": "Kod yuborish",
       "submitting": "Yuborilmoqda…",
-      "sent": "Agar bu manzilda hisob boʻlsa, kod yoʻlga chiqdi. Pochtangizni tekshiring.",
+      "sent": "Kod yoʻlga chiqdi. Pochtangizni tekshiring.",
       "continue": "Menda kod bor",
       "backToLogin": "Kirishga qaytish"
     },
@@ -322,7 +322,12 @@
       "passwordConfirm": "Yangi parolni tasdiqlang",
       "submit": "Saqlash va kirish",
       "submitting": "Saqlanmoqda…",
-      "note": "Qolgan barcha qurilmalardan chiqarilasiz."
+      "note": "Qolgan barcha qurilmalardan chiqarilasiz.",
+      "checkCode": "Kodni tekshirish",
+      "checking": "Tekshirilmoqda…",
+      "codeAccepted": "Kod toʻgʻri",
+      "newCode": "Yangi kod soʻrash",
+      "spentHelp": "Bu kod ishlatib boʻlindi. Yangi kod soʻrasangiz, urinishlar yana boshidan hisoblanadi. Agar pochtangizga ham kira olmayotgan boʻlsangiz, biz bilan bogʻlaning."
     },
     "errors": {
       "emailTaken": "Bu pochtada hisob allaqachon bor. Kiring.",
@@ -331,7 +336,7 @@
       "emailNotVerified": "Avval pochtangizni tasdiqlang — sizga yangi kod yubordik.",
       "codeInvalid": "Kod notoʻgʻri.",
       "codeExpired": "Kod eskirdi. Yangisini soʻrang.",
-      "codeAttemptsExceeded": "Juda koʻp notoʻgʻri kod kiritildi. Yangisini soʻrang.",
+      "codeAttemptsExceeded": "Kod bir necha marta notoʻgʻri kiritildi. Bu kod endi ishlamaydi — yangisini soʻrang.",
       "resendTooSoon": "Yangi kod soʻrashdan oldin {seconds} soniya kuting.",
       "rateLimited": "Juda koʻp urinish. Birozdan soʻng qayta urinib koʻring.",
       "weakPassword": "Iltimos, kuchliroq parol tanlang.",
@@ -348,7 +353,8 @@
       "passwordTooLong": "Bu 128 belgidan uzun",
       "codeLength": "Olti xonali kodni kiriting",
       "emailMismatch": "Ikki pochta manzili mos kelmadi",
-      "passwordMismatch": "Ikki parol mos kelmadi"
+      "passwordMismatch": "Ikki parol mos kelmadi",
+      "emailUnknown": "Bu manzilda hisob topilmadi. Boshqa manzilni kiriting yoki yangi hisob yarating."
     },
     "setPassword": {
       "title": "Pochtangiz tasdiqlandi",
@@ -384,12 +390,12 @@
       "ignore": "Agar Ahd hisobini siz yaratmagan boʻlsangiz, bu xatni eʼtiborsiz qoldiring."
     },
     "reset": {
-      "subject": "Ahd parolini tiklash",
-      "preheader": "Parolni tiklash kodingiz",
+      "subject": "Ahd — parolni tiklash kodi: {code}",
+      "preheader": "Olti xonali kod, {minutes} daqiqa amal qiladi.",
       "heading": "Parolni tiklash",
-      "body": "Yangi parol tanlash uchun bu kodni Ahd’ga kiriting.",
-      "expiry": "Bu kod {minutes} daqiqadan soʻng eskiradi.",
-      "ignore": "Agar parolni tiklashni soʻramagan boʻlsangiz, bu xatni eʼtiborsiz qoldiring — hech narsa oʻzgarmadi."
+      "body": "Quyidagi kodni Ahd’dagi oynaga kiriting — shundan keyin yangi parol tanlaysiz. Kodni hech kimga bermang: Ahd xodimlari uni hech qachon soʻramaydi.",
+      "expiry": "Kod {minutes} daqiqadan soʻng eskiradi va faqat bir marta ishlaydi.",
+      "ignore": "Agar parolni tiklashni soʻramagan boʻlsangiz, hech narsa qilishingiz shart emas — parolingiz oʻzgarmagan. Ammo bu takrorlansa, parolingizni almashtirib qoʻying."
     },
     "weekly": {
       "subject": "Ahd bilan haftangiz",

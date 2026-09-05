@@ -66,7 +66,7 @@ export default async function AppQuranPage({ params }: Params) {
   const [{ meta, ayahs }, [unit]] = await Promise.all([
     loadPage(page),
     db
-      .select({ page: memorizationUnits.page })
+      .select({ page: memorizationUnits.page, surahs: memorizationUnits.surahs })
       .from(memorizationUnits)
       .where(
         and(
@@ -83,6 +83,8 @@ export default async function AppQuranPage({ params }: Params) {
   const names = meta.surahs.map((n) =>
     localisedSurah(n, locale as QuranLocale),
   );
+  /* A row with no `surahs` is the whole page, so every surah on it is held. */
+  const held = unit ? (unit.surahs ?? meta.surahs) : [];
 
   return (
     <div className="min-h-dvh">
@@ -138,7 +140,24 @@ export default async function AppQuranPage({ params }: Params) {
               which writes to the covenant rather than to this browser. */}
           <div className="flex flex-wrap items-center justify-end gap-2">
             <ReaderControls />
-            <MemorizeToggle page={page} memorized={Boolean(unit)} />
+            {/* A page carrying several short surahs is not one thing to
+                claim. One toggle each, so Al-Kawthar can be held without also
+                claiming the two surahs that share its page. */}
+            {meta.surahs.length > 1 ? (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {meta.surahs.map((number, i) => (
+                  <MemorizeToggle
+                    key={number}
+                    page={page}
+                    surah={number}
+                    memorized={held.includes(number)}
+                    label={names[i]?.title ?? String(number)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <MemorizeToggle page={page} memorized={held.length > 0} />
+            )}
           </div>
 
           <div className="mt-4 space-y-4">

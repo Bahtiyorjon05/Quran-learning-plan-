@@ -439,7 +439,10 @@ export async function requestPasswordReset(input: {
   try {
     await enforceRateLimit(BUCKETS.reset, input.ctx, email);
   } catch {
-    return { ok: true };
+    /* Reported as though it were found. Saying "too many requests" for one
+       address and "no such account" for another would turn the limiter itself
+       into the answer, which is the thing the limiter is here to protect. */
+    return { ok: true, found: true };
   }
 
   await recordAuthEvent({ kind: "password_reset_requested", email, ctx: input.ctx });
@@ -450,9 +453,66 @@ export async function requestPasswordReset(input: {
     .where(eq(users.email, email))
     .limit(1);
 
-  if (user) await issueResetCode(user.id, user.email, input.locale);
+  if (!user) return { ok: true, found: false };
 
-  return { ok: true };
+  await issueResetCode(user.id, user.email, input.locale);
+  return { ok: true, found: true };
+}
+
+/**
+ * Is this the right code — without spending it.
+ *
+ * The reset used to ask for the code and the new password on one screen, which
+ * meant somebody had to invent a password before finding out whether the six
+ * digits they had copied out of an email were even right. Now the code is
+ * checked on its own, and the password is only asked for once it is known to
+ * be worth asking for.
+ *
+ * A wrong guess costs an attempt here exactly as it would at the end, so
+ * splitting the screen in two does not buy an attacker extra tries.
+ */
+export async function checkResetCode(input: {
+  email: string;
+  code: string;
+  ctx: RequestContext;
+}) {
+  const email = normalizeEmail(input.email);
+
+  const [user] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
+
+  if (!user) {
+    await burnPasswordTime();
+    throw new AuthError("codeInvalid");
+  }
+
+  const [row] = await db
+    .select()
+    .from(passwordResetCodes)
+    .where(and(eq(passwordResetCodes.userId, user.id), isNull(passwordResetCodes.consumedAt)))
+    .orderBy(desc(passwordResetCodes.createdAt))
+    .limit(1);
+
+  if (!row) throw new AuthError("codeInvalid");
+  if (row.expiresAt.getTime() < Date.now()) throw new AuthError("codeExpired");
+  if (row.attempts >= OTP_MAX_ATTEMPTS) throw new AuthError("codeAttemptsExceeded");
+
+  if (!safeEqualHex(hashOtp(user.id, input.code.trim()), row.codeHash)) {
+    await db
+      .update(passwordResetCodes)
+      .set({ attempts: row.attempts + 1 })
+      .where(eq(passwordResetCodes.id, row.id));
+
+    if (row.attempts + 1 >= OTP_MAX_ATTEMPTS) throw new AuthError("codeAttemptsExceeded");
+    throw new AuthError("codeInvalid", {
+      remaining: OTP_MAX_ATTEMPTS - (row.attempts + 1),
+    });
+  }
+
+  return { ok: true as const };
 }
 
 export async function resetPassword(input: {

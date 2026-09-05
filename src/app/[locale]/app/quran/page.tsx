@@ -33,7 +33,11 @@ export default async function AppMushafPage({
   const t = await getTranslations("app.mushaf");
 
   const units = await db
-    .select({ page: memorizationUnits.page, strength: memorizationUnits.strength })
+    .select({
+      page: memorizationUnits.page,
+      strength: memorizationUnits.strength,
+      surahs: memorizationUnits.surahs,
+    })
     .from(memorizationUnits)
     .where(eq(memorizationUnits.userId, user.id));
 
@@ -41,6 +45,10 @@ export default async function AppMushafPage({
      dumb renderer rather than something that queries. */
   const strengths = new Array<number>(TOTAL_PAGES).fill(0);
   for (const unit of units) strengths[unit.page - 1] = unit.strength;
+
+  /* Pages held for only some of the surahs sitting on them. */
+  const partial = new Map<number, readonly number[]>();
+  for (const unit of units) if (unit.surahs) partial.set(unit.page, unit.surahs);
 
   const held = units.length;
   const averageStrength = held
@@ -80,7 +88,7 @@ export default async function AppMushafPage({
             {t("browse")}
           </h2>
           <SurahIndex
-            progress={surahProgress(strengths)}
+            progress={surahProgress(strengths, partial)}
             surahs={localisedSurahs(locale as QuranLocale)}
             juzStartPages={juz}
             basePath="/app/quran"

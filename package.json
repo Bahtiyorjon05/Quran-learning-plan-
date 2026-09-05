@@ -41,7 +41,9 @@
     "shoot": "tsx --require ./scripts/allow-server-only.cjs scripts/shoot-app.ts",
     "observe:header": "tsx scripts/observe-header.ts",
     "observe:progress": "tsx scripts/observe-progress.ts",
-    "observe:keep-awake": "tsx scripts/observe-keep-awake.ts"
+    "observe:keep-awake": "tsx scripts/observe-keep-awake.ts",
+    "observe:surah-mark": "tsx scripts/observe-surah-mark.ts",
+    "observe:reset": "tsx scripts/observe-reset.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",

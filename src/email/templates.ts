@@ -204,9 +204,12 @@ export async function passwordResetEmail(
 
   return {
     to,
-    subject: t("subject"),
+    /* The code rides in the subject line. On a phone the notification is often
+       all somebody sees, and putting it there saves opening the mail at all —
+       every bank and every airline does this for the same reason. */
+    subject: t("subject", { code: formatOtp(code) }),
     html: shell({
-      preheader: t("preheader"),
+      preheader: t("preheader", { minutes: OTP_TTL_MINUTES }),
       heading: t("heading"),
       body,
       code,

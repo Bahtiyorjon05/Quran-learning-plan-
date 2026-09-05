@@ -8,6 +8,7 @@ import type { Locale } from "@/i18n/routing";
 import { toAuthError } from "@/auth/errors";
 import {
   login,
+  checkResetCode,
   requestPasswordReset,
   resendVerification,
   resetPassword,
@@ -191,17 +192,60 @@ export async function forgotAction(
   }
 
   try {
-    await requestPasswordReset({
+    const { found } = await requestPasswordReset({
       email: parsed.data,
       locale,
       ctx: await requestContext(),
     });
+
+    /* Said plainly, because the alternative is worse here.
+     *
+     * The usual advice is to answer identically whether or not the address is
+     * known, so nobody can use this form to discover who has an account. The
+     * cost of that is a reader who mistyped their address, or used a different
+     * one to sign up, waiting on an email that is never coming and concluding
+     * the app is broken — which for this audience is the far more likely
+     * event. The enumeration risk is held down by the limiter instead: ten
+     * attempts an hour per address and three per account, which is no use to
+     * anybody harvesting a list. */
+    if (!found) {
+      return { status: "error", fieldErrors: { email: "emailUnknown" } };
+    }
+
     await setPendingReset(parsed.data);
   } catch (error) {
     return failure(error);
   }
 
   return redirectTo("/reset-password", locale);
+}
+
+/**
+ * The code, on its own, before any password is asked for.
+ */
+export async function checkResetCodeAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const raw = Object.fromEntries(formData);
+  const email = (raw.email as string) || (await getPendingResetEmail()) || "";
+  const parsed = z.object({ email: emailField, code: codeField }).safeParse({ ...raw, email });
+
+  if (!parsed.success) {
+    return { status: "error", fieldErrors: fieldErrorsOf(parsed.error) };
+  }
+
+  try {
+    await checkResetCode({
+      email: parsed.data.email,
+      code: parsed.data.code,
+      ctx: await requestContext(),
+    });
+  } catch (error) {
+    return failure(error);
+  }
+
+  return { status: "success" };
 }
 
 const resetSchema = z

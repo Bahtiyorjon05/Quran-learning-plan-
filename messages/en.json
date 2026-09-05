@@ -309,7 +309,7 @@
       "email": "Email",
       "submit": "Send the code",
       "submitting": "Sending…",
-      "sent": "If that address has an account, a code is on its way. Check your inbox.",
+      "sent": "The code is on its way. Check your inbox.",
       "continue": "I have a code",
       "backToLogin": "Back to log in"
     },
@@ -322,7 +322,12 @@
       "passwordConfirm": "Confirm new password",
       "submit": "Save and log in",
       "submitting": "Saving…",
-      "note": "Every other device will be signed out."
+      "note": "Every other device will be signed out.",
+      "checkCode": "Check the code",
+      "checking": "Checking…",
+      "codeAccepted": "Code accepted",
+      "newCode": "Send a new code",
+      "spentHelp": "This code is spent. Asking for a new one starts the attempts over. If you cannot reach the inbox either, get in touch and we will help."
     },
     "errors": {
       "emailTaken": "That email already has an account. Log in instead.",
@@ -331,7 +336,7 @@
       "emailNotVerified": "Verify your email first — we have just sent you a new code.",
       "codeInvalid": "That code is not right.",
       "codeExpired": "That code has expired. Ask for a new one.",
-      "codeAttemptsExceeded": "Too many wrong codes. Ask for a new one.",
+      "codeAttemptsExceeded": "That code was entered wrongly too many times. It no longer works — ask for a new one.",
       "resendTooSoon": "Please wait {seconds} seconds before asking for another code.",
       "rateLimited": "Too many attempts. Please try again a little later.",
       "weakPassword": "Please choose a stronger password.",
@@ -348,7 +353,8 @@
       "passwordTooLong": "That is longer than 128 characters",
       "codeLength": "Enter the six-digit code",
       "emailMismatch": "The two email addresses do not match",
-      "passwordMismatch": "The two passwords do not match"
+      "passwordMismatch": "The two passwords do not match",
+      "emailUnknown": "No account uses this address. Check it, or create an account."
     },
     "setPassword": {
       "title": "Your email is confirmed",
@@ -384,12 +390,12 @@
       "ignore": "If you did not create an Ahd account, you can safely ignore this email."
     },
     "reset": {
-      "subject": "Reset your Ahd password",
-      "preheader": "Your Ahd password reset code",
+      "subject": "Ahd — your reset code is {code}",
+      "preheader": "A six-digit code, good for {minutes} minutes.",
       "heading": "Reset your password",
-      "body": "Enter this code in Ahd to choose a new password.",
-      "expiry": "This code expires in {minutes} minutes.",
-      "ignore": "If you did not ask to reset your password, ignore this email — nothing has changed."
+      "body": "Enter the code below in Ahd, and you will then choose a new password. Never share it: nobody from Ahd will ever ask you for this code.",
+      "expiry": "It expires in {minutes} minutes and works only once.",
+      "ignore": "If you did not ask to reset your password, there is nothing to do — your password has not changed. If this keeps happening, change it anyway."
     },
     "weekly": {
       "subject": "Your week with Ahd",

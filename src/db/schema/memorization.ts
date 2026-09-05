@@ -65,6 +65,21 @@ export const memorizationUnits = pgTable(
     lapses: integer().notNull().default(0),
     intervalDays: real().notNull().default(0),
 
+    /* Which surahs of this page are held, when not all of them are.
+     *
+     * NULL means the whole page, which is what almost every row is and what
+     * every row was before this column existed. It matters on the handful of
+     * pages that carry several short surahs: someone who has Al-Kawthar by
+     * heart should be able to say so without also claiming Al-Ma'un and
+     * Al-Kafirun, which share the page with it.
+     *
+     * Only whole pages are scheduled for revision or counted as held. A
+     * partial row exists so the surah list can tell the truth and so progress
+     * is not overstated — it is a record of what is known, not yet a unit of
+     * work. The row becomes whole, and joins the rotation, when the last surah
+     * on its page is marked. */
+    surahs: smallint().array(),
+
     firstMemorizedAt: timestamp({ withTimezone: true }),
     lastReviewedAt: timestamp({ withTimezone: true }),
     nextDueAt: timestamp({ withTimezone: true }),

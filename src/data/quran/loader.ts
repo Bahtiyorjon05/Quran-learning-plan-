@@ -302,6 +302,15 @@ export function pageSurahNames(locale: QuranLocale): string[] {
  */
 export function surahProgress(
   strengths: readonly number[],
+  /**
+   * Pages held only in part, and which surahs of them are held.
+   *
+   * A page carrying three short surahs can be held for one of them and not the
+   * others. Without this, marking Al-Kawthar lit up Al-Ma'un and Al-Kafirun
+   * beside it — the list said someone had memorised two surahs they had never
+   * looked at.
+   */
+  partial?: ReadonlyMap<number, readonly number[]>,
 ): Record<number, { held: number; total: number; strength: number }> {
   const out: Record<number, { held: number; total: number; strength: number }> = {};
 
@@ -310,6 +319,8 @@ export function surahProgress(
     let sum = 0;
     for (let page = surah.startPage; page <= surah.endPage; page++) {
       const strength = strengths[page - 1] ?? 0;
+      const only = partial?.get(page);
+      if (only && !only.includes(surah.number)) continue;
       if (strength > 0) {
         held += 1;
         sum += strength;

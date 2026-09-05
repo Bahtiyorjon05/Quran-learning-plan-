@@ -19,9 +19,14 @@ import { cn } from "@/lib/utils";
 export function MemorizeToggle({
   page,
   memorized,
+  surah,
+  label,
 }: {
   page: number;
   memorized: boolean;
+  /** One surah of a shared page, rather than the page as a whole. */
+  surah?: number;
+  label?: string;
 }) {
   const t = useTranslations("app.mushaf");
   const [, submit, pending] = useActionState(setPageMemorized, MARK_IDLE);
@@ -36,6 +41,7 @@ export function MemorizeToggle({
     >
       <input type="hidden" name="page" value={page} />
       <input type="hidden" name="memorized" value={String(!shown)} />
+      {surah !== undefined && <input type="hidden" name="surah" value={surah} />}
 
       <button
         type="submit"
@@ -57,7 +63,7 @@ export function MemorizeToggle({
         ) : (
           <Bookmark className="h-3.5 w-3.5" />
         )}
-        {shown ? t("memorized") : t("markMemorized")}
+        {label ?? (shown ? t("memorized") : t("markMemorized"))}
       </button>
     </form>
   );
