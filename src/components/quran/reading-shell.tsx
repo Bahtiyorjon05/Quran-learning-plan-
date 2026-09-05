@@ -5,6 +5,7 @@ import { Footer } from "@/components/site/footer";
 import { PageView } from "@/components/quran/page-view";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
+import { KeepAwake } from "@/components/quran/keep-awake";
 import { OfflineAudio, type OfflineScope } from "@/components/quran/offline-audio";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
@@ -117,6 +118,8 @@ export function ReadingShell({
               <ReaderControls />
             </div>
 
+            {/* Reading and listening both happen without touching the screen. */}
+            <KeepAwake />
             <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
 
             <OfflineAudio scopes={offlineScopes} />

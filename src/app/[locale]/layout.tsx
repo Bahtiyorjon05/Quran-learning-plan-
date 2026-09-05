@@ -111,6 +111,20 @@ export const viewport: Viewport = {
   colorScheme: "dark light",
 };
 
+/* Catches the browser's one offer to install, before React exists.
+ *
+ * Chrome fires `beforeinstallprompt` once per page load, very early, and if
+ * nobody calls preventDefault and keeps the event it is gone for good. A React
+ * effect mounts long after that moment, so the button had usually missed it —
+ * and fell back to explaining where the browser hides its own menu item, which
+ * is not what anybody wants from a button labelled "install".
+ *
+ * So the event is caught here, ahead of everything, and parked on `window` for
+ * the component to pick up whenever it arrives. Firing it still has to happen
+ * inside a real click; that is the browser's rule, and this only preserves the
+ * chance to obey it. */
+const installScript = `(function(){window.__ahdInstall=null;window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__ahdInstall=e;window.dispatchEvent(new Event("ahd-install-ready"))});window.addEventListener("appinstalled",function(){window.__ahdInstall=null;window.dispatchEvent(new Event("ahd-install-ready"))})})();`;
+
 /* Applied before first paint so the chosen theme never flashes. Kept tiny and
    dependency-free on purpose — it runs ahead of React. */
 const themeScript = `(function(){try{var t=localStorage.getItem("ahd-theme");if(!t){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","dark")}})();`;
@@ -142,6 +156,7 @@ export default async function LocaleLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: installScript }} />
       </head>
       <body className="min-h-dvh antialiased">
         <NextIntlClientProvider>

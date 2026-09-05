@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowDownToLine, Share, SquarePlus, X } from "lucide-react";
 
@@ -49,6 +49,32 @@ const DISMISSED_KEY = "ahd-install-dismissed";
 /** How long a dismissal of the card is honoured. */
 const DISMISSAL_DAYS = 30;
 
+/* ── The parked prompt ──────────────────────────────────────────────────────
+   The head script catches `beforeinstallprompt` and leaves the event on
+   `window.__ahdInstall`, announcing it with `ahd-install-ready`. This is the
+   subscription side of that, shaped for useSyncExternalStore so the server and
+   the first client render agree on "none yet" and nothing flickers. */
+
+declare global {
+  interface Window {
+    __ahdInstall?: InstallEvent | null;
+  }
+}
+
+function subscribeInstall(onChange: () => void) {
+  window.addEventListener("ahd-install-ready", onChange);
+  return () => window.removeEventListener("ahd-install-ready", onChange);
+}
+
+function installSnapshot(): InstallEvent | null {
+  return window.__ahdInstall ?? null;
+}
+
+function clearInstall() {
+  window.__ahdInstall = null;
+  window.dispatchEvent(new Event("ahd-install-ready"));
+}
+
 type InstallEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
@@ -85,40 +111,39 @@ function useInstall() {
   const standalone = useStandalone();
   const ios = useAppleBrowser();
 
-  const [prompt, setPrompt] = useState<InstallEvent | null>(null);
+  /* Read through the store rather than caught here.
+   *
+   * Chrome fires `beforeinstallprompt` once, very early — reliably before this
+   * component has mounted — so a listener added in an effect arrived after the
+   * only offer the browser was ever going to make. The event is caught by a
+   * script in the document head instead and parked on `window`; this subscribes
+   * to whatever is parked there. That is the difference between a button that
+   * installs the app and a button that explains where the browser hides its own
+   * menu item. */
+  const prompt = useSyncExternalStore(subscribeInstall, installSnapshot, () => null);
   const [justInstalled, setJustInstalled] = useState(false);
 
   useEffect(() => {
-    const onPrompt = (event: Event) => {
-      /* Kept rather than fired. Chrome only honours `prompt()` inside a user
-         gesture, so the browser's own moment is the wrong one. */
-      event.preventDefault();
-      setPrompt(event as InstallEvent);
-    };
-
     const onInstalled = () => {
       setJustInstalled(true);
-      setPrompt(null);
       /* Cleared, not kept. If this app is deleted later the browser will offer
          again, and an old dismissal must not swallow that offer. */
       writeLocal(DISMISSED_KEY, "");
     };
 
-    window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onPrompt);
-      window.removeEventListener("appinstalled", onInstalled);
-    };
+    return () => window.removeEventListener("appinstalled", onInstalled);
   }, []);
 
   const installed = standalone || justInstalled;
 
   async function install(): Promise<"accepted" | "dismissed" | "manual"> {
     if (!prompt) return "manual";
+    /* Spent, and cleared from the parking spot: a prompt may only be used once
+       and calling it again throws. */
+    clearInstall();
     await prompt.prompt();
     const { outcome } = await prompt.userChoice;
-    setPrompt(null);
     return outcome;
   }
 

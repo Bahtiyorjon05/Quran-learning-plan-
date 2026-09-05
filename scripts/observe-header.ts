@@ -141,11 +141,39 @@ async function main() {
       if (!has(/oʻrnat|o'rnat|Install|Установ/i)) failures.push("install is not in the menu");
     }
 
+    /* ── Install actually installs ──
+       The head script catches `beforeinstallprompt` before React exists, so a
+       prompt offered at any point is still in hand when the row is clicked.
+       Without that the row fell back to explaining where Chrome hides its own
+       menu item, which is not what a button labelled "install" should do. */
+    await page.evaluate(`
+      var e = new Event("beforeinstallprompt");
+      window.__ahdPromptCalls = 0;
+      e.prompt = function(){ window.__ahdPromptCalls++; return Promise.resolve(); };
+      e.userChoice = Promise.resolve({ outcome: "accepted" });
+      window.dispatchEvent(e);
+    `);
+    await page.waitForTimeout(500);
+
+    await page
+      .getByRole("menuitem", { name: /oʻrnat|o'rnat|Install|Установ/i })
+      .first()
+      .click();
+    await page.waitForTimeout(600);
+
+    const fired = await page.evaluate("window.__ahdPromptCalls || 0");
+    console.log(`  6. clicking install   → prompt() called ${fired} time(s)`);
+    if (Number(fired) < 1) {
+      failures.push(
+        "clicking install did not open the browser's install dialog — it fell back to explaining",
+      );
+    }
+
     /* Escape closes it. */
     await page.keyboard.press("Escape");
     await page.waitForTimeout(300);
     const stillOpen = (await page.locator('[role="menu"]').count()) > 0;
-    console.log(`  6. Escape closes it    → ${stillOpen ? "NO" : "yes"}`);
+    console.log(`  7. Escape closes it    → ${stillOpen ? "NO" : "yes"}`);
     if (stillOpen) failures.push("Escape does not close the account menu");
   }
 
@@ -156,7 +184,7 @@ async function main() {
     .getByRole("button", { name: /Hisob|Account|Аккаунт/ })
     .first()
     .innerText();
-  console.log(`  7. at 1280px the trigger reads → "${named.replace(/\n/g, " ").trim()}"`);
+  console.log(`  8. at 1280px the trigger reads → "${named.replace(/\n/g, " ").trim()}"`);
   if (!/Abdulloh/.test(named)) failures.push("the account trigger does not show the name on a laptop");
 
   await browser.close();

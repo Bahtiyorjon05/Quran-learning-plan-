@@ -16,6 +16,7 @@ import { Footer } from "@/components/site/footer";
 import { PageView } from "@/components/quran/page-view";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
+import { KeepAwake } from "@/components/quran/keep-awake";
 import { OfflineAudio } from "@/components/quran/offline-audio";
 import { AutoReadMark } from "@/components/quran/auto-read-mark";
 import { Measure } from "@/components/ui/section";
@@ -107,6 +108,8 @@ export default async function QuranPage({ params }: Params) {
             <div className="flex justify-end">
               <ReaderControls />
             </div>
+            {/* Reading and listening both happen without touching the screen. */}
+            <KeepAwake />
             <Recitation
               ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))}
               nextHref={page < TOTAL_PAGES ? `/quran/${page + 1}` : undefined}

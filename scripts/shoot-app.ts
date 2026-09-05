@@ -32,15 +32,32 @@ const arg = (name: string, fallback: string) => {
   return i >= 0 ? process.argv[i + 1] : fallback;
 };
 
+/* Signed in. Every screen an account holder actually lives in. */
 const SCREENS = [
   ["dashboard", "/app"],
   ["practice", "/app/practice"],
+  ["drill", "/app/practice/42"],
   ["mushaf", "/app/quran"],
+  ["reader", "/app/quran/42"],
   ["mistakes", "/app/mistakes"],
-  ["plan-new", "/app/plan/new"],
+  ["settings", "/app/settings"],
+  ["plan-amend", "/app/plan/amend"],
   ["admin", "/admin"],
   ["admin-people", "/admin/users"],
+] as const;
+
+/* Signed out, and shot in their own browser: a session cookie would redirect
+   half of them to the dashboard and photograph the wrong thing. */
+const PUBLIC = [
   ["home", "/"],
+  ["login", "/login"],
+  ["signup", "/signup"],
+  ["forgot", "/forgot-password"],
+  ["quran-index", "/quran"],
+  ["surah", "/quran/surah/36"],
+  ["page", "/quran/42"],
+  ["about", "/about"],
+  ["faq", "/faq"],
 ] as const;
 
 const overflows: string[] = [];
@@ -109,15 +126,21 @@ async function main() {
 
   const browser = await chromium.launch({ executablePath: CHROME, headless: true });
 
-  for (const theme of themes) {
+  async function shoot(
+    screens: readonly (readonly [string, string])[],
+    theme: string,
+    signedIn: boolean,
+  ) {
     const context = await browser.newContext({
       viewport: { width, height: 1000 },
       deviceScaleFactor: 2,
       colorScheme: theme === "light" ? "light" : "dark",
     });
-    await context.addCookies([
-      { name: "ahd_session", value: token, domain: new URL(BASE).hostname, path: "/", httpOnly: true, sameSite: "Lax" },
-    ]);
+    if (signedIn) {
+      await context.addCookies([
+        { name: "ahd_session", value: token, domain: new URL(BASE).hostname, path: "/", httpOnly: true, sameSite: "Lax" },
+      ]);
+    }
 
     /* The theme lives in localStorage and is applied by an inline script before
        first paint, so it has to be in place before the document runs — a cookie
@@ -131,7 +154,7 @@ async function main() {
     }, theme);
     const page = await context.newPage();
 
-    for (const [name, path] of SCREENS) {
+    for (const [name, path] of screens) {
       await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
 
       /* Walk the whole page first. Anything revealed by an IntersectionObserver
@@ -146,8 +169,19 @@ async function main() {
         window.scrollTo(0, 0);
       });
 
+      /* Freeze everything that moves, and undo the scroll-driven reveal.
+         `fullPage` resizes the viewport to the height of the whole document,
+         which is exactly the thing `animation-timeline: view()` measures
+         against — so every section below the fold photographed at opacity 0
+         and the page looked like it had a hole in it. It does not: scrolled
+         normally each section reaches full opacity. Killing the animation
+         restores the resting state, which is what a layout review wants. */
+      await page.addStyleTag({
+        content: `*,*::before,*::after{animation:none!important;transition:none!important}`,
+      });
+
       /* Let the arrival animations finish before the shutter. */
-      await page.waitForTimeout(2600);
+      await page.waitForTimeout(1200);
       /* Horizontal overflow is the one responsiveness bug that is a fact
          rather than a matter of taste, so it is measured rather than eyeballed:
          a page whose scrollWidth exceeds its viewport slides sideways under the
@@ -193,6 +227,11 @@ async function main() {
       console.log(`  ${name.padEnd(12)} ${theme.padEnd(5)} → ${file.split("/").pop()}${overflow ? "  ⚠ OVERFLOWS" : ""}`);
     }
     await context.close();
+  }
+
+  for (const theme of themes) {
+    await shoot(SCREENS, theme, true);
+    await shoot(PUBLIC, theme, false);
   }
 
   await browser.close();

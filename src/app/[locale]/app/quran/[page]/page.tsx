@@ -19,6 +19,7 @@ import { PageView } from "@/components/quran/page-view";
 import { MemorizeToggle } from "@/components/quran/memorize-toggle";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
+import { KeepAwake } from "@/components/quran/keep-awake";
 import { OfflineAudio } from "@/components/quran/offline-audio";
 import { offlineScopesForPage } from "@/data/quran/loader";
 import { AutoReadMark } from "@/components/quran/auto-read-mark";
@@ -134,6 +135,8 @@ export default async function AppQuranPage({ params }: Params) {
           </div>
 
           <div className="mt-4 space-y-4">
+            {/* Reading and listening both happen without touching the screen. */}
+            <KeepAwake />
             <Recitation
               ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))}
               nextHref={page < TOTAL_PAGES ? `/app/quran/${page + 1}` : undefined}

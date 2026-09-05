@@ -49,3 +49,6 @@ next-env.d.ts
 
 # Screenshots from `npm run shoot` — look at them, do not commit them.
 screenshots/
+
+# Build and server logs. Kept in the workspace, never in the system temp dir.
+.logs/
