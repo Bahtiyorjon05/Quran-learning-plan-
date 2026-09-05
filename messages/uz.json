@@ -1012,7 +1012,12 @@
         "about": "Turli suralardagi deyarli bir xil parchalar — hifzdagi eng qiyin narsa va deyarli hech qayerda mashq qilinmaydigani."
       }
     },
-    "next": "Keyingi"
+    "next": "Keyingi",
+    "startHere": "Shu yerdan boshlang",
+    "modesTitle": "Har bir mashq shu oltitadan tortadi",
+    "othersTitle": "Boshqa sahifalar",
+    "strengthLabel": "mustahkamlik",
+    "startAction": "Mashqni boshlash"
   },
   "install": {
     "title": "Ahd ilovasini oʻrnating",
@@ -1077,7 +1082,8 @@
     "pushOff": "Oʻchirilgan",
     "pushEnable": "Ruxsat berish",
     "pushBlocked": "Brauzer xabarlarni bloklagan. Sozlamalardan ruxsat bering.",
-    "pushUnsupported": "Bu brauzer xabarlarni qoʻllab-quvvatlamaydi."
+    "pushUnsupported": "Bu brauzer xabarlarni qoʻllab-quvvatlamaydi.",
+    "pushHint": "Brauzer ruxsati kerak. Ruxsatsiz yuqoridagi eslatmalar yuborilmaydi."
   },
   "amend": {
     "title": "Ahdni oʻzgartirish",

@@ -400,7 +400,12 @@ export default async function AppHomePage({
                 />
               </section>
 
-              <div className="space-y-5">
+              {/* Sticky on a laptop. Today's sheet beside it is the tall
+                  column — three tracks, each with its own pages — so the
+                  shortcuts scrolled out of reach almost immediately and left a
+                  column of empty ground beside the thing you were reading.
+                  They now travel with it. */}
+              <div className="space-y-5 lg:sticky lg:top-24">
                 <PracticeInvite weakest={pages[0] ?? null} fragileCount={fragile} held={held} />
 
                 {/* Only shown where it can actually be acted on: the component

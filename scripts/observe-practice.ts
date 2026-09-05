@@ -168,7 +168,11 @@ async function playMode(page: Page, mode: string) {
      asserted is that the drill reached the end and reported on every question
      it asked. A premature submit used to lose the last one silently. */
   const reviewed = await page.locator("[data-question-dot]").count();
-  const listed = await page.locator("[aria-expanded]").count();
+  /* Scoped to the drill itself. Counting every `aria-expanded` in the document
+     swept in whatever the page furniture happened to have — the account menu
+     in the header is one — and the review list silently gained a question it
+     never asked. */
+  const listed = await page.locator("main [aria-expanded]").count();
   if (listed !== total) {
     failures.push(`${mode}: asked ${total} questions but reported on ${listed}`);
   }

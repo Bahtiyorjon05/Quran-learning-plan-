@@ -4,8 +4,7 @@ import { and, desc, eq, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { mistakes } from "@/db/schema";
-import { juzOfPage } from "@/core/quran/mushaf";
-import { loadJuz, surahTitle, type QuranLocale } from "@/data/quran/loader";
+import { loadSurahAyahs, surahTitle, type QuranLocale } from "@/data/quran/loader";
 
 /**
  * The weak spots, gathered.
@@ -67,23 +66,27 @@ export async function loadWeakSpots(
 
   if (rows.length === 0) return [];
 
-  /* The text, fetched a juz at a time rather than an ayah at a time: twenty
-     weak spots usually sit in two or three juz. */
+  /* The text, fetched by surah rather than by the juz of the recorded page.
+     The page a mistake was made on is not a reliable route to the ayah's
+     words: a page that straddles a juz boundary holds ayahs from both, and a
+     mutashabihat confusion records an ayah from somewhere else entirely. Both
+     looked the juz up from the wrong end and found nothing, so the weak-spots
+     page — whose entire job is to show the words you keep losing — listed the
+     reference and no Arabic at all. Grouped by surah, the lookup cannot miss. */
   const needed = new Map<number, Set<string>>();
   for (const row of rows) {
-    const juz = juzOfPage(row.page);
     const key = `${row.surah}:${row.ayah}`;
-    const set = needed.get(juz);
+    const set = needed.get(row.surah);
     if (set) set.add(key);
-    else needed.set(juz, new Set([key]));
+    else needed.set(row.surah, new Set([key]));
   }
 
   const texts = new Map<string, string>();
   await Promise.all(
-    [...needed.keys()].map(async (juz) => {
-      const file = await loadJuz(juz);
-      for (const ayah of file.ayahs) {
-        if (needed.get(juz)!.has(ayah.k)) texts.set(ayah.k, ayah.t);
+    [...needed.entries()].map(async ([number, keys]) => {
+      const ayahs = await loadSurahAyahs(number);
+      for (const ayah of ayahs) {
+        if (keys.has(ayah.k)) texts.set(ayah.k, ayah.t);
       }
     }),
   );

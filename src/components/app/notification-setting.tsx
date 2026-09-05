@@ -77,7 +77,10 @@ export function NotificationSetting() {
             ? t("pushUnsupported")
             : permission === "denied"
               ? t("pushBlocked")
-              : t("remindersHint")}
+              : /* Its own sentence, not the switch's. This row is about the
+                   browser's permission, and repeating the hint from the toggle
+                   above printed the same line twice in one card. */
+                t("pushHint")}
         </span>
       </span>
 

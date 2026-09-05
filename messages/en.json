@@ -1012,7 +1012,12 @@
         "about": "Near-identical passages in different surahs — the hardest thing in hifz, and the thing almost nothing else drills."
       }
     },
-    "next": "Next"
+    "next": "Next",
+    "startHere": "Start here",
+    "modesTitle": "Every session draws on these six",
+    "othersTitle": "Other pages",
+    "strengthLabel": "strength",
+    "startAction": "Start practising"
   },
   "install": {
     "title": "Install Ahd",
@@ -1077,7 +1082,8 @@
     "pushOff": "Off",
     "pushEnable": "Allow",
     "pushBlocked": "The browser has blocked notifications. Allow them in its settings.",
-    "pushUnsupported": "This browser cannot show notifications."
+    "pushUnsupported": "This browser cannot show notifications.",
+    "pushHint": "The browser has to allow it. Without permission the reminders above are never sent."
   },
   "amend": {
     "title": "Amend your covenant",

@@ -222,9 +222,13 @@ async function main() {
         );
       }
 
+      /* If a signed-in screen photographed the sign-in page, the shot is a
+         lie and the whole review is built on it. Say so loudly. */
+      const landed = new URL(page.url()).pathname;
+      const bounced = signedIn && /\/(login|signup)$/.test(landed);
       const file = `${OUT}/${name}-${theme}-${width}.png`;
       await page.screenshot({ path: file, fullPage: true });
-      console.log(`  ${name.padEnd(12)} ${theme.padEnd(5)} → ${file.split("/").pop()}${overflow ? "  ⚠ OVERFLOWS" : ""}`);
+      console.log(`  ${name.padEnd(12)} ${theme.padEnd(5)} → ${file.split("/").pop()}${overflow ? "  ⚠ OVERFLOWS" : ""}${bounced ? `  ⚠ BOUNCED TO ${landed}` : ""}`);
     }
     await context.close();
   }
