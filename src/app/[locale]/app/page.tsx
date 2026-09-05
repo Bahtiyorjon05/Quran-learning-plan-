@@ -22,6 +22,7 @@ import { Atmosphere } from "@/components/app/atmosphere";
 import { TimeZoneSync } from "@/components/app/timezone-sync";
 import { Corners } from "@/components/ui/ornament";
 import { buttonStyles } from "@/components/ui/button";
+import { Illuminated } from "@/components/ui/illumination";
 import { Measure } from "@/components/ui/section";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -328,8 +329,11 @@ export default async function AppHomePage({
                 </Link>
               </div>
             ) : (
-              <div className="relative p-6 sm:p-8">
-                <div className="flex flex-col items-center gap-8 sm:flex-row sm:gap-10">
+              <div className="relative p-6 sm:p-10">
+                {/* The one panel on this screen that is not a readout. It is
+                    the promise itself, so it is framed like a page. */}
+                <Illuminated inset="0.75rem" />
+                <div className="relative flex flex-col items-center gap-8 sm:flex-row sm:gap-10">
                   <CovenantArc
                     pace={pace}
                     fill={memorisedShare}

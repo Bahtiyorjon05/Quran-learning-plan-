@@ -32,7 +32,9 @@ type Params = { params: Promise<{ locale: string; page: string }> };
 
 function parsePage(raw: string): number | null {
   const page = Number(raw);
-  return Number.isInteger(page) && page >= 1 && page <= TOTAL_PAGES ? page : null;
+  return Number.isInteger(page) && page >= 1 && page <= TOTAL_PAGES
+    ? page
+    : null;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -40,7 +42,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const page = parsePage(raw);
   if (!page) return {};
   const t = await getTranslations({ locale, namespace: "quran.reader" });
-  return { title: t("page", { page }), robots: { index: false, follow: false } };
+  return {
+    title: t("page", { page }),
+    robots: { index: false, follow: false },
+  };
 }
 
 /**
@@ -75,7 +80,9 @@ export default async function AppQuranPage({ params }: Params) {
 
   const t = await getTranslations("quran.reader");
   const tm = await getTranslations("app.mushaf");
-  const names = meta.surahs.map((n) => localisedSurah(n, locale as QuranLocale));
+  const names = meta.surahs.map((n) =>
+    localisedSurah(n, locale as QuranLocale),
+  );
 
   return (
     <div className="min-h-dvh">
@@ -139,13 +146,15 @@ export default async function AppQuranPage({ params }: Params) {
             <KeepAwake />
             <Recitation
               ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))}
-              nextHref={page < TOTAL_PAGES ? `/app/quran/${page + 1}` : undefined}
+              nextHref={
+                page < TOTAL_PAGES ? `/app/quran/${page + 1}` : undefined
+              }
+              /* Signed-in readers were the only ones who could not keep a page
+                 for later, which is backwards — they are the ones revising it
+                 every week. It sits with the player's other settings: asked
+                 for once per surah, not wanted above the words every visit. */
+              extra={<OfflineAudio scopes={await offlineScopesForPage(page)} />}
             />
-
-            {/* Signed-in readers were the only ones who could not keep a page
-                for later, which is backwards — they are the ones revising it
-                every week. */}
-            <OfflineAudio scopes={await offlineScopesForPage(page)} />
           </div>
         </div>
       </Measure>

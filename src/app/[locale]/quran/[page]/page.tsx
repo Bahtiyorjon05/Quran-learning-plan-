@@ -28,7 +28,9 @@ type Params = { params: Promise<{ locale: string; page: string }> };
 
 function parsePage(raw: string): number | null {
   const page = Number(raw);
-  return Number.isInteger(page) && page >= 1 && page <= TOTAL_PAGES ? page : null;
+  return Number.isInteger(page) && page >= 1 && page <= TOTAL_PAGES
+    ? page
+    : null;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -52,7 +54,9 @@ export default async function QuranPage({ params }: Params) {
 
   const { meta, ayahs } = await loadPage(page);
   const t = await getTranslations("quran.reader");
-  const names = meta.surahs.map((n) => localisedSurah(n, locale as QuranLocale));
+  const names = meta.surahs.map((n) =>
+    localisedSurah(n, locale as QuranLocale),
+  );
 
   return (
     <>
@@ -113,20 +117,22 @@ export default async function QuranPage({ params }: Params) {
             <Recitation
               ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))}
               nextHref={page < TOTAL_PAGES ? `/quran/${page + 1}` : undefined}
+              extra={<OfflineAudio scopes={await offlineScopesForPage(page)} />}
             />
-
-            <OfflineAudio scopes={await offlineScopesForPage(page)} />
           </div>
         </Measure>
 
         <Measure className="pb-16">
           <PageView ayahs={ayahs} locale={locale as Locale} />
 
-        <AutoReadMark page={page} />
+          <AutoReadMark page={page} />
 
           <div className="mx-auto mt-10 flex max-w-2xl items-center justify-between gap-3 border-t border-[var(--line-subtle)] pt-8">
             {page > 1 ? (
-              <Link href={`/quran/${page - 1}`} className={buttonStyles({ variant: "outline" })}>
+              <Link
+                href={`/quran/${page - 1}`}
+                className={buttonStyles({ variant: "outline" })}
+              >
                 <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
                 {t("prev")}
               </Link>

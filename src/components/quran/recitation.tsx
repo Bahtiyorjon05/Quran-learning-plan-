@@ -2,7 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Loader2, Pause, Play, Repeat, SkipForward, Volume2 } from "lucide-react";
+import {
+  Loader2,
+  Pause,
+  Play,
+  Repeat,
+  SkipForward,
+  SlidersHorizontal,
+  Volume2,
+} from "lucide-react";
 
 import {
   RECITERS,
@@ -133,6 +141,7 @@ export type PlayableAyah = { k: string; s: number; a: number };
 export function Recitation({
   ayahs,
   nextHref,
+  extra,
 }: {
   ayahs: PlayableAyah[];
   /**
@@ -143,6 +152,15 @@ export function Recitation({
    * turns to the next one and keeps going.
    */
   nextHref?: string;
+  /**
+   * Rendered inside the options panel.
+   *
+   * The offline download used to be a second card stacked under this one, and
+   * between them they filled a laptop screen before a single ayah appeared.
+   * It is asked for perhaps once per surah; it does not belong above the words
+   * every time the page is opened.
+   */
+  extra?: React.ReactNode;
 }) {
   const t = useTranslations("quran.audio");
   const locale = useLocale() as "uz" | "en" | "ru";
@@ -155,7 +173,9 @@ export function Recitation({
      is the oldest trick in hifz, and every reciter here is too fast for a
      beginner at least once. */
   const storedSpeed = Number(useLocalValue(SPEED_KEY));
-  const speed = SPEEDS.includes(storedSpeed as Speed) ? (storedSpeed as Speed) : 1;
+  const speed = SPEEDS.includes(storedSpeed as Speed)
+    ? (storedSpeed as Speed)
+    : 1;
   /* On by default: someone who pressed play wants to read along, and having to
      find the control before that works would be a strange first impression. */
   const follow = useLocalValue(FOLLOW_KEY) !== "false";
@@ -252,7 +272,8 @@ export function Recitation({
     } else if (adopting) {
       audio.dispatchEvent(new Event("ahd-adopt"));
       audio.dispatchEvent(new Event(audio.paused ? "pause" : "play"));
-      if (Number.isFinite(audio.duration)) audio.dispatchEvent(new Event("loadedmetadata"));
+      if (Number.isFinite(audio.duration))
+        audio.dispatchEvent(new Event("loadedmetadata"));
       audio.dispatchEvent(new Event("timeupdate"));
     }
 
@@ -402,8 +423,13 @@ export function Recitation({
   useEffect(
     () => () => {
       setTimeout(() => {
-        if (document.querySelector("[data-ahd-recitation]") instanceof HTMLAudioElement) {
-          const audio = document.querySelector("[data-ahd-recitation]") as HTMLAudioElement;
+        if (
+          document.querySelector("[data-ahd-recitation]") instanceof
+          HTMLAudioElement
+        ) {
+          const audio = document.querySelector(
+            "[data-ahd-recitation]",
+          ) as HTMLAudioElement;
           if (!audio.paused) return;
         }
         for (const node of document.querySelectorAll("[data-reciting]")) {
@@ -443,7 +469,9 @@ export function Recitation({
     const basmala =
       perAyah && withBasmala && opensWithBasmala(target.s, target.a);
 
-    audio.src = basmala ? basmalaAudioUrl(reciter.id) : sourceFor(reciter.id, next);
+    audio.src = basmala
+      ? basmalaAudioUrl(reciter.id)
+      : sourceFor(reciter.id, next);
     /* Written to the element, because the element is what survives a language
        switch — the React state does not. */
     audio.dataset.index = String(next);
@@ -464,9 +492,7 @@ export function Recitation({
        opens, not the one after that: warming ahead of the ayah while skipping
        the ayah itself left exactly the gap this is meant to close. */
     if (perAyah) {
-      const upcoming = basmala
-        ? [next, next + 1]
-        : [next + 1, next + 2];
+      const upcoming = basmala ? [next, next + 1] : [next + 1, next + 2];
 
       warm(
         upcoming
@@ -493,11 +519,16 @@ export function Recitation({
     if (index === null || !audio) return;
     const wasPlaying = !paused;
     audio.src =
-      audio.dataset.basmala === "1" ? basmalaAudioUrl(id) : sourceFor(id, index);
+      audio.dataset.basmala === "1"
+        ? basmalaAudioUrl(id)
+        : sourceFor(id, index);
     if (wasPlaying) void audio.play().catch(() => setFailed(true));
   }
 
   const started = index !== null;
+  /* Everything that is set once and then left alone — speed, which voice, what
+     to keep for offline — lives behind this. Only the transport stays out. */
+  const [options, setOptions] = useState(false);
 
   return (
     <div className="rounded-2xl border border-[var(--line-strong)] bg-[var(--surface-raised)]/40 p-4 sm:p-5">
@@ -529,7 +560,9 @@ export function Recitation({
               : failed
                 ? t("failed")
                 : perAyah
-                  ? t("nowPlaying", { ayah: `${ayahs[index].s}:${ayahs[index].a}` })
+                  ? t("nowPlaying", {
+                      ayah: `${ayahs[index].s}:${ayahs[index].a}`,
+                    })
                   : t("nowPlayingSurah")}
           </p>
         </div>
@@ -580,6 +613,22 @@ export function Recitation({
               </button>
             </>
           )}
+
+          <button
+            type="button"
+            onClick={() => setOptions((open) => !open)}
+            aria-expanded={options}
+            aria-label={t("options")}
+            title={t("options")}
+            className={cn(
+              "inline-grid h-9 w-9 place-items-center rounded-full border transition-colors duration-300",
+              options
+                ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
+                : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
+            )}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
@@ -607,7 +656,9 @@ export function Recitation({
             }}
             aria-label={t("seek")}
             className="ahd-seek h-1.5 flex-1"
-            style={{ ["--played" as string]: `${(position / duration) * 100}%` }}
+            style={{
+              ["--played" as string]: `${(position / duration) * 100}%`,
+            }}
           />
 
           <span className="w-9 shrink-0 text-end text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
@@ -616,62 +667,68 @@ export function Recitation({
         </div>
       )}
 
-      {/* ── Speed ── */}
-      <div className="mt-4 flex flex-wrap items-center gap-1.5">
-        <span className="me-1 text-[0.6875rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
-          {t("speed")}
-        </span>
-        {SPEEDS.map((option) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() => writeLocal(SPEED_KEY, String(option))}
-            aria-pressed={option === speed}
-            className={cn(
-              "rounded-full border px-2.5 py-1 text-[0.6875rem] tabular-nums",
-              "transition-[border-color,background-color,color] duration-300",
-              option === speed
-                ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
-                : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
-            )}
-          >
-            {option}&times;
-          </button>
-        ))}
-      </div>
+      {options && (
+        <>
+          {/* ── Speed ── */}
+          <div className="mt-4 flex flex-wrap items-center gap-1.5">
+            <span className="me-1 text-[0.6875rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
+              {t("speed")}
+            </span>
+            {SPEEDS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => writeLocal(SPEED_KEY, String(option))}
+                aria-pressed={option === speed}
+                className={cn(
+                  "rounded-full border px-2.5 py-1 text-[0.6875rem] tabular-nums",
+                  "transition-[border-color,background-color,color] duration-300",
+                  option === speed
+                    ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
+                    : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
+                )}
+              >
+                {option}&times;
+              </button>
+            ))}
+          </div>
 
-      {/* The reciters, named in the reader's own language. Buttons rather than
+          {/* The reciters, named in the reader's own language. Buttons rather than
           a dropdown, for the same reason the language switcher is buttons: one
           tap, and you can see what you are switching from. */}
-      <div className="mt-4 flex flex-wrap gap-1.5 border-t border-[var(--line-subtle)] pt-4">
-        {RECITERS.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => chooseReciter(option.id)}
-            aria-pressed={option.id === reciter.id}
-            title={option.note[locale]}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-[0.75rem] transition-[border-color,background-color,color] duration-300",
-              option.id === reciter.id
-                ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
-                : "border-[var(--line-strong)] text-[var(--text-muted)] hover:border-[var(--text-faint)] hover:text-[var(--text-strong)]",
-            )}
-          >
-            {option.name[locale]}
-            {option.kind === "surah" && (
-              <span className="ms-1.5 text-[0.625rem] text-[var(--text-faint)]">
-                {t("wholeSurah")}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+          <div className="mt-4 flex flex-wrap gap-1.5 border-t border-[var(--line-subtle)] pt-4">
+            {RECITERS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => chooseReciter(option.id)}
+                aria-pressed={option.id === reciter.id}
+                title={option.note[locale]}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-[0.75rem] transition-[border-color,background-color,color] duration-300",
+                  option.id === reciter.id
+                    ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
+                    : "border-[var(--line-strong)] text-[var(--text-muted)] hover:border-[var(--text-faint)] hover:text-[var(--text-strong)]",
+                )}
+              >
+                {option.name[locale]}
+                {option.kind === "surah" && (
+                  <span className="ms-1.5 text-[0.625rem] text-[var(--text-faint)]">
+                    {t("wholeSurah")}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
 
-      {!perAyah && (
-        <p className="mt-3 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
-          {t("wholeSurahNote")}
-        </p>
+          {!perAyah && (
+            <p className="mt-3 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+              {t("wholeSurahNote")}
+            </p>
+          )}
+
+          {extra && <div className="mt-4">{extra}</div>}
+        </>
       )}
 
       {failed && (

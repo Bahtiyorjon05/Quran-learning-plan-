@@ -6,7 +6,10 @@ import { PageView } from "@/components/quran/page-view";
 import { ReaderControls } from "@/components/quran/reader-controls";
 import { Recitation } from "@/components/quran/recitation";
 import { KeepAwake } from "@/components/quran/keep-awake";
-import { OfflineAudio, type OfflineScope } from "@/components/quran/offline-audio";
+import {
+  OfflineAudio,
+  type OfflineScope,
+} from "@/components/quran/offline-audio";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -63,7 +66,9 @@ export function ReadingShell({
                 <LayoutGrid className="h-4 w-4" />
               </Link>
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-[var(--text-strong)]">{title}</p>
+                <p className="truncate text-sm font-medium text-[var(--text-strong)]">
+                  {title}
+                </p>
                 <p className="truncate text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
                   {subtitle}
                 </p>
@@ -120,9 +125,10 @@ export function ReadingShell({
 
             {/* Reading and listening both happen without touching the screen. */}
             <KeepAwake />
-            <Recitation ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))} />
-
-            <OfflineAudio scopes={offlineScopes} />
+            <Recitation
+              ayahs={ayahs.map((a) => ({ k: a.k, s: a.s, a: a.a }))}
+              extra={<OfflineAudio scopes={offlineScopes} />}
+            />
           </div>
         </Measure>
 
@@ -131,7 +137,10 @@ export function ReadingShell({
 
           <div className="mx-auto mt-10 flex max-w-2xl items-center justify-between gap-3 border-t border-[var(--line-subtle)] pt-8">
             {previous ? (
-              <Link href={previous.href} className={buttonStyles({ variant: "outline" })}>
+              <Link
+                href={previous.href}
+                className={buttonStyles({ variant: "outline" })}
+              >
                 <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
                 {previous.label}
               </Link>
@@ -139,7 +148,10 @@ export function ReadingShell({
               <span />
             )}
             {next ? (
-              <Link href={next.href} className={buttonStyles({ variant: "outline" })}>
+              <Link
+                href={next.href}
+                className={buttonStyles({ variant: "outline" })}
+              >
                 {next.label}
                 <ChevronRight className="h-4 w-4 rtl:rotate-180" />
               </Link>

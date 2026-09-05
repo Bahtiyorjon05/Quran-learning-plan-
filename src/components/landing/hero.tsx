@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { ArrowRight, BookOpen } from "lucide-react";
 
+import { Khatim, StarRule } from "@/components/ui/illumination";
 import { CountUp } from "@/components/ui/count-up";
 
 import { Link } from "@/i18n/navigation";
@@ -30,7 +31,7 @@ export function Hero() {
         {/* ── Words ── */}
         <div className="animate-rise">
           <p className="inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] bg-[var(--surface-raised)]/60 px-3.5 py-1.5 text-xs font-medium tracking-wide text-[var(--text-muted)] backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            <Khatim className="h-3.5 w-3.5 shrink-0 text-[var(--gold)]" />
             {t("badge")}
           </p>
 
@@ -62,7 +63,9 @@ export function Hero() {
 
           <p className="mt-4 text-xs text-[var(--text-faint)]">{t("noAccount")}</p>
 
-          <dl className="mt-12 grid max-w-lg grid-cols-2 gap-x-8 gap-y-6 border-t border-[var(--line-subtle)] pt-8 sm:grid-cols-4">
+          <StarRule className="mt-12 max-w-lg" />
+
+          <dl className="mt-8 grid max-w-lg grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
             {stats.map((s) => (
               <div key={s.label}>
                 <dt className="sr-only">{s.label}</dt>

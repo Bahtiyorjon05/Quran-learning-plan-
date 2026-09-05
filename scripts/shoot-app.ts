@@ -46,6 +46,13 @@ const SCREENS = [
   ["admin-people", "/admin/users"],
 ] as const;
 
+/* The two screens every reader meets once, which the settled account above is
+   redirected straight past. */
+const FIRST_RUN = [["onboarding", "/onboarding"]] as const;
+
+/* Onboarded, no covenant: the one state the wizard is reachable in. */
+const WIZARD = [["plan-new", "/app/plan/new"]] as const;
+
 /* Signed out, and shot in their own browser: a session cookie would redirect
    half of them to the dashboard and photograph the wrong thing. */
 const PUBLIC = [
@@ -64,6 +71,7 @@ const overflows: string[] = [];
 
 async function main() {
   mkdirSync(OUT, { recursive: true });
+  mkdirSync(`${OUT}/top`, { recursive: true });
 
   const width = Number(arg("width", "1440"));
   const themes = arg("theme", "dark,light").split(",");
@@ -118,6 +126,38 @@ async function main() {
     `;
   }
 
+  /* A newcomer, so onboarding and the covenant wizard can be seen. The account
+     above is a year into a covenant and is redirected straight past both. */
+  const freshEmail = `new-${Date.now()}${DOMAIN}`;
+  const [newcomer] = (await sql`
+    insert into users (email, email_verified_at, password_hash, display_name)
+    values (${freshEmail}, now(), 'not-a-real-hash', '') returning id
+  `) as { id: string }[];
+  const freshToken = randomBytes(32).toString("base64url");
+  await sql`
+    insert into sessions (user_id, token_hash, expires_at)
+    values (${newcomer.id}, ${createHash("sha256").update(freshToken).digest("hex")},
+            now() + interval '1 day')
+  `;
+
+  /* Onboarded, but with no covenant yet — the only state in which the wizard
+     is reachable. The newcomer above is bounced to onboarding instead. */
+  const planlessEmail = `plan-${Date.now()}${DOMAIN}`;
+  const [planless] = (await sql`
+    insert into users (email, email_verified_at, password_hash, display_name)
+    values (${planlessEmail}, now(), 'not-a-real-hash', 'Yangi') returning id
+  `) as { id: string }[];
+  await sql`
+    insert into profiles (user_id, locale, onboarded_at, time_zone, preferred_reciter, study_time)
+    values (${planless.id}, 'uz', now(), 'Asia/Tashkent', 'alafasy', '05:30')
+  `;
+  const planlessToken = randomBytes(32).toString("base64url");
+  await sql`
+    insert into sessions (user_id, token_hash, expires_at)
+    values (${planless.id}, ${createHash("sha256").update(planlessToken).digest("hex")},
+            now() + interval '1 day')
+  `;
+
   const token = randomBytes(32).toString("base64url");
   await sql`
     insert into sessions (user_id, token_hash, expires_at)
@@ -130,6 +170,7 @@ async function main() {
     screens: readonly (readonly [string, string])[],
     theme: string,
     signedIn: boolean,
+    as: "settled" | "newcomer" | "planless" = "settled",
   ) {
     const context = await browser.newContext({
       viewport: { width, height: 1000 },
@@ -138,7 +179,15 @@ async function main() {
     });
     if (signedIn) {
       await context.addCookies([
-        { name: "ahd_session", value: token, domain: new URL(BASE).hostname, path: "/", httpOnly: true, sameSite: "Lax" },
+        {
+          name: "ahd_session",
+          value:
+            as === "newcomer" ? freshToken : as === "planless" ? planlessToken : token,
+          domain: new URL(BASE).hostname,
+          path: "/",
+          httpOnly: true,
+          sameSite: "Lax",
+        },
       ]);
     }
 
@@ -228,6 +277,15 @@ async function main() {
       const bounced = signedIn && /\/(login|signup)$/.test(landed);
       const file = `${OUT}/${name}-${theme}-${width}.png`;
       await page.screenshot({ path: file, fullPage: true });
+      /* And the first screen on its own. A full-page capture of a nine
+         thousand pixel landing page is unreadable once it is scaled to fit,
+         and past about sixteen thousand device pixels Chrome stitches it in
+         tiles and repeats the sticky header into the seam — which reads as the
+         page having rendered itself twice. This one is just what a visitor
+         actually sees first. */
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForTimeout(200);
+      await page.screenshot({ path: `${OUT}/top/${name}-${theme}-${width}.png` });
       console.log(`  ${name.padEnd(12)} ${theme.padEnd(5)} → ${file.split("/").pop()}${overflow ? "  ⚠ OVERFLOWS" : ""}${bounced ? `  ⚠ BOUNCED TO ${landed}` : ""}`);
     }
     await context.close();
@@ -235,6 +293,8 @@ async function main() {
 
   for (const theme of themes) {
     await shoot(SCREENS, theme, true);
+    await shoot(FIRST_RUN, theme, true, "newcomer");
+    await shoot(WIZARD, theme, true, "planless");
     await shoot(PUBLIC, theme, false);
   }
 

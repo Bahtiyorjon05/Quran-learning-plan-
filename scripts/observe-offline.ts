@@ -62,6 +62,12 @@ async function main() {
   await page.waitForLoadState("networkidle").catch(() => {});
   await page.waitForTimeout(2000);
 
+  /* Keeping a surah is asked for about once per surah, so it sits with the
+     player's other settings rather than above the words on every visit. Open
+     them the way a reader would. */
+  await page.getByRole("button", { name: /Sozlamalar|Options|Настройки/ }).first().click();
+  await page.waitForTimeout(500);
+
   const surahScope = page.getByRole("button", { name: /This surah|Bu sura|Эта сура/ });
   const hasScopes = (await surahScope.count()) > 0;
   console.log(`  4. scope chooser   → ${hasScopes ? "page, surah and juz offered" : "MISSING"}`);

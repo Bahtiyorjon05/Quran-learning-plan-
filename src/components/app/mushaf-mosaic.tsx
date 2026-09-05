@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { MosaicGrid, MosaicLegend, type Band } from "@/components/landing/mosaic-grid";
 import { CountUp } from "@/components/ui/count-up";
-import { Corners } from "@/components/ui/ornament";
+import { Illuminated } from "@/components/ui/illumination";
 
 /**
  * The whole mushaf as 604 tiles, coloured by how strongly each page is held.
@@ -46,7 +46,7 @@ export function MushafMosaic({
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_16rem]">
         <div className="panel relative overflow-hidden rounded-3xl p-5 sm:p-7">
           <div aria-hidden className="girih pointer-events-none absolute inset-0 opacity-[0.03]" />
-          <Corners />
+          <Illuminated inset="0.625rem" />
           <div className="relative">
           <MosaicGrid
             strengths={strengths}

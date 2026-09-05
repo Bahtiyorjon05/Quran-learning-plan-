@@ -138,7 +138,7 @@ export default async function AdminUsersPage({
               </p>
             </Panel>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {people.map((person) => (
                 <li key={person.id}>
                   <PersonPanel person={person} />
@@ -173,17 +173,17 @@ function PersonPanel({ person }: { person: AdminUser }) {
   const state = paceOf(person);
 
   return (
-    <div className="min-w-0 rounded-2xl border border-[var(--line-subtle)] p-4 sm:p-5">
+    <div className="min-w-0 rounded-2xl border border-[var(--line-subtle)] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <Identity person={person} />
         {state && <BandChip band={state.pace.band} />}
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-7">
+      <div className="mt-3.5 grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-6">
         <div className="min-w-0">
           <CovenantTrack person={person} state={state} />
 
-          <dl className="mt-5 grid grid-cols-3 gap-x-3 gap-y-3.5 sm:grid-cols-6">
+          <dl className="mt-3.5 grid grid-cols-3 gap-x-3 gap-y-3 sm:grid-cols-6">
             <Figure label="Pages" value={person.pagesHeld || "—"} />
             <Figure
               label="Strength"
@@ -203,7 +203,7 @@ function PersonPanel({ person }: { person: AdminUser }) {
         <ActivityStrip counts={person.activity} />
       </div>
 
-      <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-[var(--line-subtle)] pt-3 text-[0.6875rem] text-[var(--text-faint)]">
+      <p className="mt-3.5 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-[var(--line-subtle)] pt-2.5 text-[0.6875rem] text-[var(--text-faint)]">
         <span>Joined {WHEN.format(person.createdAt)}</span>
         {person.locale && <span>· {person.locale.toUpperCase()}</span>}
         {person.reciter && <span>· {person.reciter}</span>}
@@ -392,7 +392,7 @@ function ActivityStrip({ counts }: { counts: number[] }) {
 
       {/* A 2px gap between columns, and 4px rounded tops anchored to the
           baseline, so a day with one drill is still visibly a day with one. */}
-      <div className="mt-2.5 flex h-14 items-end gap-[2px]" role="img"
+      <div className="mt-2.5 flex h-10 items-end gap-[2px]" role="img"
            aria-label={`${done} drills over the last ${ACTIVITY_DAYS} days`}>
         {counts.map((n, i) => (
           <span

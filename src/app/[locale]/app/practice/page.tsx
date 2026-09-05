@@ -15,7 +15,7 @@ import {
 import { requireOnboardedUser } from "@/auth/guard";
 import { AppHeader } from "@/components/app/app-header";
 import { Atmosphere } from "@/components/app/atmosphere";
-import { Corners } from "@/components/ui/ornament";
+import { Illuminated } from "@/components/ui/illumination";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
 import { DRILL_MODES } from "@/core/drill/types";
@@ -124,7 +124,7 @@ export default async function PracticeIndexPage({
                       aria-hidden
                       className="girih pointer-events-none absolute inset-0 opacity-[0.03]"
                     />
-                    <Corners />
+                    <Illuminated inset="0.625rem" />
 
                     <div className="relative flex flex-wrap items-center gap-6 sm:gap-8">
                       <span

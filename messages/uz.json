@@ -705,7 +705,8 @@
       "wholeSurah": "butun sura",
       "wholeSurahNote": "Bu qori uchun butun sura bitta faylda, shuning uchun sahifa oyatma-oyat kuzatib bora olmaydi va bitta oyatni takrorlay olmaydi. Boshqa qorilar buni qiladi.",
       "seek": "Oyat ichidagi joy",
-      "speed": "Tezlik"
+      "speed": "Tezlik",
+      "options": "Sozlamalar"
     },
     "offline": {
       "title": "Oflayn tinglash",

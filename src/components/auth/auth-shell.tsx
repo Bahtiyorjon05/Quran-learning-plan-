@@ -3,6 +3,7 @@ import { ArrowLeft, Check } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import { Wordmark } from "@/components/brand/logo";
+import { Illuminated, StarRule } from "@/components/ui/illumination";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
 import { ThemeToggle } from "@/components/site/theme-toggle";
 
@@ -58,23 +59,24 @@ export function AuthShell({
               else. It now opens the block, left-aligned with the quote it
               belongs to. */}
           <div className="flex min-h-0 flex-1 flex-col justify-center overflow-y-auto py-10">
-            <div className="max-w-lg">
+            <div className="relative max-w-lg rounded-3xl px-11 py-12">
+              {/* The one thing on this screen that is not a form. Framed like a
+                  page of the book it is asking you to carry. */}
+              <Illuminated inset="0.875rem" />
+
               <p
                 lang="ar"
-                className="font-arabic text-[1.75rem] leading-[1.8] text-gold-ink xl:text-[2rem]"
+                className="relative font-arabic text-[1.75rem] leading-[1.8] text-gold-ink xl:text-[2rem]"
               >
                 رَبِّ زِدْنِي عِلْمًا
               </p>
-              <p className="mt-1 text-xs tracking-[0.14em] text-[var(--text-faint)] uppercase">
+              <p className="relative mt-1 text-xs tracking-[0.14em] text-[var(--text-faint)] uppercase">
                 {t("duaSource")}
               </p>
 
-              <div
-                aria-hidden
-                className="my-8 h-px w-24 bg-[linear-gradient(90deg,var(--gold),transparent)]"
-              />
+              <StarRule className="relative my-8" />
 
-              <blockquote>
+              <blockquote className="relative">
                 <p className="font-[family-name:var(--font-display)] text-[1.625rem] leading-[1.4] font-light text-[var(--text-strong)] italic xl:text-[2rem]">
                   “{t("quote")}”
                 </p>
@@ -83,11 +85,14 @@ export function AuthShell({
                 </footer>
               </blockquote>
 
-              <ul className="mt-12 space-y-4">
+              <ul className="relative mt-10 space-y-4">
                 {points.map((point) => (
                   <li key={point} className="flex items-start gap-3.5">
                     <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
-                      <Check className="h-3 w-3 text-[var(--accent)]" strokeWidth={2.5} />
+                      <Check
+                        className="h-3 w-3 text-[var(--accent)]"
+                        strokeWidth={2.5}
+                      />
                     </span>
                     <span className="text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
                       {point}
