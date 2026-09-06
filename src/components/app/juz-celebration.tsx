@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import { Goldfall } from "@/components/ui/goldfall";
 import { Illuminated, Khatim, StarRule } from "@/components/ui/illumination";
 import { buttonStyles } from "@/components/ui/button";
 import { markJuzSeenAction } from "@/app/[locale]/app/milestone-actions";
@@ -40,13 +41,17 @@ function tierOf(total: number): Tier {
   return "one";
 }
 
-/** How many rays turn behind the panel, and how bright. Grows with the tier. */
-const WEIGHT: Record<Tier, { rays: string; seal: string; panel: string }> = {
-  one: { rays: "opacity-100", seal: "h-28 w-28", panel: "max-w-lg" },
-  five: { rays: "opacity-100", seal: "h-32 w-32", panel: "max-w-lg" },
-  ten: { rays: "opacity-100", seal: "h-36 w-36", panel: "max-w-xl" },
-  twenty: { rays: "opacity-100", seal: "h-40 w-40", panel: "max-w-xl" },
-  thirty: { rays: "opacity-100", seal: "h-44 w-44", panel: "max-w-2xl" },
+/**
+ * How big the moment is. The seal and the panel grow, and so does the shower
+ * of gold falling past them — a scattering for one juz, a downpour for the
+ * whole Qur'an.
+ */
+const WEIGHT: Record<Tier, { rays: string; seal: string; panel: string; fall: number }> = {
+  one: { rays: "opacity-100", seal: "h-28 w-28", panel: "max-w-lg", fall: 26 },
+  five: { rays: "opacity-100", seal: "h-32 w-32", panel: "max-w-lg", fall: 38 },
+  ten: { rays: "opacity-100", seal: "h-36 w-36", panel: "max-w-xl", fall: 52 },
+  twenty: { rays: "opacity-100", seal: "h-40 w-40", panel: "max-w-xl", fall: 68 },
+  thirty: { rays: "opacity-100", seal: "h-44 w-44", panel: "max-w-2xl", fall: 96 },
 };
 
 export function JuzCelebration({
@@ -112,6 +117,10 @@ export function JuzCelebration({
         )}
       />
 
+      {/* Falling in front of the darkened ground and behind the panel, so the
+          words are never read through moving light. */}
+      <Goldfall count={weight.fall} className="z-0" />
+
       <div
         ref={dialog}
         tabIndex={-1}
@@ -138,6 +147,10 @@ export function JuzCelebration({
             )}
           >
             <span aria-hidden className="ahd-seal-halo absolute inset-0 rounded-full" />
+            <span
+              aria-hidden
+              className="ahd-bloom absolute -inset-[120%] [animation-delay:0.15s]"
+            />
             <Khatim className="relative h-full w-full text-[var(--gold)]" />
             <span className="absolute font-[family-name:var(--font-display)] text-[1.75rem] leading-none text-[var(--gold-ink)] tabular-nums">
               {whole ? 30 : many ? juz.length : first}

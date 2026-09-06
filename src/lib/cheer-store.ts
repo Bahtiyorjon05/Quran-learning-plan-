@@ -18,10 +18,15 @@
 
 const HOLDS_FOR = 3400;
 const FADES_FOR = 550;
+/* A scattering, not a downpour: this happens once per page, several times a
+   week. Enough to feel like something arrived, little enough to still feel
+   like a surprise the twentieth time. */
+const MOTES = 22;
 
 let current: HTMLElement | null = null;
 let fade: ReturnType<typeof setTimeout> | null = null;
 let gone: ReturnType<typeof setTimeout> | null = null;
+let rain: ReturnType<typeof setTimeout> | null = null;
 
 function dismiss() {
   if (!current) return;
@@ -52,6 +57,11 @@ export function pageLearnt(words: { mashaallah: string; line: string }) {
   card.className =
     "relative flex items-center gap-4 rounded-2xl border border-[var(--gold)]/40 " +
     "bg-[var(--surface-raised)] py-3.5 pe-6 ps-4 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)] backdrop-blur";
+
+  /* The light arrives before the card does. */
+  const bloom = document.createElement("span");
+  bloom.className = "ahd-bloom absolute -inset-x-24 -inset-y-16 rounded-full";
+  card.append(bloom);
 
   const seal = document.createElement("span");
   seal.className = "relative grid h-11 w-11 shrink-0 place-items-center";
@@ -90,4 +100,51 @@ export function pageLearnt(words: { mashaallah: string; line: string }) {
 
   current = host;
   fade = setTimeout(dismiss, HOLDS_FOR);
+  goldFalls();
+}
+
+/**
+ * Gold, falling past the whole screen.
+ *
+ * The React version of this lives in `<Goldfall />` and the CSS is shared; this
+ * is the same shower built with the DOM, for the same reason the card is —
+ * nothing here can be owned by a tree that a server action is about to replace.
+ * It clears itself up once the slowest mote has left the bottom of the screen.
+ */
+function goldFalls() {
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+  const sky = document.createElement("div");
+  sky.setAttribute("aria-hidden", "true");
+  sky.className = "ahd-fall";
+
+  let longest = 0;
+  for (let i = 0; i < MOTES; i++) {
+    const r = (salt: number) => (((i + 1) * 9301 + salt * 49297) % 233280) / 233280;
+    const d = 3.4 + r(3) * 2.8;
+    const delay = r(4) * 1.9;
+    longest = Math.max(longest, d + delay);
+
+    const mote = document.createElement("i");
+    const star = i % 3 === 0;
+    mote.className = star ? "ahd-star" : "ahd-mote";
+    mote.style.cssText =
+      `--x:${(r(1) * 100).toFixed(2)}%;--w:${(4 + r(2) * 8).toFixed(1)}px;` +
+      `--d:${d.toFixed(2)}s;--delay:${delay.toFixed(2)}s;` +
+      `--drift:${Math.round(r(5) * 130 - 65)}px;--spin:${Math.round(r(6) * 520 - 180)}deg;` +
+      `--dim:${(0.32 + r(7) * 0.5).toFixed(2)}`;
+    if (star) {
+      mote.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+        'stroke-linejoin="round" class="h-full w-full">' +
+        '<rect x="4.5" y="4.5" width="15" height="15" rx="1"></rect>' +
+        '<rect x="4.5" y="4.5" width="15" height="15" rx="1" transform="rotate(45 12 12)"></rect>' +
+        "</svg>";
+    }
+    sky.append(mote);
+  }
+
+  document.body.append(sky);
+  if (rain) clearTimeout(rain);
+  rain = setTimeout(() => sky.remove(), (longest + 0.4) * 1000);
 }

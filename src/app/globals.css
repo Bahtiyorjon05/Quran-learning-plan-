@@ -1436,3 +1436,106 @@ body:has([data-app-tabbar]) {
     display: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Gold, falling.
+
+   The surprise that lands with a milestone. Deliberately not confetti: no
+   primary colours, no paper shapes, no bounce. What falls is light — motes and
+   the eight-pointed star that frames every other surface in this app — drifting
+   down the way dust turns in a shaft of sun through a mosque window.
+
+   Everything animated here is transform and opacity, so it stays on the
+   compositor and never touches layout. It is decoration and nothing else, so
+   `prefers-reduced-motion` removes it entirely rather than shortening it.
+--------------------------------------------------------------------------- */
+
+@keyframes ahd-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -14vh, 0) rotate(0deg) scale(var(--s, 1));
+  }
+  9% {
+    opacity: var(--dim, 1);
+  }
+  78% {
+    opacity: var(--dim, 1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift, 0px), 108vh, 0) rotate(var(--spin, 240deg))
+      scale(var(--s, 1));
+  }
+}
+
+.ahd-fall {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  overflow: hidden;
+  pointer-events: none;
+  /* Nothing inside can affect anything outside, so the browser is free to skip
+     it entirely while it works out the rest of the page. */
+  contain: strict;
+}
+
+.ahd-fall > i {
+  position: absolute;
+  top: 0;
+  left: var(--x);
+  display: block;
+  width: var(--w);
+  height: var(--w);
+  color: var(--gold);
+  animation: ahd-fall var(--d) linear var(--delay) both;
+  will-change: transform, opacity;
+}
+
+/* A mote is a point of light, so the falloff is most of what you see. A flat
+   disc reads as a dot of paint on a cream page — this one has no edge. */
+.ahd-fall .ahd-mote {
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    currentColor 0%,
+    color-mix(in oklab, var(--gold) 62%, transparent) 42%,
+    transparent 72%
+  );
+  box-shadow: 0 0 14px 2px color-mix(in oklab, var(--gold) 34%, transparent);
+}
+
+.ahd-fall .ahd-star {
+  filter: drop-shadow(0 0 7px color-mix(in oklab, var(--gold) 50%, transparent));
+}
+
+/* The bloom: one soft ring of light thrown off the moment it happens, sized to
+   whatever it sits behind. It reads as the light arriving rather than as a
+   shape, so it never resolves into an edge. */
+@keyframes ahd-bloom {
+  from {
+    opacity: 0.9;
+    transform: scale(0.25);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+.ahd-bloom {
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--gold) 42%, transparent) 0%,
+    color-mix(in oklab, var(--gold) 14%, transparent) 38%,
+    transparent 66%
+  );
+  animation: ahd-bloom 1.5s cubic-bezier(0.16, 0.8, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ahd-fall,
+  .ahd-bloom {
+    display: none;
+  }
+}
