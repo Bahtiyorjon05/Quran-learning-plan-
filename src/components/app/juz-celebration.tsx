@@ -47,11 +47,11 @@ function tierOf(total: number): Tier {
  * whole Qur'an.
  */
 const WEIGHT: Record<Tier, { rays: string; seal: string; panel: string; fall: number }> = {
-  one: { rays: "opacity-100", seal: "h-28 w-28", panel: "max-w-lg", fall: 26 },
-  five: { rays: "opacity-100", seal: "h-32 w-32", panel: "max-w-lg", fall: 38 },
-  ten: { rays: "opacity-100", seal: "h-36 w-36", panel: "max-w-xl", fall: 52 },
-  twenty: { rays: "opacity-100", seal: "h-40 w-40", panel: "max-w-xl", fall: 68 },
-  thirty: { rays: "opacity-100", seal: "h-44 w-44", panel: "max-w-2xl", fall: 96 },
+  one: { rays: "opacity-100", seal: "h-28 w-28", panel: "max-w-lg", fall: 48 },
+  five: { rays: "opacity-100", seal: "h-32 w-32", panel: "max-w-lg", fall: 66 },
+  ten: { rays: "opacity-100", seal: "h-36 w-36", panel: "max-w-xl", fall: 88 },
+  twenty: { rays: "opacity-100", seal: "h-40 w-40", panel: "max-w-xl", fall: 110 },
+  thirty: { rays: "opacity-100", seal: "h-44 w-44", panel: "max-w-2xl", fall: 150 },
 };
 
 export function JuzCelebration({

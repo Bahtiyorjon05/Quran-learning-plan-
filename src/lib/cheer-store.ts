@@ -18,10 +18,10 @@
 
 const HOLDS_FOR = 3400;
 const FADES_FOR = 550;
-/* A scattering, not a downpour: this happens once per page, several times a
-   week. Enough to feel like something arrived, little enough to still feel
-   like a surprise the twentieth time. */
-const MOTES = 22;
+/* Enough to be unmistakable. Twenty-two spread over six seconds was tasteful
+   and completely missable — a handful of specks drifting past on a cream page
+   reads as dust, not as something happening. */
+const MOTES = 64;
 
 let current: HTMLElement | null = null;
 let fade: ReturnType<typeof setTimeout> | null = null;
@@ -112,27 +112,33 @@ export function pageLearnt(words: { mashaallah: string; line: string }) {
  * It clears itself up once the slowest mote has left the bottom of the screen.
  */
 function goldFalls() {
-  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-
   const sky = document.createElement("div");
   sky.setAttribute("aria-hidden", "true");
   sky.className = "ahd-fall";
 
   let longest = 0;
   for (let i = 0; i < MOTES; i++) {
-    const r = (salt: number) => (((i + 1) * 9301 + salt * 49297) % 233280) / 233280;
-    const d = 3.4 + r(3) * 2.8;
-    const delay = r(4) * 1.9;
+    /* Mixed rather than modular, and one lane each: see `<Goldfall />`, which
+       lays the same sky down for the juz moments. */
+    const r = (salt: number) => {
+      let h = Math.imul(i + 1, 374761393) ^ Math.imul(salt + 1, 668265263);
+      h = Math.imul(h ^ (h >>> 13), 1274126177);
+      return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+    };
+    const lane = (i / MOTES) * 100;
+    const d = 2.9 + r(3) * 2.6;
+    const delay = r(4) * 1.2;
     longest = Math.max(longest, d + delay);
 
     const mote = document.createElement("i");
     const star = i % 3 === 0;
     mote.className = star ? "ahd-star" : "ahd-mote";
     mote.style.cssText =
-      `--x:${(r(1) * 100).toFixed(2)}%;--w:${(4 + r(2) * 8).toFixed(1)}px;` +
+      `--x:${(lane + r(1) * (100 / MOTES)).toFixed(2)}%;--y:${(6 + r(8) * 82).toFixed(1)}%;` +
+      `--w:${(7 + r(2) * 14).toFixed(1)}px;` +
       `--d:${d.toFixed(2)}s;--delay:${delay.toFixed(2)}s;` +
       `--drift:${Math.round(r(5) * 130 - 65)}px;--spin:${Math.round(r(6) * 520 - 180)}deg;` +
-      `--dim:${(0.32 + r(7) * 0.5).toFixed(2)}`;
+      `--dim:${(0.55 + r(7) * 0.45).toFixed(2)}`;
     if (star) {
       mote.innerHTML =
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +

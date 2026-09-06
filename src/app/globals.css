@@ -1492,20 +1492,29 @@ body:has([data-app-tabbar]) {
 }
 
 /* A mote is a point of light, so the falloff is most of what you see. A flat
-   disc reads as a dot of paint on a cream page — this one has no edge. */
+   disc reads as a dot of paint on a cream page — this one has no edge.
+
+   The white core matters: gold alone on parchment is a brown speck, and a
+   brown speck is dust, not a celebration. Lit from the middle it reads as
+   something burning. */
 .ahd-fall .ahd-mote {
   border-radius: 9999px;
   background: radial-gradient(
     circle,
-    currentColor 0%,
-    color-mix(in oklab, var(--gold) 62%, transparent) 42%,
-    transparent 72%
+    color-mix(in oklab, white 78%, var(--gold)) 0%,
+    var(--gold) 30%,
+    color-mix(in oklab, var(--gold) 55%, transparent) 55%,
+    transparent 76%
   );
-  box-shadow: 0 0 14px 2px color-mix(in oklab, var(--gold) 34%, transparent);
+  box-shadow:
+    0 0 10px 2px color-mix(in oklab, var(--gold) 70%, transparent),
+    0 0 26px 6px color-mix(in oklab, var(--gold) 34%, transparent);
 }
 
 .ahd-fall .ahd-star {
-  filter: drop-shadow(0 0 7px color-mix(in oklab, var(--gold) 50%, transparent));
+  filter:
+    drop-shadow(0 0 5px color-mix(in oklab, var(--gold) 85%, transparent))
+    drop-shadow(0 0 16px color-mix(in oklab, var(--gold) 45%, transparent));
 }
 
 /* The bloom: one soft ring of light thrown off the moment it happens, sized to
@@ -1533,9 +1542,31 @@ body:has([data-app-tabbar]) {
   animation: ahd-bloom 1.5s cubic-bezier(0.16, 0.8, 0.3, 1) both;
 }
 
+/* Reduced motion asks for less movement, not less occasion. Switching the
+   whole thing off meant anyone with the setting on — and it is on by default
+   on more phones than you would think — marked a page and saw nothing happen.
+   So the gold still arrives; it simply stays where it is and glimmers instead
+   of falling past. */
+@keyframes ahd-glimmer {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  35%,
+  65% {
+    opacity: var(--dim, 1);
+    transform: scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ahd-fall,
+  .ahd-fall > i {
+    top: var(--y, 40%);
+    animation: ahd-glimmer 2.6s ease-in-out var(--delay) both;
+  }
+
   .ahd-bloom {
-    display: none;
+    animation-duration: 0.9s;
   }
 }
