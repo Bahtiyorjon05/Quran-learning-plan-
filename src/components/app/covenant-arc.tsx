@@ -64,6 +64,14 @@ export function CovenantArc({
   const progress = Math.max(0, Math.min(1, fill));
   const color = BAND_COLOR[pace.band];
 
+  /* Where the fill ends. The arc head is the one moving part of this dial that
+     means something — it is exactly how far along the promise you are — so it
+     is drawn as a light rather than as the end of a line, and it arrives after
+     the arc has finished drawing itself to it. */
+  const headAngle = progress * SWEEP * 2 * Math.PI;
+  const headX = 64 + Math.cos(headAngle) * RADIUS;
+  const headY = 64 + Math.sin(headAngle) * RADIUS;
+
   /* The label is a formatted percentage; counting it up needs the number, and
      anything that is not one (a dash, an em-dash) is simply printed. */
   const numeric = Number(label.replace("%", ""));
@@ -89,6 +97,23 @@ export function CovenantArc({
             <stop offset="100%" stopColor={color} stopOpacity="1" />
           </linearGradient>
         </defs>
+
+        {/* An inner ring, turning once every two minutes. Borrowed from the
+            rete of an astrolabe, which is the part that moves while the scale
+            behind it stays put — it makes the dial read as an instrument that
+            is running rather than a picture of one. */}
+        <circle
+          cx="64"
+          cy="64"
+          r="41"
+          fill="none"
+          stroke={color}
+          strokeWidth="0.75"
+          strokeDasharray="1 7"
+          strokeLinecap="round"
+          opacity="0.28"
+          className="ahd-arc-rete"
+        />
 
         {/* The dial. */}
         <g stroke="var(--line-strong)" strokeWidth="1" strokeLinecap="round">
@@ -139,6 +164,18 @@ export function CovenantArc({
             } as React.CSSProperties
           }
         />
+        {/* The head of the arc: a light where the promise has reached. */}
+        {progress > 0.008 && (
+          <g className="ahd-arc-head">
+            {/* Three circles rather than one: a wide wash, a tighter halo, and
+                a hot core. That is what makes it read as a light sitting on the
+                ring instead of a dot printed over it. */}
+            <circle cx={headX} cy={headY} r="9" fill={color} opacity="0.16" />
+            <circle cx={headX} cy={headY} r="5.5" fill={color} opacity="0.34" />
+            <circle cx={headX} cy={headY} r="3.1" fill={color} />
+            <circle cx={headX} cy={headY} r="1.5" fill="var(--surface-raised)" opacity="0.9" />
+          </g>
+        )}
       </svg>
 
       <div className="absolute inset-0 grid place-content-center text-center">

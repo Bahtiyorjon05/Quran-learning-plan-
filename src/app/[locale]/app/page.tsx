@@ -23,6 +23,8 @@ import { TimeZoneSync } from "@/components/app/timezone-sync";
 import { Corners } from "@/components/ui/ornament";
 import { buttonStyles } from "@/components/ui/button";
 import { Illuminated } from "@/components/ui/illumination";
+import { Motes } from "@/components/ui/motes";
+import { Greeting } from "@/components/app/greeting";
 import { JuzSeals } from "@/components/app/juz-seals";
 import { JuzCelebration } from "@/components/app/juz-celebration";
 import { juzProgress } from "@/core/milestones/juz";
@@ -278,19 +280,7 @@ export default async function AppHomePage({
               account, not about today, and a screen opened every morning should
               not spend its best line on it. */}
           <div className="animate-rise flex flex-wrap items-end justify-between gap-4">
-            <div className="min-w-0">
-              <p
-                className="font-arabic flex items-center gap-3 text-lg text-gold-ink/80"
-                dir="rtl"
-                aria-hidden
-              >
-                السلام عليكم
-                <span className="h-px w-10 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--gold)_45%,transparent),transparent)] rtl:bg-[linear-gradient(270deg,color-mix(in_oklab,var(--gold)_45%,transparent),transparent)]" />
-              </p>
-              <h1 className="mt-1.5 font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.75rem]">
-                {user.displayName || ta("welcome")}
-              </h1>
-            </div>
+            <Greeting name={user.displayName || ta("welcome")} />
 
             {sheet && sheet.streak > 0 && (
               <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-gold-500/30 bg-gold-500/10 px-3.5 py-1.5 text-[0.8125rem] font-medium text-gold-ink">
@@ -344,6 +334,9 @@ export default async function AppHomePage({
                 {/* The one panel on this screen that is not a readout. It is
                     the promise itself, so it is framed like a page. */}
                 <Illuminated inset="0.75rem" />
+                {/* Dust in a shaft of light. The one panel here that is a
+                    promise rather than a readout, so it is allowed to breathe. */}
+                <Motes />
                 <div className="relative flex flex-col items-center gap-6 sm:flex-row sm:gap-10">
                   <CovenantArc
                     pace={pace}

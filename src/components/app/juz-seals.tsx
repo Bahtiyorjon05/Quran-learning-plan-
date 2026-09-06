@@ -28,16 +28,26 @@ export function JuzSeals({
       className={cn("grid grid-cols-10 gap-2 sm:gap-2.5", className)}
       aria-label={`${held.length}/30`}
     >
-      {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => {
+      {Array.from({ length: 30 }, (_, i) => i + 1).map((juz, i) => {
         const on = lit.has(juz);
         return (
-          <li key={juz} className="relative">
+          <li
+            key={juz}
+            className="ahd-seal-in relative"
+            /* One after another, in reading order. Thirty landing at once is a
+               flicker; thirty landing in sequence is the book being counted. */
+            style={{ animationDelay: `${i * 28}ms` }}
+          >
             <span
               title={String(juz)}
               className={cn(
                 "group relative grid aspect-square place-items-center rounded-xl border transition-[border-color,background-color] duration-500",
+                /* A lit seal has to read on cream as well as on night. The
+                   halo does almost nothing against a light ground, so the
+                   difference is carried by the fill, the border and the weight
+                   of the star itself rather than by glow alone. */
                 on
-                  ? "border-[var(--gold)]/45 bg-[color-mix(in_oklab,var(--gold)_10%,transparent)]"
+                  ? "border-[var(--gold)]/60 bg-[color-mix(in_oklab,var(--gold)_18%,transparent)] shadow-[inset_0_1px_0_color-mix(in_oklab,var(--gold)_30%,transparent)]"
                   : "border-[var(--line-subtle)] bg-[var(--surface-inset)]/40",
               )}
             >
@@ -53,7 +63,9 @@ export function JuzSeals({
               <Khatim
                 className={cn(
                   "relative h-[58%] w-[58%] transition-colors duration-500",
-                  on ? "text-[var(--gold)]" : "text-[var(--line-strong)]",
+                  on
+                    ? "text-[var(--gold)] [stroke-width:1.5]"
+                    : "text-[var(--line-strong)]",
                 )}
               />
               <span

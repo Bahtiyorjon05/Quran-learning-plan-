@@ -465,7 +465,13 @@
     }
   },
   "app": {
-    "greeting": "Today",
+    "greeting": {
+      "dawn": "Before dawn",
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "dusk": "Good evening",
+      "night": "Good night"
+    },
     "welcome": "As-salamu alaykum",
     "placeholder": "Your covenant and the three daily tracks arrive here next.",
     "covenant": {

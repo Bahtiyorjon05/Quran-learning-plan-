@@ -1182,3 +1182,145 @@ body:has([data-app-tabbar]) {
     transform: rotate(360deg);
   }
 }
+
+/* The rete: the moving part of an astrolabe. Slow enough that it is felt
+   rather than watched. */
+.ahd-arc-rete {
+  transform-origin: 50% 50%;
+  animation: ahd-rete-turn 120s linear infinite;
+}
+
+@keyframes ahd-rete-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The head arrives once the arc has finished drawing itself to it, then
+   breathes in place — the one part of the dial that means "you are here". */
+.ahd-arc-head {
+  animation:
+    ahd-head-in 0.7s var(--ease-settle) 1.7s both,
+    ahd-head-pulse 3.4s ease-in-out 2.4s infinite;
+  transform-origin: center;
+}
+
+@keyframes ahd-head-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ahd-head-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+
+/* Gold motes, drifting up through a panel. Six of them, each with its own
+   delay and drift, so nothing ever reads as a loop. */
+.ahd-motes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.ahd-motes i {
+  position: absolute;
+  bottom: -6px;
+  width: 3px;
+  height: 3px;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--gold) 70%, transparent);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--gold) 55%, transparent);
+  opacity: 0;
+  animation: ahd-mote-rise 14s linear infinite;
+}
+
+@keyframes ahd-mote-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0) scale(0.6);
+  }
+  12% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-320px) translateX(var(--drift, 12px)) scale(1);
+  }
+}
+
+/* Seals land one after another rather than all at once. */
+.ahd-seal-in {
+  animation: ahd-seal-pop 0.6s var(--ease-settle) both;
+}
+
+@keyframes ahd-seal-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ahd-arc-rete,
+  .ahd-arc-head,
+  .ahd-motes i,
+  .ahd-seal-in,
+  .ahd-seal-glow,
+  .ahd-rays {
+    animation: none !important;
+    opacity: 1;
+  }
+}
+
+/* The reader's own name, catching light rather than sitting flat. A very slow
+   sweep across a gold-to-ink gradient — at 18s it is never caught moving, only
+   noticed on returning to the page. */
+.ahd-name {
+  background-image: linear-gradient(
+    100deg,
+    var(--text-strong) 0%,
+    var(--text-strong) 38%,
+    color-mix(in oklab, var(--gold) 78%, var(--text-strong)) 50%,
+    var(--text-strong) 62%,
+    var(--text-strong) 100%
+  );
+  background-size: 260% 100%;
+  animation: ahd-name-sweep 18s ease-in-out 1.2s infinite;
+}
+
+@keyframes ahd-name-sweep {
+  0%,
+  62%,
+  100% {
+    background-position: 130% 50%;
+  }
+  18% {
+    background-position: -30% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ahd-name {
+    animation: none;
+    background-position: 130% 50%;
+  }
+}

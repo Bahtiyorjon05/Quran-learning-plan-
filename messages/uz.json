@@ -465,7 +465,13 @@
     }
   },
   "app": {
-    "greeting": "Bugun",
+    "greeting": {
+      "dawn": "Tong oldidan",
+      "morning": "Xayrli tong",
+      "afternoon": "Xayrli kun",
+      "dusk": "Xayrli kech",
+      "night": "Xayrli tun"
+    },
     "welcome": "Assalomu alaykum",
     "placeholder": "Ahdingiz va uchta kunlik yoʼnalish keyingi qadamda shu yerda paydo boʻladi.",
     "covenant": {
