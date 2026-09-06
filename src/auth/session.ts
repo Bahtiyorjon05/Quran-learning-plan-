@@ -95,6 +95,8 @@ export type CurrentUser = {
   displayName: string | null;
   emailVerifiedAt: Date | null;
   hasPassword: boolean;
+  /** When this session cleared the second factor, if it has. */
+  secondFactorAt: Date | null;
   onboardedAt: Date | null;
   sessionId: string;
   locale: "uz" | "en" | "ru";
@@ -117,6 +119,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     .select({
       sessionId: sessions.id,
       lastSeenAt: sessions.lastSeenAt,
+      secondFactorAt: sessions.secondFactorAt,
       id: users.id,
       email: users.email,
       role: users.role,
@@ -153,6 +156,9 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     displayName: row.displayName,
     emailVerifiedAt: row.emailVerifiedAt,
     hasPassword: row.passwordHash !== null,
+    /* Null on an account with a second password means this device has proved
+       the first factor and nothing else yet. */
+    secondFactorAt: row.secondFactorAt,
     onboardedAt: row.onboardedAt,
     sessionId: row.sessionId,
     locale: row.locale ?? "uz",

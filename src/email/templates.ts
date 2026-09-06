@@ -19,7 +19,13 @@ const MESSAGES = { en, ru, uz } as const;
  * weekly report cards and reminder digests in later phases run from a cron job
  * with no request at all — so the templates must not depend on it.
  */
-type EmailNamespace = "email.common" | "email.verify" | "email.reset" | "email.weekly";
+type EmailNamespace =
+  | "email.common"
+  | "email.verify"
+  | "email.reset"
+  | "email.weekly"
+  | "email.twoFactor"
+  | "email.twoFactorChanged";
 
 function translator(locale: Locale, namespace: EmailNamespace) {
   return createTranslator({ locale, messages: MESSAGES[locale], namespace });
@@ -167,7 +173,7 @@ export async function verificationEmail(
     to,
     subject: t("subject", { code }),
     html: shell({
-      preheader: t("preheader", { code }),
+      preheader: t("preheader", { code, minutes: OTP_TTL_MINUTES }),
       heading: t("heading"),
       body,
       code,
@@ -359,3 +365,70 @@ export async function weeklyReportEmail(
 
 /** Exported so the cron can name the sender the same way the others do. */
 export { MESSAGES as EMAIL_MESSAGES };
+
+/**
+ * The code that turns the second password on, or sets a new one.
+ *
+ * The two purposes get different words because they are different moments: one
+ * is somebody adding a lock, the other is somebody who has lost the key. Both
+ * say the same thing about the code itself, which is the line that matters —
+ * nobody from Ahd will ever ask for it.
+ */
+export async function twoFactorCodeEmail(
+  locale: Locale,
+  to: string,
+  code: string,
+  purpose: "enable" | "reset",
+): Promise<Mail> {
+  const t = translator(locale, "email.twoFactor");
+  const tc = translator(locale, "email.common");
+
+  const heading = purpose === "enable" ? t("enableHeading") : t("resetHeading");
+  const body = purpose === "enable" ? t("enableBody") : t("resetBody");
+  const footnote = t("expiry", { minutes: OTP_TTL_MINUTES });
+  const footer = t("ignore");
+
+  return {
+    to,
+    subject:
+      purpose === "enable"
+        ? t("enableSubject", { code: formatOtp(code) })
+        : t("resetSubject", { code: formatOtp(code) }),
+    html: shell({
+      preheader: t("preheader", { code: formatOtp(code), minutes: OTP_TTL_MINUTES }),
+      heading,
+      body,
+      code,
+      footnote,
+      footer,
+    }),
+    text: [heading, "", body, "", `    ${formatOtp(code)}`, "", footnote, "", footer, "", tc("signature")].join("\n"),
+  };
+}
+
+/**
+ * After the fact: it was turned on, turned off, or replaced.
+ *
+ * Sent to the address rather than shown on screen, because the person who most
+ * needs to know is the one who did *not* do it. No code, nothing to click —
+ * just what changed, and what to do if it was not you.
+ */
+export async function twoFactorChangedEmail(
+  locale: Locale,
+  to: string,
+  what: "enabled" | "disabled" | "reset",
+): Promise<Mail> {
+  const t = translator(locale, "email.twoFactorChanged");
+  const tc = translator(locale, "email.common");
+
+  const heading = t(`${what}Heading`);
+  const body = t(`${what}Body`);
+  const footer = t("warn");
+
+  return {
+    to,
+    subject: t(`${what}Subject`),
+    html: shell({ preheader: heading, heading, body, footnote: footer, footer: tc("signature") }),
+    text: [heading, "", body, "", footer, "", tc("signature")].join("\n"),
+  };
+}

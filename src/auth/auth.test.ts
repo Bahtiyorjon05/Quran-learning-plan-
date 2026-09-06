@@ -42,6 +42,15 @@ const {
   verifyEmail,
 } = await import("./service");
 const { LOCKOUT_THRESHOLD, BUCKETS, recordAuthEvent } = await import("./rate-limit");
+const {
+  confirmTwoFactorSetup,
+  disableTwoFactor,
+  resetTwoFactor,
+  startTwoFactorReset,
+  startTwoFactorSetup,
+  twoFactorEnabled,
+  verifySecondFactor,
+} = await import("./two-factor");
 const { checkPassword, scorePassword } = await import("./password-policy");
 const { hashPassword, verifyPassword, burnPasswordTime } = await import("./password");
 const { generateOtp, hashOtp, safeEqualHex } = await import("./codes");
@@ -509,5 +518,123 @@ describe("resetting a password", () => {
     await expect(
       resetPassword({ email, code: wrong, password: "another-long-secret", ctx }),
     ).rejects.toMatchObject({ code: "codeInvalid" });
+  });
+});
+
+describe("the second password", () => {
+  it("a code can only be spent once, even by two requests at the same time", async () => {
+    const { email, userId } = await activate("tfa-race");
+    await startTwoFactorSetup({ userId, email, locale: "uz" });
+    const code = lastCode();
+
+    /* Both start before either finishes. Reading the row, deciding, and then
+       marking it consumed would let both through. */
+    const results = await Promise.allSettled([
+      confirmTwoFactorSetup({
+        userId, email, locale: "uz", code,
+        password: "first-second-password-1", accountPasswordHash: null, ctx,
+      }),
+      confirmTwoFactorSetup({
+        userId, email, locale: "uz", code,
+        password: "other-second-password-2", accountPasswordHash: null, ctx,
+      }),
+    ]);
+
+    expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
+  });
+
+  it("refuses a second password identical to the account password", async () => {
+    const { email, userId } = await activate("tfa-same");
+    await startTwoFactorSetup({ userId, email, locale: "uz" });
+    const code = lastCode();
+    const [row] = await db.select({ hash: users.passwordHash }).from(users).where(eq(users.id, userId));
+
+    await expect(
+      confirmTwoFactorSetup({
+        userId, email, locale: "uz", code,
+        password: PASSWORD, accountPasswordHash: row.hash, ctx,
+      }),
+    ).rejects.toMatchObject({ code: "twoFactorSameAsPassword" });
+  });
+
+  it("locks after five wrong answers, and the right one still works after a reset", async () => {
+    const { email, userId } = await activate("tfa-lock");
+    await startTwoFactorSetup({ userId, email, locale: "uz" });
+    await confirmTwoFactorSetup({
+      userId, email, locale: "uz", code: lastCode(),
+      password: "a-good-second-password", accountPasswordHash: null, ctx,
+    });
+
+    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
+
+    for (let i = 0; i < 4; i++) {
+      await expect(
+        verifySecondFactor({ userId, sessionId: session.id, password: "nope", ctx }),
+      ).rejects.toMatchObject({ code: "twoFactorInvalid" });
+    }
+    await expect(
+      verifySecondFactor({ userId, sessionId: session.id, password: "nope", ctx }),
+    ).rejects.toMatchObject({ code: "twoFactorLocked" });
+
+    /* Even the right answer is refused while it is locked — otherwise the
+       lockout would only cost an attacker the guesses they already spent. */
+    await expect(
+      verifySecondFactor({ userId, sessionId: session.id, password: "a-good-second-password", ctx }),
+    ).rejects.toMatchObject({ code: "twoFactorLocked" });
+
+    /* The inbox is the way out, and it clears the lock. */
+    outbox.length = 0;
+    await startTwoFactorReset({ userId, email, locale: "uz" });
+    await resetTwoFactor({
+      userId, sessionId: session.id, email, locale: "uz", code: lastCode(),
+      password: "a-different-second-one", accountPasswordHash: null, ctx,
+    });
+
+    const [after] = await db.select().from(sessions).where(eq(sessions.id, session.id));
+    expect(after.secondFactorAt).not.toBeNull();
+  });
+
+  it("clears every session stamp when it is switched off", async () => {
+    const { email, userId } = await activate("tfa-off");
+    await startTwoFactorSetup({ userId, email, locale: "uz" });
+    await confirmTwoFactorSetup({
+      userId, email, locale: "uz", code: lastCode(),
+      password: "yet-another-second-one", accountPasswordHash: null, ctx,
+    });
+
+    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
+    await verifySecondFactor({
+      userId, sessionId: session.id, password: "yet-another-second-one", ctx,
+    });
+
+    const [row] = await db.select({ hash: users.passwordHash }).from(users).where(eq(users.id, userId));
+    await disableTwoFactor({
+      userId, email, locale: "uz",
+      accountPassword: PASSWORD, accountPasswordHash: row.hash, ctx,
+    });
+
+    /* A stamp that outlived the factor would quietly satisfy a factor switched
+       on again later, without anybody proving anything. */
+    const [after] = await db.select().from(sessions).where(eq(sessions.id, session.id));
+    expect(after.secondFactorAt).toBeNull();
+  });
+
+  it("will not switch off for the wrong account password", async () => {
+    const { email, userId } = await activate("tfa-guard");
+    await startTwoFactorSetup({ userId, email, locale: "uz" });
+    await confirmTwoFactorSetup({
+      userId, email, locale: "uz", code: lastCode(),
+      password: "a-fifth-second-password", accountPasswordHash: null, ctx,
+    });
+
+    const [row] = await db.select({ hash: users.passwordHash }).from(users).where(eq(users.id, userId));
+    await expect(
+      disableTwoFactor({
+        userId, email, locale: "uz",
+        accountPassword: "not-the-password", accountPasswordHash: row.hash, ctx,
+      }),
+    ).rejects.toMatchObject({ code: "invalidCredentials" });
+
+    expect(await twoFactorEnabled(userId)).toBe(true);
   });
 });

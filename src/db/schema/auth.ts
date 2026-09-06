@@ -40,6 +40,10 @@ export const authEventKind = pgEnum("auth_event_kind", [
   "password_changed",
   "account_locked",
   "account_deleted",
+  "two_factor_enabled",
+  "two_factor_disabled",
+  "two_factor_failed",
+  "two_factor_reset",
 ]);
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -141,6 +145,16 @@ export const sessions = pgTable(
     userAgent: text(),
     ip: text(),
 
+    /* When this session cleared the second factor.
+     *
+     * Null on an account with 2FA switched on means the password was right and
+     * nothing else has been proved yet — the session exists, but every screen
+     * behind the wall turns it away until this is set. Keeping it on the
+     * session rather than in a separate half-login cookie means signing out
+     * everywhere also revokes every half-finished login, and a session that
+     * cleared 2FA on Tuesday does not have to do it again on Wednesday. */
+    secondFactorAt: timestamp({ withTimezone: true }),
+
     createdAt: now(),
     lastSeenAt: now(),
     expiresAt: timestamp({ withTimezone: true }).notNull(),
@@ -205,6 +219,60 @@ export const passwordResetCodes = pgTable(
     uniqueIndex("password_reset_codes_hash_key").on(t.codeHash),
     index("password_reset_codes_user_id_idx").on(t.userId),
     check("password_reset_codes_attempts_sane", sql`${t.attempts} >= 0`),
+  ],
+);
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE SECOND FACTOR
+   A second password, not a phone. Most of the people this is built for do not
+   have an authenticator app and would lose a recovery sheet; what they do have
+   is the inbox they signed up with, which is why every way back in runs
+   through it.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export const twoFactorPurpose = pgEnum("two_factor_purpose", ["enable", "reset"]);
+
+export const twoFactors = pgTable("two_factors", {
+  userId: uuid()
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+
+  /* Argon2, exactly as the account password is. It is a password; it gets a
+     password's storage. */
+  passwordHash: text().notNull(),
+
+  enabledAt: now(),
+
+  /* Wrong answers, and the cool-off they earn. Separate from the account's own
+     lockout so a forgotten second factor cannot lock somebody out of the
+     account itself — the way back is a code to the inbox either way. */
+  failedCount: integer().notNull().default(0),
+  lockedUntil: timestamp({ withTimezone: true }),
+
+  updatedAt: now(),
+});
+
+export const twoFactorCodes = pgTable(
+  "two_factor_codes",
+  {
+    id: id(),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    /* Turning it on and getting back in are different acts with different
+       consequences, so they are never interchangeable codes. */
+    purpose: twoFactorPurpose().notNull(),
+    codeHash: text().notNull(),
+    attempts: smallint().notNull().default(0),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    consumedAt: timestamp({ withTimezone: true }),
+    lastSentAt: now(),
+    createdAt: now(),
+  },
+  (t) => [
+    uniqueIndex("two_factor_codes_hash_key").on(t.codeHash),
+    index("two_factor_codes_user_id_idx").on(t.userId),
+    check("two_factor_codes_attempts_sane", sql`${t.attempts} >= 0`),
   ],
 );
 

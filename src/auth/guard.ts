@@ -6,6 +6,7 @@ import { getLocale } from "next-intl/server";
 import { redirectTo } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { getCurrentUser, type CurrentUser } from "./session";
+import { twoFactorEnabled } from "./two-factor";
 
 /**
  * The gate for everything under /app.
@@ -35,6 +36,18 @@ export async function requireUser(): Promise<CurrentUser> {
 export async function requirePasswordUser(): Promise<CurrentUser> {
   const user = await requireUser();
   if (!user.hasPassword) redirectTo("/set-password", user.locale);
+
+  /* The second factor, if the account has one.
+   *
+   * Checked here rather than in the login action because a session outlives
+   * the login that made it: the browser is left open for three days, and every
+   * request in that window has to be as unsatisfied as the first one was. A
+   * session that has never cleared the factor can reach exactly two places —
+   * the challenge, and the way to reset it — and nothing else. */
+  if (!user.secondFactorAt && (await twoFactorEnabled(user.id))) {
+    redirectTo("/two-factor", user.locale);
+  }
+
   return user;
 }
 

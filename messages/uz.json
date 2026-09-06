@@ -344,7 +344,12 @@
       "emailMismatch": "Ikki pochta manzili mos kelmadi.",
       "sessionRequired": "Davom etish uchun tizimga kiring.",
       "verificationExpired": "Tasdiqlash seansi tugadi. Qaytadan kiring.",
-      "unknown": "Nimadir notoʻgʻri ketdi. Qayta urinib koʻring."
+      "unknown": "Nimadir notoʻgʻri ketdi. Qayta urinib koʻring.",
+      "twoFactorAlreadyOn": "Ikkinchi parol allaqachon yoqilgan.",
+      "twoFactorNotOn": "Bu hisobda ikkinchi parol yoqilmagan.",
+      "twoFactorInvalid": "Ikkinchi parol notoʻgʻri. Yana {remaining} marta urinib koʻrasiz.",
+      "twoFactorLocked": "Koʻp marta notoʻgʻri kiritildi. {minutes} daqiqadan soʻng qayta urinib koʻring yoki ikkinchi parolni tiklang.",
+      "twoFactorSameAsPassword": "Ikkinchi parol odatdagi parolingizdan boshqa boʻlsin — aks holda ikkita qulf bitta kalitga ochiladi."
     },
     "validation": {
       "required": "Bu maydon toʻldirilishi shart",
@@ -375,6 +380,22 @@
       "strength2": "Oʻrtacha",
       "strength3": "Yaxshi",
       "strength4": "Mustahkam"
+    },
+    "twoFactor": {
+      "title": "Ikkinchi parol",
+      "subtitle": "Parolingiz toʻgʻri. Endi ikkinchi parolni kiriting — {email} hisobi shu bilan himoyalangan.",
+      "password": "Ikkinchi parol",
+      "submit": "Davom etish",
+      "checking": "Tekshirilmoqda…",
+      "forgot": "Ikkinchi parolni unutdingizmi?",
+      "notYou": "Bu siz emasmisiz? Chiqish",
+      "code": "Pochtangizga kelgan kod",
+      "codeSent": "Kod yuborildi. Pochtangizni tekshiring.",
+      "newPassword": "Yangi ikkinchi parol",
+      "confirmPassword": "Yangi parolni takrorlang",
+      "resetSubmit": "Saqlash va kirish",
+      "resetting": "Saqlanmoqda…",
+      "backToChallenge": "Orqaga qaytish"
     }
   },
   "email": {
@@ -383,11 +404,11 @@
     },
     "verify": {
       "subject": "{code} — Ahd tasdiqlash kodingiz",
-      "preheader": "Ahd kodingiz: {code}",
+      "preheader": "Kodingiz {code}, {minutes} daqiqa amal qiladi.",
       "heading": "Pochtangizni tasdiqlang",
-      "body": "Hisobingizni yakunlash uchun bu kodni Ahd’ga kiriting.",
-      "expiry": "Bu kod {minutes} daqiqadan soʻng eskiradi.",
-      "ignore": "Agar Ahd hisobini siz yaratmagan boʻlsangiz, bu xatni eʼtiborsiz qoldiring."
+      "body": "Assalomu alaykum. Ahd — Qurʼonni yod olish va uni hech qachon yoʻqotmaslik uchun. Hisobingizni yakunlash uchun quyidagi kodni kiriting; soʻng parol tanlaysiz va ahdingizni tuzasiz.",
+      "expiry": "Kod {minutes} daqiqadan soʻng eskiradi va faqat bir marta ishlaydi.",
+      "ignore": "Agar Ahd hisobini siz yaratmagan boʻlsangiz, hech narsa qilishingiz shart emas — bu manzil bilan hisob ochilmaydi. Kodni hech kimga bermang."
     },
     "reset": {
       "subject": "Ahd — parolni tiklash kodi: {code}",
@@ -414,6 +435,29 @@
       "days": "{count, plural, other {# kun}}",
       "open": "Bugungini ochish",
       "footer": "Haftada bir marta, dushanba kuni yuboriladi. Hisobingizdan oʻchirib qoʻyishingiz mumkin."
+    },
+    "twoFactor": {
+      "enableSubject": "{code} — ikkinchi parolni yoqish kodi",
+      "resetSubject": "{code} — ikkinchi parolni tiklash kodi",
+      "enableHeading": "Ikkinchi parolni yoqish",
+      "resetHeading": "Ikkinchi parolni tiklash",
+      "preheader": "Kodingiz {code}, {minutes} daqiqa amal qiladi.",
+      "enableBody": "Ikkinchi parol — hisobingizga qoʻshimcha qulf. Uni yoqish avval shu pochtani tasdiqlashdan boshlanadi: quyidagi kodni kiriting, soʻng ikkinchi parolni tanlaysiz. Undan keyin har kirishda avval odatdagi parol, soʻng shu ikkinchi parol soʻraladi.",
+      "resetBody": "Ikkinchi parolni unutgan boʻlsangiz, bu kod orqali yangisini tanlaysiz. Hisobingiz oʻz joyida — faqat ikkinchi parol almashadi.",
+      "expiry": "Kod {minutes} daqiqadan soʻng eskiradi va faqat bir marta ishlaydi.",
+      "ignore": "Buni siz soʻramagan boʻlsangiz, kodni eʼtiborsiz qoldiring va hech kimga bermang — Ahd xodimlari uni hech qachon soʻramaydi. Hisobingiz oʻzgarmadi."
+    },
+    "twoFactorChanged": {
+      "enabledSubject": "Ahd — ikkinchi parol yoqildi",
+      "disabledSubject": "Ahd — ikkinchi parol oʻchirildi",
+      "resetSubject": "Ahd — ikkinchi parol almashtirildi",
+      "enabledHeading": "Ikkinchi parol yoqildi",
+      "disabledHeading": "Ikkinchi parol oʻchirildi",
+      "resetHeading": "Ikkinchi parol almashtirildi",
+      "enabledBody": "Bundan keyin har kirishda odatdagi paroldan soʻng ikkinchi parol ham soʻraladi. Uni unutsangiz, kirish sahifasidagi havola orqali pochtangizga kod yuboriladi.",
+      "disabledBody": "Hisobingiz endi faqat odatdagi parol bilan himoyalangan. Xohlagan payt sozlamalardan qaytadan yoqishingiz mumkin.",
+      "resetBody": "Ikkinchi parolingiz yangisiga almashtirildi. Eskisi endi ishlamaydi.",
+      "warn": "Bu oʻzgarishni siz qilmagan boʻlsangiz, darhol parolingizni almashtiring va biz bilan bogʻlaning."
     }
   },
   "app": {
@@ -1090,7 +1134,27 @@
     "pushEnable": "Ruxsat berish",
     "pushBlocked": "Brauzer xabarlarni bloklagan. Sozlamalardan ruxsat bering.",
     "pushUnsupported": "Bu brauzer xabarlarni qoʻllab-quvvatlamaydi.",
-    "pushHint": "Brauzer ruxsati kerak. Ruxsatsiz yuqoridagi eslatmalar yuborilmaydi."
+    "pushHint": "Brauzer ruxsati kerak. Ruxsatsiz yuqoridagi eslatmalar yuborilmaydi.",
+    "twoFactor": {
+      "title": "Ikkinchi parol",
+      "on": "Yoqilgan",
+      "off": "Oʻchirilgan",
+      "onBody": "Har kirishda odatdagi paroldan soʻng ikkinchi parol ham soʻraladi.",
+      "offBody": "Hisobingiz faqat odatdagi parol bilan himoyalangan. Ikkinchi parol qoʻshimcha qulf boʻladi.",
+      "turnOn": "Yoqish",
+      "sending": "Kod yuborilmoqda…",
+      "codeSent": "Pochtangizga kod yubordik. Uni kiriting va ikkinchi parolni tanlang.",
+      "code": "Pochtangizga kelgan kod",
+      "newPassword": "Ikkinchi parol",
+      "confirmPassword": "Takrorlang",
+      "differentNote": "Odatdagi parolingizdan boshqa boʻlsin. Uni unutsangiz, pochtangiz orqali tiklaysiz.",
+      "confirm": "Yoqish",
+      "turningOn": "Yoqilmoqda…",
+      "turnOff": "Oʻchirish",
+      "turningOff": "Oʻchirilmoqda…",
+      "confirmWithPassword": "Tasdiqlash uchun odatdagi parolingizni kiriting",
+      "cancel": "Bekor qilish"
+    }
   },
   "amend": {
     "title": "Ahdni oʻzgartirish",

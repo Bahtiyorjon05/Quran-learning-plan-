@@ -20,6 +20,11 @@ export const AUTH_ERROR_CODES = [
   "emailMismatch",
   "sessionRequired",
   "verificationExpired",
+  "twoFactorAlreadyOn",
+  "twoFactorNotOn",
+  "twoFactorInvalid",
+  "twoFactorLocked",
+  "twoFactorSameAsPassword",
   "unknown",
 ] as const;
 

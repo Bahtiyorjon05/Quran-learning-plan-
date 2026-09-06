@@ -64,9 +64,12 @@ async function main() {
   if (hasPassword > 0) failures.push("the password is asked for before the code is checked");
 
   /* ── 3. A wrong code is refused and the boxes clear ── */
+  /* One real input behind six drawn cells, so the whole code goes in at once.
+     Filling six times over would have typed a single digit and been refused by
+     the length check rather than by the server, which is not the path under
+     test. */
   const boxes = page.locator('input[inputmode="numeric"]');
-  const count = await boxes.count();
-  for (let i = 0; i < count; i++) await boxes.nth(i).fill("0");
+  await boxes.first().fill("000000");
   await page.getByRole("button", { name: /tekshirish|Check|Проверить/i }).click();
   await page.waitForTimeout(2500);
   const cleared = await boxes.first().inputValue();

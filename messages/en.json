@@ -344,7 +344,12 @@
       "emailMismatch": "The two email addresses do not match.",
       "sessionRequired": "Please log in to continue.",
       "verificationExpired": "That verification session has expired. Please log in again.",
-      "unknown": "Something went wrong. Please try again."
+      "unknown": "Something went wrong. Please try again.",
+      "twoFactorAlreadyOn": "The second password is already on.",
+      "twoFactorNotOn": "This account has no second password.",
+      "twoFactorInvalid": "That is not the second password. {remaining} attempts left.",
+      "twoFactorLocked": "Too many wrong answers. Try again in {minutes} minutes, or reset the second password.",
+      "twoFactorSameAsPassword": "The second password must differ from your usual one — otherwise both locks open with the same key."
     },
     "validation": {
       "required": "This field is required",
@@ -375,6 +380,22 @@
       "strength2": "Fair",
       "strength3": "Good",
       "strength4": "Strong"
+    },
+    "twoFactor": {
+      "title": "Second password",
+      "subtitle": "Your password was right. Now the second one — it is what protects {email}.",
+      "password": "Second password",
+      "submit": "Continue",
+      "checking": "Checking…",
+      "forgot": "Forgotten your second password?",
+      "notYou": "Not you? Sign out",
+      "code": "The code from your inbox",
+      "codeSent": "Code sent. Check your inbox.",
+      "newPassword": "New second password",
+      "confirmPassword": "Repeat the new password",
+      "resetSubmit": "Save and continue",
+      "resetting": "Saving…",
+      "backToChallenge": "Go back"
     }
   },
   "email": {
@@ -382,12 +403,12 @@
       "signature": "Ahd — your covenant with the Qur'an"
     },
     "verify": {
-      "subject": "{code} is your Ahd verification code",
-      "preheader": "Your Ahd code is {code}",
-      "heading": "Confirm your email",
-      "body": "Enter this code in Ahd to finish creating your account.",
-      "expiry": "This code expires in {minutes} minutes.",
-      "ignore": "If you did not create an Ahd account, you can safely ignore this email."
+      "subject": "{code} — your Ahd confirmation code",
+      "preheader": "Your code is {code}, good for {minutes} minutes.",
+      "heading": "Confirm your address",
+      "body": "Welcome. Ahd is for memorising the Qurʼan and never losing it again. Enter the code below to finish your account; you will then choose a password and write your covenant.",
+      "expiry": "It expires in {minutes} minutes and works only once.",
+      "ignore": "If you did not create an Ahd account, there is nothing to do — no account will be opened for this address. Never share the code with anyone."
     },
     "reset": {
       "subject": "Ahd — your reset code is {code}",
@@ -414,6 +435,29 @@
       "days": "{count, plural, one {# day} other {# days}}",
       "open": "Open today",
       "footer": "Sent once a week, on Monday. You can turn this off in your account."
+    },
+    "twoFactor": {
+      "enableSubject": "{code} — code to turn on your second password",
+      "resetSubject": "{code} — code to reset your second password",
+      "enableHeading": "Turn on your second password",
+      "resetHeading": "Reset your second password",
+      "preheader": "Your code is {code}, good for {minutes} minutes.",
+      "enableBody": "A second password is an extra lock on your account. Turning it on starts by proving this inbox: enter the code below, then choose the second password. After that, signing in asks for your usual password first and the second one after it.",
+      "resetBody": "If you have forgotten your second password, this code lets you choose a new one. Your account is untouched — only the second password changes.",
+      "expiry": "It expires in {minutes} minutes and works only once.",
+      "ignore": "If you did not ask for this, ignore the code and never share it — nobody from Ahd will ever ask you for it. Nothing about your account has changed."
+    },
+    "twoFactorChanged": {
+      "enabledSubject": "Ahd — second password turned on",
+      "disabledSubject": "Ahd — second password turned off",
+      "resetSubject": "Ahd — second password changed",
+      "enabledHeading": "Second password turned on",
+      "disabledHeading": "Second password turned off",
+      "resetHeading": "Second password changed",
+      "enabledBody": "From now on, signing in asks for your second password after the usual one. If you forget it, the sign-in screen has a link that sends a code to this inbox.",
+      "disabledBody": "Your account is now protected by your usual password alone. You can turn the second one back on from settings whenever you like.",
+      "resetBody": "Your second password has been replaced. The old one no longer works.",
+      "warn": "If this was not you, change your password immediately and get in touch with us."
     }
   },
   "app": {
@@ -1090,7 +1134,27 @@
     "pushEnable": "Allow",
     "pushBlocked": "The browser has blocked notifications. Allow them in its settings.",
     "pushUnsupported": "This browser cannot show notifications.",
-    "pushHint": "The browser has to allow it. Without permission the reminders above are never sent."
+    "pushHint": "The browser has to allow it. Without permission the reminders above are never sent.",
+    "twoFactor": {
+      "title": "Second password",
+      "on": "On",
+      "off": "Off",
+      "onBody": "Signing in asks for your second password after the usual one.",
+      "offBody": "Your account is protected by your usual password alone. A second password adds another lock.",
+      "turnOn": "Turn on",
+      "sending": "Sending the code…",
+      "codeSent": "We sent a code to your inbox. Enter it, then choose the second password.",
+      "code": "The code from your inbox",
+      "newPassword": "Second password",
+      "confirmPassword": "Repeat it",
+      "differentNote": "Make it different from your usual password. If you forget it, your inbox is the way back.",
+      "confirm": "Turn on",
+      "turningOn": "Turning on…",
+      "turnOff": "Turn off",
+      "turningOff": "Turning off…",
+      "confirmWithPassword": "Type your usual password to confirm",
+      "cancel": "Cancel"
+    }
   },
   "amend": {
     "title": "Amend your covenant",

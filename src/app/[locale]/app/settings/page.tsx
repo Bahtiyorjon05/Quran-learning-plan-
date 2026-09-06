@@ -6,9 +6,11 @@ import { ArrowRight, ScrollText } from "lucide-react";
 import { db } from "@/db/client";
 import { plans, profiles } from "@/db/schema";
 import { requireOnboardedUser } from "@/auth/guard";
+import { twoFactorEnabled } from "@/auth/two-factor";
 import { AppHeader } from "@/components/app/app-header";
 import { Atmosphere } from "@/components/app/atmosphere";
 import { SettingsForm } from "@/components/app/settings-form";
+import { TwoFactorSetting } from "@/components/app/two-factor-setting";
 import { Measure } from "@/components/ui/section";
 import { Link } from "@/i18n/navigation";
 
@@ -19,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function SettingsPage() {
   const user = await requireOnboardedUser();
+  const secondFactor = await twoFactorEnabled(user.id);
   const t = await getTranslations("settings");
 
   const [profile] = await db
@@ -75,6 +78,17 @@ export default async function SettingsPage() {
                 reminders={profile?.reminders ?? true}
                 weekly={profile?.weekly ?? true}
               />
+
+            {/* The second password, in with the rest of the account. Reached
+                from the same menu as everything else about who you are. */}
+            <section className="panel mt-5 rounded-2xl p-5 sm:p-6">
+              <h2 className="text-[0.6875rem] font-semibold tracking-[0.16em] text-[var(--text-faint)] uppercase">
+                {t("twoFactor.title")}
+              </h2>
+              <div className="mt-5">
+                <TwoFactorSetting enabled={secondFactor} />
+              </div>
+            </section>
 
               {/* The covenant is not a preference, so it is a door rather than a
                 field: its own screen, with its own rules about what may change. */}
