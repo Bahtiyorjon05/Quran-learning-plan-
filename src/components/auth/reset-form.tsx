@@ -121,7 +121,8 @@ export function ResetForm({ email }: { email: string | null }) {
           label={t("code")}
           autoFocus={!!email && !verified}
           invalid={!!fieldError("code") || (!verified && !!live.error)}
-          disabled={busy || verified}
+          disabled={busy}
+          readOnly={verified}
         />
         {fieldError("code") && (
           <p role="alert" className="text-[0.8125rem] text-danger">

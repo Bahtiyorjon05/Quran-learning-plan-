@@ -83,7 +83,8 @@ export function TwoFactorForm() {
             label={t("code")}
             autoFocus={!codeAccepted}
             invalid={!codeAccepted && (!!check.error || !!fieldError(check, "code"))}
-            disabled={resetting || sending || checking || codeAccepted}
+            disabled={resetting || sending || checking}
+            readOnly={codeAccepted}
             onComplete={() => {
               if (!codeAccepted) codeForm.current?.requestSubmit();
             }}

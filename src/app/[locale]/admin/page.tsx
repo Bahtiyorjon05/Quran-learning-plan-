@@ -81,15 +81,27 @@ const RECITER_LABELS: Record<string, string> = Object.fromEntries(
 );
 
 /** "3 Sep, 14:20" — enough to place an event, without the noise of seconds. */
-const WHEN = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-});
+/**
+ * Timestamps in the reader's own clock, not the server's.
+ *
+ * Built per request rather than once at module scope: without an explicit
+ * zone, Intl uses whatever the process is running in, which on Vercel is UTC.
+ * An admin in Seoul was reading sign-ins nine hours in the past and had no way
+ * to tell.
+ */
+function whenIn(timeZone: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone,
+  });
+}
 
 export default async function AdminOverviewPage() {
-  await requireAdmin();
+  const admin = await requireAdmin();
+  const WHEN = whenIn(admin.timeZone);
 
   const [overview, depth, admins] = await Promise.all([
     loadOverview(),

@@ -1174,7 +1174,8 @@
     },
     "pushTest": "Send a test",
     "pushSent": "Sent",
-    "pushNothing": "Nothing arrived"
+    "pushNothing": "Nothing arrived",
+    "pushReady": "This device is ready"
   },
   "amend": {
     "title": "Amend your covenant",

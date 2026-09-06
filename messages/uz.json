@@ -1174,7 +1174,8 @@
     },
     "pushTest": "Sinov yuborish",
     "pushSent": "Yuborildi",
-    "pushNothing": "Yetib bormadi"
+    "pushNothing": "Yetib bormadi",
+    "pushReady": "Bu qurilma tayyor"
   },
   "amend": {
     "title": "Ahdni oʻzgartirish",

@@ -147,12 +147,24 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
               label={t("code")}
               autoFocus={!codeAccepted}
               invalid={!codeAccepted && (!!check.error || !!fieldError(check, "code"))}
-              disabled={checking || enabling || codeAccepted}
+              disabled={checking || enabling}
+              readOnly={codeAccepted}
               onComplete={() => {
                 if (!codeAccepted) codeForm.current?.requestSubmit();
               }}
             />
           </div>
+
+          {/* A field error with nowhere to render is how this screen came to
+              fail in silence. Anything not shown beside its own field is shown
+              here rather than swallowed. */}
+          {codeAccepted &&
+            enable.fieldErrors &&
+            Object.keys(enable.fieldErrors)
+              .filter((name) => !["password", "passwordConfirm"].includes(name))
+              .map((name) => (
+                <FormError key={name}>{tv(enable.fieldErrors![name])}</FormError>
+              ))}
 
           {codeAccepted && (
             <>

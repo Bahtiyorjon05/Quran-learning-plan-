@@ -19,13 +19,29 @@ export const metadata: Metadata = {
 
 const PER_PAGE = 25;
 
-const WHEN = new Intl.DateTimeFormat("en-GB", {
+/* Two different things that both look like dates.
+ *
+ * A covenant's deadline is a plain calendar date, parsed as midnight Z: it has
+ * to be read back in UTC or it slides a day for anyone west of the meridian.
+ * A join date comes from a real timestamp and belongs in the reader's own
+ * clock — without a zone Intl uses the server's, which on Vercel is UTC. */
+const DEADLINE = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "short",
   year: "numeric",
+  timeZone: "UTC",
 });
 
-const DAY = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
+const whenIn = (timeZone: string) =>
+  new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone,
+  });
+
+const dayIn = (timeZone: string) =>
+  new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone });
 
 /** "3 days ago", or "never". Precise dates are noise in a scanned list. */
 function ago(date: Date | null): string {
@@ -83,7 +99,7 @@ export default async function AdminUsersPage({
 }: {
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
-  await requireAdmin();
+  const admin = await requireAdmin();
 
   const { q, page } = await searchParams;
   const search = (q ?? "").slice(0, 120);
@@ -141,7 +157,7 @@ export default async function AdminUsersPage({
             <ul className="space-y-2.5">
               {people.map((person) => (
                 <li key={person.id}>
-                  <PersonPanel person={person} />
+                  <PersonPanel timeZone={admin.timeZone} person={person} />
                 </li>
               ))}
             </ul>
@@ -169,7 +185,7 @@ export default async function AdminUsersPage({
  * covenant against the calendar, and whether they are still turning up. Both
  * are pictures, and pictures do not fit in a cell.
  */
-function PersonPanel({ person }: { person: AdminUser }) {
+function PersonPanel({ person, timeZone }: { person: AdminUser; timeZone: string }) {
   const state = paceOf(person);
 
   return (
@@ -200,11 +216,11 @@ function PersonPanel({ person }: { person: AdminUser }) {
           </dl>
         </div>
 
-        <ActivityStrip counts={person.activity} />
+        <ActivityStrip counts={person.activity} timeZone={timeZone} />
       </div>
 
       <p className="mt-3.5 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-[var(--line-subtle)] pt-2.5 text-[0.6875rem] text-[var(--text-faint)]">
-        <span>Joined {WHEN.format(person.createdAt)}</span>
+        <span>Joined {whenIn(timeZone).format(person.createdAt)}</span>
         {person.locale && <span>· {person.locale.toUpperCase()}</span>}
         {person.reciter && <span>· {person.reciter}</span>}
         {person.studyTime && <span>· studies {person.studyTime}</span>}
@@ -316,7 +332,7 @@ function CovenantTrack({
         <span className="text-[0.75rem] text-[var(--text-muted)]">
           Finish by{" "}
           <span className="text-[var(--text-default)]">
-            {WHEN.format(new Date(`${person.covenant.endDate}T00:00:00Z`))}
+            {DEADLINE.format(new Date(`${person.covenant.endDate}T00:00:00Z`))}
           </span>
         </span>
         <span className="text-[0.75rem] tabular-nums text-[var(--text-muted)]">
@@ -364,7 +380,7 @@ function CovenantTrack({
  * which is the difference between a healthy account and one that has quietly
  * stopped. One hue, because this is a magnitude and nothing else.
  */
-function ActivityStrip({ counts }: { counts: number[] }) {
+function ActivityStrip({ counts, timeZone }: { counts: number[]; timeZone: string }) {
   const peak = Math.max(1, ...counts);
   const done = counts.reduce((sum, n) => sum + n, 0);
   const activeDays = counts.filter((n) => n > 0).length;
@@ -408,7 +424,7 @@ function ActivityStrip({ counts }: { counts: number[] }) {
       </div>
 
       <div className="mt-1.5 flex justify-between text-[0.625rem] text-[var(--text-faint)] tabular-nums">
-        <span>{DAY.format(first)}</span>
+        <span>{dayIn(timeZone).format(first)}</span>
         <span>today</span>
       </div>
     </div>

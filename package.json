@@ -44,7 +44,7 @@
     "observe:keep-awake": "tsx scripts/observe-keep-awake.ts",
     "observe:surah-mark": "tsx scripts/observe-surah-mark.ts",
     "observe:reset": "tsx scripts/observe-reset.ts",
-    "observe:two-factor": "tsx scripts/observe-two-factor.ts",
+    "observe:two-factor": "tsx --require ./scripts/allow-server-only.cjs scripts/observe-two-factor.ts",
     "observe:milestones": "tsx scripts/observe-milestones.ts"
   },
   "dependencies": {

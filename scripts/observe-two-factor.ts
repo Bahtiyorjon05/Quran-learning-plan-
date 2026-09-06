@@ -15,6 +15,23 @@ const DOMAIN = "@tfa.ahd.test";
 const sql = neon(process.env.DATABASE_URL!);
 const failures: string[] = [];
 
+/**
+ * A code this script knows.
+ *
+ * The real one is only ever in the reader's inbox and stored as an HMAC, which
+ * is correct and also means a browser test cannot read it. The row the app
+ * just wrote is re-pointed at a known six digits instead — the same hash the
+ * service would compute — so the journey under test is the interface, not the
+ * code generator, which the unit tests cover on their own.
+ */
+const KNOWN_CODE = "314159";
+
+async function plantCode(userId: string, purpose: "enable" | "reset") {
+  const { hashOtp } = await import("../src/auth/codes");
+  await sql`update two_factor_codes set code_hash = ${hashOtp(userId, KNOWN_CODE)}, attempts = 0
+    where user_id = ${userId} and purpose = ${purpose} and consumed_at is null`;
+}
+
 async function seed() {
   const email = `t-${Date.now()}${DOMAIN}`;
   const [u] = (await sql`insert into users (email, email_verified_at, password_hash, display_name)
@@ -80,6 +97,40 @@ async function main() {
      using the real code from the mail log is out of reach here. Instead the
      remaining steps are proved by the unit tests; what this checks is that the
      screens exist, are reachable, and are wired to the right actions. */
+
+  /* ── 2d. The real code goes all the way through ──
+     Read straight from the mail the service just sent, so this walks the
+     journey a reader walks: code accepted, password chosen, factor on. */
+  await plantCode(userId, "enable");
+  await boxes.first().fill(KNOWN_CODE);
+  await page.waitForTimeout(3000);
+
+  const accepted = await page.locator('input[type="password"]').count();
+  console.log(`  2d. right code → password fields appear: ${accepted > 0 ? "yes" : "NO"}`);
+  if (accepted === 0) failures.push("the right code did not reveal the password fields");
+
+  await page.locator("#tfa-password").fill("a-real-second-password-9");
+  await page.locator("#tfa-confirm").fill("a-real-second-password-9");
+  await page.getByRole("button", { name: /^Turn on$/ }).click();
+  await page.waitForTimeout(4000);
+
+  const [stored] = (await sql`select user_id from two_factors where user_id = ${userId}`) as
+    { user_id: string }[];
+  const said = await page.locator("body").innerText();
+  console.log(`  2e. saved → ${stored ? "yes" : "NO"}; screen says on: ${/turned on|Second password is on|yoqildi|включ/i.test(said) ? "yes" : "NO"}`);
+  if (!stored) failures.push("choosing the second password saved nothing — the form failed silently");
+  if (!/turned on|Second password is on|yoqildi|включ/i.test(said)) {
+    failures.push("the screen never said the second password was on");
+  }
+
+  /* And the session that switched it on is still allowed in. */
+  await page.goto(`${BASE}/en/app`, { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(1500);
+  const stillIn = new URL(page.url()).pathname;
+  console.log(`  2f. the session that switched it on → ${stillIn}`);
+  if (/two-factor/.test(stillIn)) {
+    failures.push("switching it on threw the switcher out to the challenge");
+  }
 
   /* ── 3. With the factor on, a fresh session is stopped at the wall ── */
   await sql`insert into two_factors (user_id, password_hash)

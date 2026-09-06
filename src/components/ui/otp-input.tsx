@@ -19,6 +19,7 @@ export function OtpInput({
   autoFocus,
   invalid,
   disabled,
+  readOnly,
   onComplete,
   className,
 }: {
@@ -28,6 +29,14 @@ export function OtpInput({
   autoFocus?: boolean;
   invalid?: boolean;
   disabled?: boolean;
+  /**
+   * Accepted, and not to be changed — but still submitted.
+   *
+   * `disabled` would look identical and silently drop the field from the form,
+   * which is how a screen that had already accepted a code came to fail
+   * validation on that same code and say nothing at all about it.
+   */
+  readOnly?: boolean;
   onComplete?: (value: string) => void;
   className?: string;
 }) {
@@ -90,6 +99,7 @@ export function OtpInput({
         onBlur={() => setFocused(false)}
         autoFocus={autoFocus}
         disabled={disabled}
+        readOnly={readOnly}
         inputMode="numeric"
         pattern="[0-9]*"
         autoComplete="one-time-code"
@@ -102,7 +112,7 @@ export function OtpInput({
       <div className="flex justify-between gap-2 sm:gap-3" aria-hidden>
         {cells.map((i) => {
           const char = value[i];
-          const isActive = focused && !disabled && i === activeIndex && value.length < length;
+          const isActive = focused && !disabled && !readOnly && i === activeIndex && value.length < length;
           const isLastFilled = focused && !disabled && value.length === length && i === length - 1;
 
           return (

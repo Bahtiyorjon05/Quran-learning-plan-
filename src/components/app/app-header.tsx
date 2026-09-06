@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { getCurrentUser } from "@/auth/session";
 
 import { AccountMenu } from "./account-menu";
+import { NotificationBell } from "./notification-bell";
 import { AppNavDesktop, AppTabBar } from "./app-nav";
 
 /**
@@ -36,6 +37,9 @@ export async function AppHeader() {
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {/* Reachable from the screen people open every morning, rather than
+                buried at the foot of settings. */}
+            <NotificationBell />
             <LanguageSwitcher />
             <ThemeToggle />
             <AccountMenu
