@@ -395,7 +395,10 @@
       "confirmPassword": "Repeat the new password",
       "resetSubmit": "Save and continue",
       "resetting": "Saving…",
-      "backToChallenge": "Go back"
+      "backToChallenge": "Go back",
+      "checkCode": "Check the code",
+      "checkingCode": "Checking…",
+      "codeAccepted": "Code accepted"
     }
   },
   "email": {
@@ -1153,7 +1156,10 @@
       "turnOff": "Turn off",
       "turningOff": "Turning off…",
       "confirmWithPassword": "Type your usual password to confirm",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "checkCode": "Check the code",
+      "checkingCode": "Checking…",
+      "codeAccepted": "Code accepted"
     }
   },
   "amend": {

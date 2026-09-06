@@ -395,7 +395,10 @@
       "confirmPassword": "Yangi parolni takrorlang",
       "resetSubmit": "Saqlash va kirish",
       "resetting": "Saqlanmoqda…",
-      "backToChallenge": "Orqaga qaytish"
+      "backToChallenge": "Orqaga qaytish",
+      "checkCode": "Kodni tekshirish",
+      "checkingCode": "Tekshirilmoqda…",
+      "codeAccepted": "Kod toʻgʻri"
     }
   },
   "email": {
@@ -1153,7 +1156,10 @@
       "turnOff": "Oʻchirish",
       "turningOff": "Oʻchirilmoqda…",
       "confirmWithPassword": "Tasdiqlash uchun odatdagi parolingizni kiriting",
-      "cancel": "Bekor qilish"
+      "cancel": "Bekor qilish",
+      "checkCode": "Kodni tekshirish",
+      "checkingCode": "Tekshirilmoqda…",
+      "codeAccepted": "Kod toʻgʻri"
     }
   },
   "amend": {

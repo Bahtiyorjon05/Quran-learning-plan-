@@ -43,6 +43,7 @@ const {
 } = await import("./service");
 const { LOCKOUT_THRESHOLD, BUCKETS, recordAuthEvent } = await import("./rate-limit");
 const {
+  checkTwoFactorCode,
   confirmTwoFactorSetup,
   disableTwoFactor,
   resetTwoFactor,
@@ -636,5 +637,47 @@ describe("the second password", () => {
     ).rejects.toMatchObject({ code: "invalidCredentials" });
 
     expect(await twoFactorEnabled(userId)).toBe(true);
+  });
+});
+
+describe("a code and a password never share a step", () => {
+  it("checks a 2FA code without spending it, and counts a wrong guess", async () => {
+    const { email, userId } = await activate("tfa-gate");
+    await startTwoFactorSetup({ userId, email, locale: "uz" });
+    const code = lastCode();
+
+    /* Wrong first: this is what the reader hits before any password field
+       should have appeared. */
+    await expect(
+      checkTwoFactorCode({ userId, code: "000000", purpose: "enable" }),
+    ).rejects.toMatchObject({ code: "codeInvalid" });
+
+    /* Right, twice, and still unspent — the confirm step needs it again. */
+    await expect(
+      checkTwoFactorCode({ userId, code, purpose: "enable" }),
+    ).resolves.toEqual({ ok: true });
+    await expect(
+      checkTwoFactorCode({ userId, code, purpose: "enable" }),
+    ).resolves.toEqual({ ok: true });
+
+    await expect(
+      confirmTwoFactorSetup({
+        userId, email, locale: "uz", code,
+        password: "the-gated-second-one", accountPasswordHash: null, ctx,
+      }),
+    ).resolves.toEqual({ ok: true });
+  });
+
+  it("will not accept a reset code where an enable code is asked for", async () => {
+    const { email, userId } = await activate("tfa-purpose");
+    await startTwoFactorSetup({ userId, email, locale: "uz" });
+    const enableCode = lastCode();
+
+    /* Purposes are not interchangeable: a code mailed to switch the factor on
+       must not also serve to replace a forgotten one, or the weaker journey
+       would let somebody skip the stronger. */
+    await expect(
+      checkTwoFactorCode({ userId, code: enableCode, purpose: "reset" }),
+    ).rejects.toMatchObject({ code: "codeInvalid" });
   });
 });

@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
+import { CircleCheck, Loader2 } from "lucide-react";
 
 import { Field, FormError, FormNotice, PasswordInput } from "@/components/ui/field";
 import { OtpInput } from "@/components/ui/otp-input";
@@ -10,6 +10,7 @@ import { PasswordStrength } from "@/components/ui/password-strength";
 import { buttonStyles } from "@/components/ui/button";
 import { IDLE, type FormState } from "@/auth/form-state";
 import {
+  checkTwoFactorCodeAction,
   resetTwoFactorAction,
   sendTwoFactorResetCode,
   verifyTwoFactorAction,
@@ -30,6 +31,7 @@ export function TwoFactorForm() {
   const te = useTranslations("auth.errors");
 
   const [state, action, pending] = useActionState(verifyTwoFactorAction, IDLE);
+  const [check, checkAction, checking] = useActionState(checkTwoFactorCodeAction, IDLE);
   const [reset, resetAction, resetting] = useActionState(resetTwoFactorAction, IDLE);
   const [sent, setSent] = useState<FormState | null>(null);
   const [sending, startSend] = useTransition();
@@ -46,24 +48,41 @@ export function TwoFactorForm() {
     startSend(async () => setSent(await sendTwoFactorResetCode()));
   }
 
+  /* The same rule as everywhere else a code and a password share a screen:
+     the password fields do not exist until the code has come back right. */
+  const codeAccepted = check.status === "success";
+
   if (forgot) {
+    const live = codeAccepted ? reset : check;
     return (
-      <form action={resetAction} className="space-y-6" noValidate>
-        {sent?.status === "success" && <FormNotice>{t("codeSent")}</FormNotice>}
+      <form action={codeAccepted ? resetAction : checkAction} className="space-y-6" noValidate>
+        {!codeAccepted && sent?.status === "success" && <FormNotice>{t("codeSent")}</FormNotice>}
         {sent?.error && <FormError>{te(sent.error.code, sent.error.values)}</FormError>}
-        {reset.error && <FormError>{te(reset.error.code, reset.error.values)}</FormError>}
+        {live.error && <FormError>{te(live.error.code, live.error.values)}</FormError>}
+
+        <input type="hidden" name="purpose" value="reset" />
 
         <div className="space-y-2">
-          <p className="text-[0.8125rem] font-medium text-[var(--text-default)]">{t("code")}</p>
+          <p className="flex items-center justify-between gap-3 text-[0.8125rem] font-medium text-[var(--text-default)]">
+            {t("code")}
+            {codeAccepted && (
+              <span className="inline-flex items-center gap-1.5 text-[0.75rem] font-normal text-[var(--accent-strong)]">
+                <CircleCheck className="h-3.5 w-3.5" />
+                {t("codeAccepted")}
+              </span>
+            )}
+          </p>
           <OtpInput
             name="code"
             label={t("code")}
-            autoFocus
-            invalid={!!reset.error || !!fieldError(reset, "code")}
-            disabled={resetting || sending}
+            autoFocus={!codeAccepted}
+            invalid={!codeAccepted && (!!check.error || !!fieldError(check, "code"))}
+            disabled={resetting || sending || checking || codeAccepted}
           />
         </div>
 
+        {codeAccepted && (
+          <>
         <Field label={t("newPassword")} htmlFor="password" error={fieldError(reset, "password")}>
           <PasswordInput
             id="password"
@@ -90,7 +109,14 @@ export function TwoFactorForm() {
           />
         </Field>
 
-        <SubmitButton label={t("resetSubmit")} pendingLabel={t("resetting")} pending={resetting} />
+          </>
+        )}
+
+        <SubmitButton
+          label={codeAccepted ? t("resetSubmit") : t("checkCode")}
+          pendingLabel={codeAccepted ? t("resetting") : t("checkingCode")}
+          pending={checking || resetting}
+        />
 
         <button
           type="button"

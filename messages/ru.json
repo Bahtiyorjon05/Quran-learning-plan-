@@ -395,7 +395,10 @@
       "confirmPassword": "Повторите новый пароль",
       "resetSubmit": "Сохранить и войти",
       "resetting": "Сохраняем…",
-      "backToChallenge": "Назад"
+      "backToChallenge": "Назад",
+      "checkCode": "Проверить код",
+      "checkingCode": "Проверяем…",
+      "codeAccepted": "Код принят"
     }
   },
   "email": {
@@ -1153,7 +1156,10 @@
       "turnOff": "Выключить",
       "turningOff": "Выключаем…",
       "confirmWithPassword": "Введите обычный пароль для подтверждения",
-      "cancel": "Отмена"
+      "cancel": "Отмена",
+      "checkCode": "Проверить код",
+      "checkingCode": "Проверяем…",
+      "codeAccepted": "Код принят"
     }
   },
   "amend": {

@@ -154,6 +154,52 @@ async function consumeCode(
   if (spent.length === 0) throw new AuthError("codeInvalid");
 }
 
+/**
+ * Is this the right code — without spending it.
+ *
+ * Both screens that take a code also take a new password, and asking for both
+ * at once means inventing a password before finding out whether the six digits
+ * were even right — and losing the password with them when they were not. So
+ * the code is checked on its own first, and the password fields do not exist
+ * until it has been accepted.
+ *
+ * A wrong guess costs an attempt here exactly as it would when the code is
+ * finally spent, so splitting the screen in two buys nobody extra tries.
+ */
+export async function checkTwoFactorCode(input: {
+  userId: string;
+  code: string;
+  purpose: "enable" | "reset";
+}) {
+  const [row] = await db
+    .select()
+    .from(twoFactorCodes)
+    .where(
+      and(
+        eq(twoFactorCodes.userId, input.userId),
+        eq(twoFactorCodes.purpose, input.purpose),
+        isNull(twoFactorCodes.consumedAt),
+      ),
+    )
+    .limit(1);
+
+  if (!row) throw new AuthError("codeInvalid");
+  if (row.expiresAt.getTime() < Date.now()) throw new AuthError("codeExpired");
+  if (row.attempts >= OTP_MAX_ATTEMPTS) throw new AuthError("codeAttemptsExceeded");
+
+  if (!safeEqualHex(hashOtp(input.userId, input.code.trim()), row.codeHash)) {
+    await db
+      .update(twoFactorCodes)
+      .set({ attempts: row.attempts + 1 })
+      .where(eq(twoFactorCodes.id, row.id));
+
+    if (row.attempts + 1 >= OTP_MAX_ATTEMPTS) throw new AuthError("codeAttemptsExceeded");
+    throw new AuthError("codeInvalid", { remaining: OTP_MAX_ATTEMPTS - (row.attempts + 1) });
+  }
+
+  return { ok: true as const };
+}
+
 /* ── Turning it on ─────────────────────────────────────────────────────── */
 
 /** Step one: prove the inbox. */

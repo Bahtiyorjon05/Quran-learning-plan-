@@ -8,6 +8,7 @@ import { toAuthError } from "@/auth/errors";
 import type { FormState } from "@/auth/form-state";
 import {
   accountPasswordHash,
+  checkTwoFactorCode,
   confirmTwoFactorSetup,
   disableTwoFactor,
   resetTwoFactor,
@@ -83,6 +84,36 @@ export async function enableTwoFactorAction(
       password: parsed.data.password,
       accountPasswordHash: await accountPasswordHash(user.id),
       ctx: await requestContext(),
+    });
+  } catch (error) {
+    return failure(error);
+  }
+
+  return { status: "success" };
+}
+
+/**
+ * The code on its own, before any password field exists.
+ *
+ * Shared by both screens that take a code: switching the second password on,
+ * and replacing a forgotten one.
+ */
+export async function checkTwoFactorCodeAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await requireUser();
+  const parsed = z
+    .object({ code: codeField, purpose: z.enum(["enable", "reset"]) })
+    .safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success) return { status: "error", fieldErrors: { code: "codeLength" } };
+
+  try {
+    await checkTwoFactorCode({
+      userId: user.id,
+      code: parsed.data.code,
+      purpose: parsed.data.purpose,
     });
   } catch (error) {
     return failure(error);

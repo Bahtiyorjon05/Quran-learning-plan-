@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { KeyRound, Loader2, ShieldCheck, ShieldOff } from "lucide-react";
+import { CircleCheck, KeyRound, Loader2, ShieldCheck, ShieldOff } from "lucide-react";
 
 import { Field, FormError, FormNotice, PasswordInput } from "@/components/ui/field";
 import { OtpInput } from "@/components/ui/otp-input";
@@ -10,6 +10,7 @@ import { PasswordStrength } from "@/components/ui/password-strength";
 import { buttonStyles } from "@/components/ui/button";
 import { IDLE, type FormState } from "@/auth/form-state";
 import {
+  checkTwoFactorCodeAction,
   disableTwoFactorAction,
   enableTwoFactorAction,
   sendTwoFactorSetupCode,
@@ -35,6 +36,7 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
 
   const [sent, setSent] = useState<FormState | null>(null);
   const [sending, startSend] = useTransition();
+  const [check, checkAction, checking] = useActionState(checkTwoFactorCodeAction, IDLE);
   const [enable, enableAction, enabling] = useActionState(enableTwoFactorAction, IDLE);
   const [disable, disableAction, disabling] = useActionState(disableTwoFactorAction, IDLE);
   const [password, setPassword] = useState("");
@@ -43,6 +45,11 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
   /* Derived, not stored: the moment the server says it is on, it is on. */
   const on = enabled ? disable.status !== "success" : enable.status === "success";
   const awaitingCode = !on && sent?.status === "success" && enable.status !== "success";
+  /* Derived from the check, so there is no separate step to fall out of sync.
+     Until the six digits come back right there is no password field at all —
+     inventing one and then losing it to a wrong code is the whole complaint
+     this answers. */
+  const codeAccepted = check.status === "success";
 
   const fieldError = (form: FormState, name: string) => {
     const key = form.fieldErrors?.[name];
@@ -94,21 +101,43 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
       )}
 
       {awaitingCode && (
-        <form action={enableAction} className="space-y-5 border-t border-[var(--line-subtle)] pt-5">
-          <FormNotice>{t("codeSent")}</FormNotice>
-          {enable.error && <FormError>{te(enable.error.code, enable.error.values)}</FormError>}
+        <form
+          action={codeAccepted ? enableAction : checkAction}
+          className="space-y-5 border-t border-[var(--line-subtle)] pt-5"
+        >
+          {!codeAccepted && <FormNotice>{t("codeSent")}</FormNotice>}
+          {(codeAccepted ? enable.error : check.error) && (
+            <FormError>
+              {te(
+                (codeAccepted ? enable.error : check.error)!.code,
+                (codeAccepted ? enable.error : check.error)!.values,
+              )}
+            </FormError>
+          )}
+
+          <input type="hidden" name="purpose" value="enable" />
 
           <div className="space-y-2">
-            <p className="text-[0.8125rem] font-medium text-[var(--text-default)]">{t("code")}</p>
+            <p className="flex items-center justify-between gap-3 text-[0.8125rem] font-medium text-[var(--text-default)]">
+              {t("code")}
+              {codeAccepted && (
+                <span className="inline-flex items-center gap-1.5 text-[0.75rem] font-normal text-[var(--accent-strong)]">
+                  <CircleCheck className="h-3.5 w-3.5" />
+                  {t("codeAccepted")}
+                </span>
+              )}
+            </p>
             <OtpInput
               name="code"
               label={t("code")}
-              autoFocus
-              invalid={!!enable.error || !!fieldError(enable, "code")}
-              disabled={enabling}
+              autoFocus={!codeAccepted}
+              invalid={!codeAccepted && (!!check.error || !!fieldError(check, "code"))}
+              disabled={checking || enabling || codeAccepted}
             />
           </div>
 
+          {codeAccepted && (
+            <>
           <Field label={t("newPassword")} htmlFor="tfa-password" error={fieldError(enable, "password")}>
             <PasswordInput
               id="tfa-password"
@@ -136,10 +165,22 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
           </Field>
 
           <p className="text-[0.75rem] leading-relaxed text-[var(--text-faint)]">{t("differentNote")}</p>
+            </>
+          )}
 
-          <button type="submit" disabled={enabling} className={buttonStyles({ size: "sm" })}>
-            {enabling ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-            {enabling ? t("turningOn") : t("confirm")}
+          <button
+            type="submit"
+            disabled={checking || enabling}
+            className={buttonStyles({ size: "sm" })}
+          >
+            {checking || enabling ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+            {codeAccepted
+              ? enabling
+                ? t("turningOn")
+                : t("confirm")
+              : checking
+                ? t("checkingCode")
+                : t("checkCode")}
           </button>
         </form>
       )}
