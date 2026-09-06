@@ -1,0 +1,34 @@
+# The daily reminder, on the hour, in everybody's own timezone.
+#
+# Vercel's Hobby plan allows one cron run a day, which cannot serve readers in
+# Tashkent and Seoul from the same schedule — "05:30" has to mean 05:30 where
+# they are. So the hourly pass runs here instead, for free, and the Vercel cron
+# stays as a once-a-day safety net in case this workflow is ever disabled.
+#
+# The endpoint itself is idempotent: it sends only to accounts whose local hour
+# matches the hour they chose, so an extra run costs nothing and a missed one
+# is picked up an hour later.
+
+name: reminders
+
+on:
+  schedule:
+    # Every hour, on the hour. GitHub may delay a run under load; the endpoint
+    # tolerates that because it works from the reader's local hour, not from
+    # when it happened to be called.
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask Ahd to send this hour's reminders
+        run: |
+          code=$(curl -s -o /tmp/out -w "%{http_code}" \
+            -H "authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.AHD_URL }}/api/cron/reminders")
+          echo "HTTP $code"
+          cat /tmp/out
+          # A non-2xx is worth failing on: silence here is a reminder nobody got.
+          test "$code" -ge 200 -a "$code" -lt 300
