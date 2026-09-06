@@ -16,12 +16,13 @@
  * live on the dashboard where nothing is racing a form submission.
  */
 
-const HOLDS_FOR = 3400;
+const HOLDS_FOR = 4600;
 const FADES_FOR = 550;
-/* Enough to be unmistakable. Twenty-two spread over six seconds was tasteful
-   and completely missable — a handful of specks drifting past on a cream page
-   reads as dust, not as something happening. */
-const MOTES = 64;
+/* Enough to fill the screen. Twenty-two was dust and sixty-four was weather;
+   this is the sky opening. They keep arriving for two and a half seconds, so
+   the screen is full for as long as the words are on it rather than emptying
+   out behind them. */
+const MOTES = 150;
 
 let current: HTMLElement | null = null;
 let fade: ReturnType<typeof setTimeout> | null = null;
@@ -116,6 +117,10 @@ function goldFalls() {
   sky.setAttribute("aria-hidden", "true");
   sky.className = "ahd-fall";
 
+  const wash = document.createElement("span");
+  wash.className = "ahd-wash";
+  sky.append(wash);
+
   let longest = 0;
   for (let i = 0; i < MOTES; i++) {
     /* Mixed rather than modular, and one lane each: see `<Goldfall />`, which
@@ -126,8 +131,8 @@ function goldFalls() {
       return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
     };
     const lane = (i / MOTES) * 100;
-    const d = 2.9 + r(3) * 2.6;
-    const delay = r(4) * 1.2;
+    const d = 2.6 + r(3) * 2.8;
+    const delay = r(4) * 2.4;
     longest = Math.max(longest, d + delay);
 
     const mote = document.createElement("i");

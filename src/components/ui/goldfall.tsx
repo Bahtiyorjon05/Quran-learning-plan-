@@ -30,8 +30,8 @@ function bit(i: number, count: number) {
     /* Only used when motion is reduced and nothing falls. */
     y: `${(6 + r(8) * 82).toFixed(1)}%`,
     w: `${(7 + r(2) * 15).toFixed(1)}px`,
-    d: `${(2.9 + r(3) * 2.6).toFixed(2)}s`,
-    delay: `${(r(4) * 1.2).toFixed(2)}s`,
+    d: `${(2.6 + r(3) * 2.8).toFixed(2)}s`,
+    delay: `${(r(4) * 2.4).toFixed(2)}s`,
     drift: `${Math.round(r(5) * 140 - 70)}px`,
     spin: `${Math.round(r(6) * 560 - 200)}deg`,
     dim: (0.55 + r(7) * 0.45).toFixed(2),
@@ -44,6 +44,7 @@ function bit(i: number, count: number) {
 export function Goldfall({ count = 40, className }: { count?: number; className?: string }) {
   return (
     <div aria-hidden className={cn("ahd-fall", className)}>
+      <span className="ahd-wash" />
       {Array.from({ length: count }, (_, i) => {
         const b = bit(i, count);
         return (

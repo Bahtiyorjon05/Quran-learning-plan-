@@ -1486,6 +1486,34 @@ body:has([data-app-tabbar]) {
   contain: strict;
 }
 
+/* Light over the whole screen, under the rain. Three soft pools rather than
+   one flat tint: a single even wash reads as the screen dimming, three that
+   breathe read as light in the room. */
+@keyframes ahd-wash {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.ahd-wash {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(38% 30% at 22% 12%, rgb(var(--gold-rgb) / 0.3), transparent 70%),
+    radial-gradient(46% 34% at 78% 26%, rgb(var(--gold-rgb) / 0.24), transparent 72%),
+    radial-gradient(60% 40% at 50% 96%, rgb(var(--gold-rgb) / 0.28), transparent 74%);
+  animation: ahd-wash 4.6s ease-in-out both;
+}
+
 .ahd-fall > i {
   position: absolute;
   top: 0;
@@ -1568,7 +1596,35 @@ body:has([data-app-tabbar]) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ahd-fall > i {
+  /* Light over the whole screen, under the rain. Three soft pools rather than
+   one flat tint: a single even wash reads as the screen dimming, three that
+   breathe read as light in the room. */
+@keyframes ahd-wash {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.ahd-wash {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(38% 30% at 22% 12%, rgb(var(--gold-rgb) / 0.3), transparent 70%),
+    radial-gradient(46% 34% at 78% 26%, rgb(var(--gold-rgb) / 0.24), transparent 72%),
+    radial-gradient(60% 40% at 50% 96%, rgb(var(--gold-rgb) / 0.28), transparent 74%);
+  animation: ahd-wash 4.6s ease-in-out both;
+}
+
+.ahd-fall > i {
     top: var(--y, 40%);
     animation: ahd-glimmer 2.6s ease-in-out var(--delay) both;
   }
