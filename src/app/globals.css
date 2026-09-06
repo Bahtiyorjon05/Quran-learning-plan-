@@ -1344,3 +1344,95 @@ body:has([data-app-tabbar]) {
     background-position: 130% 50%;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   A PAGE
+   Small on purpose: this fires six hundred and four times over a covenant, and
+   a moment that must be dismissed six hundred times is a toll rather than a
+   celebration. It rises, says the word, and leaves on its own.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ahd-page-cheer {
+  animation: ahd-cheer-in 0.55s var(--ease-settle) both;
+}
+
+.ahd-page-cheer-out {
+  animation: ahd-cheer-out 0.55s var(--ease-calm) both;
+}
+
+@keyframes ahd-cheer-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ahd-cheer-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+}
+
+/* The seal turns once as it arrives. */
+.ahd-spark-seal {
+  animation: ahd-seal-land 0.9s var(--ease-settle) 0.1s both;
+}
+
+.ahd-spark-halo {
+  background: radial-gradient(circle, color-mix(in oklab, var(--gold) 45%, transparent), transparent 70%);
+  filter: blur(10px);
+  animation: ahd-seal-breathe 3s ease-in-out infinite;
+}
+
+/* Sparks: each lifts along its own angle and fades. Four is enough to read as
+   light coming off the seal; more would be confetti, which this is not. */
+.ahd-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--gold) 85%, transparent);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--gold) 70%, transparent);
+  opacity: 0;
+  animation: ahd-spark-fly 1.5s var(--ease-calm) both;
+}
+
+@keyframes ahd-spark-fly {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(0) scale(0.5);
+  }
+  22% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(-30px) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ahd-page-cheer,
+  .ahd-page-cheer-out,
+  .ahd-spark-seal,
+  .ahd-spark-halo,
+  .ahd-spark {
+    animation: none !important;
+    opacity: 1;
+  }
+  .ahd-spark {
+    display: none;
+  }
+}

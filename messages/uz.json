@@ -560,7 +560,21 @@
       "continue": "Davom etish",
       "close": "Yopish",
       "sealsTitle": "Juzlar",
-      "sealsBody": "{held} ta juz toʻliq yodlangan"
+      "sealsBody": "{held} ta juz toʻliq yodlangan",
+      "mashaallah": "Moshoolloh!",
+      "pageLearnt": "{page}-sahifa yodlandi",
+      "tier": {
+        "one": "Endi sizda {total} ta juz bor. Alloh qabul qilsin va mustahkam saqlasin.",
+        "five": "Besh juz. Qurʼonning oltidan biri sizda — bu endi boshlanish emas, yoʻl.",
+        "ten": "Oʻn juz. Qurʼonning uchdan biri qalbingizda.",
+        "twenty": "Yigirma juz. Uchdan ikkisi tugadi — oxiri koʻrinib turibdi.",
+        "thirty": "O‘ttiz juz. Butun Qur’on — yuragingizda."
+      },
+      "hafizTitle": "Qurʼon toʻliq yodlandi",
+      "hafizBody": "Otuz juz. Butun Qurʼon. Alloh qabul qilsin, unutishdan asrasin va u bilan amal qilishni nasib etsin.",
+      "crown": "Kim Qurʼonni oʻqisa va undagiga amal qilsa, qiyomat kuni ota-onasiga toj kiydiriladi — uning nuri quyosh nuridan-da goʻzalroqdir.",
+      "crownSource": "Abu Dovud 1453",
+      "hafizContinue": "Alhamdulilloh"
     }
   },
   "onboarding": {

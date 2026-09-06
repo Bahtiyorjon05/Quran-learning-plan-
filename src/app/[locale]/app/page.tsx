@@ -269,7 +269,11 @@ export default async function AppHomePage({
       {/* Anything finished but never shown. A juz completed on a phone at
           midnight is still marked on the laptop in the morning. */}
       {juz.unseen.length > 0 && (
-        <JuzCelebration juz={juz.unseen} total={juz.held.length} />
+        <JuzCelebration
+          juz={juz.unseen}
+          total={juz.held.length}
+          name={user.displayName || user.email}
+        />
       )}
 
       <TimeZoneSync current={profile?.timeZone ?? "Asia/Tashkent"} />

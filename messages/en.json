@@ -560,7 +560,21 @@
       "continue": "Continue",
       "close": "Close",
       "sealsTitle": "Juz",
-      "sealsBody": "{held} juz carried whole"
+      "sealsBody": "{held} juz carried whole",
+      "mashaallah": "Mashaallah!",
+      "pageLearnt": "Page {page} committed to memory",
+      "tier": {
+        "one": "That makes {total} juz. May Allah accept it and keep it firm.",
+        "five": "Five juz. A sixth of the Qur'an is yours — this is no longer a beginning, it is a road.",
+        "ten": "Ten juz. A third of the Qur'an is in your heart.",
+        "twenty": "Twenty juz. Two thirds done — the end is in sight from here.",
+        "thirty": "Thirty juz. The whole Qur'an, carried in your heart."
+      },
+      "hafizTitle": "The whole Qur'an",
+      "hafizBody": "Thirty juz. All of it. May Allah accept it, guard you from forgetting it, and grant you to act by it.",
+      "crown": "Whoever recites the Qur'an and acts by what is in it, his parents will be crowned on the Day of Rising — a crown whose light is finer than the light of the sun.",
+      "crownSource": "Abu Dawud 1453",
+      "hafizContinue": "Alhamdulillah"
     }
   },
   "onboarding": {

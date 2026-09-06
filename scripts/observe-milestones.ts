@@ -65,6 +65,17 @@ async function main() {
     await page.waitForTimeout(1800);
   }
 
+  /* Marking a page says so — small, and on its own, because this happens six
+     hundred times over a covenant and a full-screen moment each time would be
+     a toll on the way to the next page. */
+  /* Asked for by class, not by text. The congratulation is appended to the
+     body outside React, and Playwright's text engine loses track of a node
+     that arrives that way — it reported SILENT for a card that a screenshot
+     showed plainly on screen. */
+  const cheer = await page.locator(".ahd-page-cheer").count();
+  console.log(`  3b. marking a page → ${cheer > 0 ? "Mashaallah shown" : "SILENT"}`);
+  if (cheer === 0) failures.push("marking a page said nothing at all");
+
   /* The last toggle's action is still in flight when the click returns, so the
      row is waited for rather than assumed. */
   let row: { juz: number; seen_at: string | null } | undefined;

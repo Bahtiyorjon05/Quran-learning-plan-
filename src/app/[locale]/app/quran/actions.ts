@@ -92,7 +92,12 @@ export async function setPageMemorized(
 
       await recomputeProgress(user.id);
       await recordJuzMilestones(user.id);
-      revalidatePath("/[locale]/app", "layout");
+      /* The dashboard and the mushaf read from this, so their cached copies
+         are dropped — but not this reader's own route. Invalidating that made
+         every mark replace the reader's subtree, which is a lot of work to
+         redraw a page the reader is still looking at. */
+      revalidatePath("/[locale]/app");
+      revalidatePath("/[locale]/app/quran");
       return { status: "ok", memorized };
     }
 
@@ -134,7 +139,12 @@ export async function setPageMemorized(
     return { status: "error" };
   }
 
-  revalidatePath("/[locale]/app", "layout");
+  /* The dashboard and the mushaf read from this, so their cached copies
+         are dropped — but not this reader's own route. Invalidating that made
+         every mark replace the reader's subtree, which is a lot of work to
+         redraw a page the reader is still looking at. */
+      revalidatePath("/[locale]/app");
+      revalidatePath("/[locale]/app/quran");
   return { status: "ok", memorized };
 }
 
