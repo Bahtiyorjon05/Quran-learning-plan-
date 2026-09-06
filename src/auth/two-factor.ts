@@ -216,6 +216,8 @@ export async function startTwoFactorSetup(input: {
 /** Step two: the code, and the second password it unlocks. */
 export async function confirmTwoFactorSetup(input: {
   userId: string;
+  /** The session doing the switching on, which is stamped as it goes. */
+  sessionId: string;
   email: string;
   locale: Locale;
   code: string;
@@ -242,6 +244,19 @@ export async function confirmTwoFactorSetup(input: {
   await db.transaction(async (tx) => {
     await consumeCode(input.userId, input.code, "enable", tx);
     await tx.insert(twoFactors).values({ userId: input.userId, passwordHash });
+
+    /* And the session that did it is stamped, in the same breath.
+     *
+     * Without this the factor came on while the current session had never
+     * cleared it, so the very next render bounced the person who had just
+     * switched it on to the challenge screen — and from their side the form
+     * simply did nothing. They proved the inbox and chose the password a
+     * second ago; asking them to type it straight back is ceremony, and
+     * silently ejecting them is a bug. */
+    await tx
+      .update(sessions)
+      .set({ secondFactorAt: sql`now()` })
+      .where(eq(sessions.id, input.sessionId));
   });
 
   await recordAuthEvent({

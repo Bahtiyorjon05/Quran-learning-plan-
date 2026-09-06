@@ -78,6 +78,7 @@ export async function enableTwoFactorAction(
   try {
     await confirmTwoFactorSetup({
       userId: user.id,
+      sessionId: user.sessionId,
       email: user.email,
       locale: user.locale,
       code: parsed.data.code,

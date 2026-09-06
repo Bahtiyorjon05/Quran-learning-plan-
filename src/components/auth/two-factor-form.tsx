@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { CircleCheck, Loader2 } from "lucide-react";
 
@@ -37,6 +37,7 @@ export function TwoFactorForm() {
   const [sending, startSend] = useTransition();
   const [forgot, setForgot] = useState(false);
   const [password, setPassword] = useState("");
+  const codeForm = useRef<HTMLFormElement>(null);
 
   const fieldError = (form: FormState, name: string) => {
     const key = form.fieldErrors?.[name];
@@ -55,7 +56,12 @@ export function TwoFactorForm() {
   if (forgot) {
     const live = codeAccepted ? reset : check;
     return (
-      <form action={codeAccepted ? resetAction : checkAction} className="space-y-6" noValidate>
+      <form
+        ref={codeForm}
+        action={codeAccepted ? resetAction : checkAction}
+        className="space-y-6"
+        noValidate
+      >
         {!codeAccepted && sent?.status === "success" && <FormNotice>{t("codeSent")}</FormNotice>}
         {sent?.error && <FormError>{te(sent.error.code, sent.error.values)}</FormError>}
         {live.error && <FormError>{te(live.error.code, live.error.values)}</FormError>}
@@ -78,6 +84,9 @@ export function TwoFactorForm() {
             autoFocus={!codeAccepted}
             invalid={!codeAccepted && (!!check.error || !!fieldError(check, "code"))}
             disabled={resetting || sending || checking || codeAccepted}
+            onComplete={() => {
+              if (!codeAccepted) codeForm.current?.requestSubmit();
+            }}
           />
         </div>
 

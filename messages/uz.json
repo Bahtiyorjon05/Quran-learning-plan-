@@ -1159,7 +1159,8 @@
       "cancel": "Bekor qilish",
       "checkCode": "Kodni tekshirish",
       "checkingCode": "Tekshirilmoqda…",
-      "codeAccepted": "Kod toʻgʻri"
+      "codeAccepted": "Kod toʻgʻri",
+      "enabledDone": "Ikkinchi parol yoqildi. Endi har kirishda soʻraladi."
     }
   },
   "amend": {

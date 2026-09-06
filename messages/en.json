@@ -1159,7 +1159,8 @@
       "cancel": "Cancel",
       "checkCode": "Check the code",
       "checkingCode": "Checking…",
-      "codeAccepted": "Code accepted"
+      "codeAccepted": "Code accepted",
+      "enabledDone": "Second password is on. It will be asked for at every sign-in from now on."
     }
   },
   "amend": {

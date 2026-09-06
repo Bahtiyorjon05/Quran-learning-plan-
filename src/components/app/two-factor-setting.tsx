@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { CircleCheck, KeyRound, Loader2, ShieldCheck, ShieldOff } from "lucide-react";
 
@@ -41,6 +41,11 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
   const [disable, disableAction, disabling] = useActionState(disableTwoFactorAction, IDLE);
   const [password, setPassword] = useState("");
   const [closing, setClosing] = useState(false);
+  /* The code form submits itself the moment six digits are in. Nobody types a
+     code and then hunts for a button; the button stays for the keyboard and
+     for anyone whose paste did not fire an input event. */
+  const codeForm = useRef<HTMLFormElement>(null);
+  const justEnabled = enable.status === "success";
 
   /* Derived, not stored: the moment the server says it is on, it is on. */
   const on = enabled ? disable.status !== "success" : enable.status === "success";
@@ -62,6 +67,15 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
 
   return (
     <div className="space-y-4">
+      {justEnabled && (
+        <FormNotice>
+          <span className="flex items-center gap-2">
+            <CircleCheck className="h-4 w-4 shrink-0" />
+            {t("enabledDone")}
+          </span>
+        </FormNotice>
+      )}
+
       <div className="flex items-start gap-3.5">
         <span
           className={cn(
@@ -102,6 +116,7 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
 
       {awaitingCode && (
         <form
+          ref={codeForm}
           action={codeAccepted ? enableAction : checkAction}
           className="space-y-5 border-t border-[var(--line-subtle)] pt-5"
         >
@@ -133,6 +148,9 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
               autoFocus={!codeAccepted}
               invalid={!codeAccepted && (!!check.error || !!fieldError(check, "code"))}
               disabled={checking || enabling || codeAccepted}
+              onComplete={() => {
+                if (!codeAccepted) codeForm.current?.requestSubmit();
+              }}
             />
           </div>
 

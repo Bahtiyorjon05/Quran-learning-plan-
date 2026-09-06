@@ -525,6 +525,7 @@ describe("resetting a password", () => {
 describe("the second password", () => {
   it("a code can only be spent once, even by two requests at the same time", async () => {
     const { email, userId } = await activate("tfa-race");
+    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
     await startTwoFactorSetup({ userId, email, locale: "uz" });
     const code = lastCode();
 
@@ -532,11 +533,11 @@ describe("the second password", () => {
        marking it consumed would let both through. */
     const results = await Promise.allSettled([
       confirmTwoFactorSetup({
-        userId, email, locale: "uz", code,
+        userId, sessionId: session.id, email, locale: "uz", code,
         password: "first-second-password-1", accountPasswordHash: null, ctx,
       }),
       confirmTwoFactorSetup({
-        userId, email, locale: "uz", code,
+        userId, sessionId: session.id, email, locale: "uz", code,
         password: "other-second-password-2", accountPasswordHash: null, ctx,
       }),
     ]);
@@ -546,13 +547,14 @@ describe("the second password", () => {
 
   it("refuses a second password identical to the account password", async () => {
     const { email, userId } = await activate("tfa-same");
+    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
     await startTwoFactorSetup({ userId, email, locale: "uz" });
     const code = lastCode();
     const [row] = await db.select({ hash: users.passwordHash }).from(users).where(eq(users.id, userId));
 
     await expect(
       confirmTwoFactorSetup({
-        userId, email, locale: "uz", code,
+        userId, sessionId: session.id, email, locale: "uz", code,
         password: PASSWORD, accountPasswordHash: row.hash, ctx,
       }),
     ).rejects.toMatchObject({ code: "twoFactorSameAsPassword" });
@@ -560,13 +562,12 @@ describe("the second password", () => {
 
   it("locks after five wrong answers, and the right one still works after a reset", async () => {
     const { email, userId } = await activate("tfa-lock");
+    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
     await startTwoFactorSetup({ userId, email, locale: "uz" });
     await confirmTwoFactorSetup({
-      userId, email, locale: "uz", code: lastCode(),
+      userId, sessionId: session.id, email, locale: "uz", code: lastCode(),
       password: "a-good-second-password", accountPasswordHash: null, ctx,
     });
-
-    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
 
     for (let i = 0; i < 4; i++) {
       await expect(
@@ -597,13 +598,12 @@ describe("the second password", () => {
 
   it("clears every session stamp when it is switched off", async () => {
     const { email, userId } = await activate("tfa-off");
+    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
     await startTwoFactorSetup({ userId, email, locale: "uz" });
     await confirmTwoFactorSetup({
-      userId, email, locale: "uz", code: lastCode(),
+      userId, sessionId: session.id, email, locale: "uz", code: lastCode(),
       password: "yet-another-second-one", accountPasswordHash: null, ctx,
     });
-
-    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
     await verifySecondFactor({
       userId, sessionId: session.id, password: "yet-another-second-one", ctx,
     });
@@ -622,9 +622,10 @@ describe("the second password", () => {
 
   it("will not switch off for the wrong account password", async () => {
     const { email, userId } = await activate("tfa-guard");
+    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
     await startTwoFactorSetup({ userId, email, locale: "uz" });
     await confirmTwoFactorSetup({
-      userId, email, locale: "uz", code: lastCode(),
+      userId, sessionId: session.id, email, locale: "uz", code: lastCode(),
       password: "a-fifth-second-password", accountPasswordHash: null, ctx,
     });
 
@@ -643,6 +644,7 @@ describe("the second password", () => {
 describe("a code and a password never share a step", () => {
   it("checks a 2FA code without spending it, and counts a wrong guess", async () => {
     const { email, userId } = await activate("tfa-gate");
+    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
     await startTwoFactorSetup({ userId, email, locale: "uz" });
     const code = lastCode();
 
@@ -662,7 +664,7 @@ describe("a code and a password never share a step", () => {
 
     await expect(
       confirmTwoFactorSetup({
-        userId, email, locale: "uz", code,
+        userId, sessionId: session.id, email, locale: "uz", code,
         password: "the-gated-second-one", accountPasswordHash: null, ctx,
       }),
     ).resolves.toEqual({ ok: true });
@@ -679,5 +681,24 @@ describe("a code and a password never share a step", () => {
     await expect(
       checkTwoFactorCode({ userId, code: enableCode, purpose: "reset" }),
     ).rejects.toMatchObject({ code: "codeInvalid" });
+  });
+});
+
+describe("switching the second password on does not lock you out", () => {
+  it("stamps the session that switched it on", async () => {
+    const { email, userId } = await activate("tfa-stamp");
+    const [session] = await db.select().from(sessions).where(eq(sessions.userId, userId));
+
+    await startTwoFactorSetup({ userId, email, locale: "uz" });
+    await confirmTwoFactorSetup({
+      userId, sessionId: session.id, email, locale: "uz", code: lastCode(),
+      password: "the-stamping-second-one", accountPasswordHash: null, ctx,
+    });
+
+    /* Without the stamp the factor comes on while this very session has never
+       cleared it, so the next render throws the person who just switched it on
+       out to the challenge — and from their side the form did nothing at all. */
+    const [after] = await db.select().from(sessions).where(eq(sessions.id, session.id));
+    expect(after.secondFactorAt).not.toBeNull();
   });
 });

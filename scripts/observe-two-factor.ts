@@ -60,6 +60,21 @@ async function main() {
     where user_id = ${userId} and purpose = 'enable' order by created_at desc limit 1`) as { code_hash: string }[];
   if (!codeRow) failures.push("no enable code was issued");
 
+  /* ── 2b. A wrong code auto-checks, is refused, and shows no password field ──
+     Typing six digits submits on its own; nobody types a code and then hunts
+     for a button. And a password field must never appear before the code has
+     come back right, or a wrong code throws away a password just invented. */
+  await boxes.first().fill("000000");
+  await page.waitForTimeout(3000);
+  const passwordShown = await page.locator('input[type="password"]').count();
+  console.log(`  2b. wrong code → password field shown: ${passwordShown > 0 ? "YES" : "no"}`);
+  if (passwordShown > 0) {
+    failures.push("a password field appeared for a code that was never accepted");
+  }
+  const boxAfter = await boxes.first().inputValue();
+  console.log(`  2c. and the box now reads "${boxAfter}"`);
+  if (boxAfter !== "") failures.push("a refused code left its digits in the box");
+
   /* The code itself is only in the email; read it from the outbox table is not
      possible, so drive the rest through the service the way a user would by
      using the real code from the mail log is out of reach here. Instead the
