@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { Bell, BellOff, BellRing } from "lucide-react";
+import { Bell, BellOff, BellRing, Check, Loader2, Send } from "lucide-react";
 
+import { subscribeThisDevice } from "@/lib/push-client";
 import { cn } from "@/lib/utils";
 
 /**
@@ -42,14 +43,34 @@ export function NotificationSetting() {
   const initial = usePermission();
   const [asked, setAsked] = useState<Permission | null>(null);
   const permission = asked ?? initial;
+  const [busy, startBusy] = useTransition();
+  const [proof, setProof] = useState<"sent" | "nothing" | null>(null);
 
   async function ask() {
     if (permission !== "default") return;
     try {
-      setAsked((await Notification.requestPermission()) as Permission);
+      const granted = (await Notification.requestPermission()) as Permission;
+      setAsked(granted);
+      /* Permission on its own delivers nothing. The device still has to be
+         registered with the push service, and doing it here — rather than
+         waiting for some later visit — is the difference between "on" meaning
+         something and meaning nothing at all. */
+      if (granted === "granted") await subscribeThisDevice();
     } catch {
       setAsked("denied");
     }
+  }
+
+  /* Proof, not a promise. Permission granted and a notification actually
+     arriving are different facts, and only the second is worth anything. */
+  function sendOne() {
+    setProof(null);
+    startBusy(async () => {
+      await subscribeThisDevice();
+      const response = await fetch("/api/push/test", { method: "POST" }).catch(() => null);
+      const body = response ? await response.json().catch(() => null) : null;
+      setProof(body?.ok ? "sent" : "nothing");
+    });
   }
 
   const tone =
@@ -83,6 +104,29 @@ export function NotificationSetting() {
                 t("pushHint")}
         </span>
       </span>
+
+      {permission === "granted" && (
+        <button
+          type="button"
+          onClick={sendOne}
+          disabled={busy}
+          className="shrink-0 rounded-full border border-[var(--line-strong)] px-3.5 py-1.5 text-[0.8125rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)] disabled:opacity-60"
+        >
+          {busy ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : proof === "sent" ? (
+            <span className="inline-flex items-center gap-1.5 text-[var(--accent-strong)]">
+              <Check className="h-3.5 w-3.5" />
+              {t("pushSent")}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5">
+              <Send className="h-3.5 w-3.5" />
+              {proof === "nothing" ? t("pushNothing") : t("pushTest")}
+            </span>
+          )}
+        </button>
+      )}
 
       {permission === "default" && (
         <button

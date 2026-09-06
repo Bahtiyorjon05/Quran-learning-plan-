@@ -543,6 +543,16 @@
       "body": "Six ways to find out what you actually hold.",
       "fragile": "{count, plural, one {# page is slipping} other {# pages are slipping}}",
       "weakest": "{name}, page {page} — held at {strength}%"
+    },
+    "milestone": {
+      "title": "Juz {juz} complete",
+      "titleMany": "{count} juz complete",
+      "body": "That makes {total} juz. May Allah accept it and keep it firm.",
+      "whole": "The whole Qur'an. Alhamdulillah.",
+      "continue": "Continue",
+      "close": "Close",
+      "sealsTitle": "Juz",
+      "sealsBody": "{held} juz carried whole"
     }
   },
   "onboarding": {
@@ -1161,7 +1171,10 @@
       "checkingCode": "Checking…",
       "codeAccepted": "Code accepted",
       "enabledDone": "Second password is on. It will be asked for at every sign-in from now on."
-    }
+    },
+    "pushTest": "Send a test",
+    "pushSent": "Sent",
+    "pushNothing": "Nothing arrived"
   },
   "amend": {
     "title": "Amend your covenant",
@@ -1186,5 +1199,15 @@
     "errorSpent": "This covenant has already been shortened once.",
     "errorFailed": "That did not save. Try again.",
     "noPlan": "There is no covenant yet."
+  },
+  "push": {
+    "daily": {
+      "title": "Today's covenant",
+      "body": "Sabaq, sabqi and manzil are waiting. A few minutes is enough."
+    },
+    "juz": {
+      "title": "Juz {juz} complete",
+      "body": "Alhamdulillah. Tap to see the seal."
+    }
   }
 }

@@ -213,3 +213,57 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PUSH
+   The only part of this worker that runs when nobody has the app open. A push
+   arrives encrypted to a key this browser alone holds, is decrypted here, and
+   must result in a visible notification — every browser revokes permission
+   from a site that receives pushes and shows nothing.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+self.addEventListener("push", (event) => {
+  /* A push with no payload, or one that is not ours, still has to become
+     something rather than nothing — silence costs the permission. */
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = {};
+  }
+
+  const title = data.title || "Ahd";
+  const options = {
+    body: data.body || "",
+    icon: "/brand/mark-192.png",
+    badge: "/brand/mark-64.png",
+    /* Same tag replaces rather than stacks: three unread morning reminders is
+       three ways of saying the same thing. */
+    tag: data.tag || "ahd",
+    renotify: false,
+    data: { url: data.url || "/app" },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || "/app";
+
+  event.waitUntil(
+    (async () => {
+      const all = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      /* Focus a window that is already open rather than opening a second copy
+         of the app beside it. */
+      for (const client of all) {
+        if ("focus" in client) {
+          await client.focus();
+          if ("navigate" in client) await client.navigate(target).catch(() => {});
+          return;
+        }
+      }
+      await self.clients.openWindow(target);
+    })(),
+  );
+});

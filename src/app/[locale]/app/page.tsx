@@ -23,6 +23,9 @@ import { TimeZoneSync } from "@/components/app/timezone-sync";
 import { Corners } from "@/components/ui/ornament";
 import { buttonStyles } from "@/components/ui/button";
 import { Illuminated } from "@/components/ui/illumination";
+import { JuzSeals } from "@/components/app/juz-seals";
+import { JuzCelebration } from "@/components/app/juz-celebration";
+import { juzProgress } from "@/core/milestones/juz";
 import { Measure } from "@/components/ui/section";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -206,6 +209,7 @@ export default async function AppHomePage({
     : null;
 
   const sheet = await loadToday(user.id);
+  const juz = await juzProgress(user.id);
 
   /* The mosaic and the practice invitation both come from what is held, so
      the pages are fetched once and shaped twice. */
@@ -259,6 +263,13 @@ export default async function AppHomePage({
     <div className="relative min-h-dvh">
       <Atmosphere />
       <AppHeader />
+
+      {/* Anything finished but never shown. A juz completed on a phone at
+          midnight is still marked on the laptop in the morning. */}
+      {juz.unseen.length > 0 && (
+        <JuzCelebration juz={juz.unseen} total={juz.held.length} />
+      )}
+
       <TimeZoneSync current={profile?.timeZone ?? "Asia/Tashkent"} />
 
       <main className="relative z-10">
@@ -583,6 +594,24 @@ export default async function AppHomePage({
                 </details>
               </div>
             </div>
+          )}
+
+          {/* Thirty seals. The mosaic below answers "how much" tile by tile,
+              honestly, but six hundred tiles is a texture — nobody counts
+              their hifz in pages. They count in juz, and thirty is a number a
+              person can hold in their head and want the next one of. */}
+          {held > 0 && (
+            <section className="animate-rise panel mt-6 rounded-3xl p-6 [animation-delay:170ms] sm:p-7">
+              <div className="flex flex-wrap items-baseline justify-between gap-3">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-normal text-[var(--text-strong)]">
+                  {ta("milestone.sealsTitle")}
+                </h2>
+                <p className="text-[0.8125rem] text-[var(--text-muted)]">
+                  {ta("milestone.sealsBody", { held: juz.held.length })}
+                </p>
+              </div>
+              <JuzSeals held={juz.held} className="mt-6" />
+            </section>
           )}
 
           {/* The mushaf as a shape: 604 tiles is the one view that makes a

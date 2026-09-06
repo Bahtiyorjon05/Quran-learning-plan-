@@ -15,6 +15,7 @@ import type { MarkState } from "@/core/plan/mark-state";
    today's counted the unbroken run from its start — so the same reader saw 2%
    or 4% depending only on which of the two had written last. */
 import { recomputeProgress } from "@/app/[locale]/app/today";
+import { recordJuzMilestones } from "@/core/milestones/juz";
 
 const schema = z.object({
   page: z.coerce.number().int().min(1).max(TOTAL_PAGES),
@@ -90,6 +91,7 @@ export async function setPageMemorized(
       }
 
       await recomputeProgress(user.id);
+      await recordJuzMilestones(user.id);
       revalidatePath("/[locale]/app", "layout");
       return { status: "ok", memorized };
     }
@@ -124,6 +126,9 @@ export async function setPageMemorized(
     }
 
     await recomputeProgress(user.id);
+    /* A juz finished by this mark is written down now, and celebrated the
+       next time a dashboard is opened — on whichever device that is. */
+    await recordJuzMilestones(user.id);
   } catch (error) {
     console.error("[quran] could not mark page:", error);
     return { status: "error" };

@@ -277,6 +277,45 @@ export const twoFactorCodes = pgTable(
 );
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   PUSH SUBSCRIPTIONS
+   One row per device, not per person: somebody signed in on a phone and a
+   laptop wants the morning reminder on the phone, and both are equally valid
+   places to be told a juz is finished.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export const pushSubscriptions = pgTable(
+  "push_subscriptions",
+  {
+    id: id(),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+
+    /* The push service's own URL for this device. Unique, because a browser
+       that re-subscribes hands back the same endpoint and must update the row
+       rather than accumulate copies of it. */
+    endpoint: text().notNull(),
+    /* The two keys the payload is encrypted to. Useless without the endpoint,
+       and useless to us for anything but sending. */
+    p256dh: text().notNull(),
+    auth: text().notNull(),
+
+    userAgent: text(),
+
+    /* When the push service last refused this endpoint. A 404 or 410 means the
+       browser threw the subscription away — the row goes with it. */
+    failedAt: timestamp({ withTimezone: true }),
+
+    createdAt: now(),
+    lastSentAt: timestamp({ withTimezone: true }),
+  },
+  (t) => [
+    uniqueIndex("push_subscriptions_endpoint_key").on(t.endpoint),
+    index("push_subscriptions_user_id_idx").on(t.userId),
+  ],
+);
+
+/* ═══════════════════════════════════════════════════════════════════════════
    AUTH EVENTS — the audit trail the admin dashboard reads
    userId is nullable: a failed login against an unknown address still matters.
    ═══════════════════════════════════════════════════════════════════════════ */

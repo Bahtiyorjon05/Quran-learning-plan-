@@ -172,3 +172,33 @@ export const mistakes = pgTable(
 export type MemorizationUnit = typeof memorizationUnits.$inferSelect;
 export type ReviewLog = typeof reviewLogs.$inferSelect;
 export type Mistake = typeof mistakes.$inferSelect;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MILESTONES
+   A juz carried whole is the first unit of hifz that feels like an
+   achievement — thirty of them is the whole Qur'an, and everybody counts in
+   them. Recorded rather than derived so the date it happened survives a page
+   later being unmarked, and so the moment can be shown once and then rest.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export const juzMilestones = pgTable(
+  "juz_milestones",
+  {
+    id: id(),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    juz: smallint().notNull(),
+
+    achievedAt: now(),
+    /* When the reader was shown it. Null means the celebration is still owed —
+       which is how a juz finished on a phone at midnight is still marked on
+       the laptop in the morning. */
+    seenAt: timestamp({ withTimezone: true }),
+  },
+  (t) => [
+    uniqueIndex("juz_milestones_user_juz_key").on(t.userId, t.juz),
+    index("juz_milestones_user_idx").on(t.userId),
+    check("juz_milestones_range", sql`${t.juz} between 1 and 30`),
+  ],
+);

@@ -543,6 +543,16 @@
       "body": "Nimani haqiqatan yodlaganingizni bilishning olti yoʻli.",
       "fragile": "{count, plural, other {# sahifa qoʻldan ketyapti}}",
       "weakest": "{name}, {page}-sahifa — mustahkamligi {strength}%"
+    },
+    "milestone": {
+      "title": "{juz}-juz yodlandi",
+      "titleMany": "{count} ta juz yodlandi",
+      "body": "Endi sizda {total} ta juz bor. Alloh qabul qilsin va mustahkam saqlasin.",
+      "whole": "Butun Qurʼon. Ollohga hamd boʻlsin.",
+      "continue": "Davom etish",
+      "close": "Yopish",
+      "sealsTitle": "Juzlar",
+      "sealsBody": "{held} ta juz toʻliq yodlangan"
     }
   },
   "onboarding": {
@@ -1161,7 +1171,10 @@
       "checkingCode": "Tekshirilmoqda…",
       "codeAccepted": "Kod toʻgʻri",
       "enabledDone": "Ikkinchi parol yoqildi. Endi har kirishda soʻraladi."
-    }
+    },
+    "pushTest": "Sinov yuborish",
+    "pushSent": "Yuborildi",
+    "pushNothing": "Yetib bormadi"
   },
   "amend": {
     "title": "Ahdni oʻzgartirish",
@@ -1186,5 +1199,15 @@
     "errorSpent": "Ahd allaqachon bir marta qisqartirilgan.",
     "errorFailed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
     "noPlan": "Hali ahd tuzilmagan."
+  },
+  "push": {
+    "daily": {
+      "title": "Bugungi ahdingiz",
+      "body": "Sabaq, sabqiy va manzil kutyapti. Bir necha daqiqa yetadi."
+    },
+    "juz": {
+      "title": "{juz}-juz yodlandi",
+      "body": "Alhamdulillah. Muhrni koʻrish uchun bosing."
+    }
   }
 }

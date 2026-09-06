@@ -1067,3 +1067,118 @@ body:has([data-app-tabbar]) {
   background-color: color-mix(in oklab, var(--accent) 8%, transparent);
   box-shadow: inset 3px 0 0 0 var(--accent);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MILESTONES
+   A juz finished is the work of weeks. The animation is slow on purpose: it
+   arrives, it settles, and it waits to be dismissed rather than sliding away
+   on a timer. Everything below respects prefers-reduced-motion through the
+   blanket rule at the foot of this file.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* A lit seal in the grid of thirty. The glow sits behind the star so it reads
+   as burning through the page rather than as a brighter icon. */
+.ahd-seal-glow {
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in oklab, var(--gold) 34%, transparent),
+    transparent 68%
+  );
+  filter: blur(6px);
+  animation: ahd-seal-breathe 5.5s ease-in-out infinite;
+}
+
+@keyframes ahd-seal-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+/* The panel itself: up from below, settling rather than bouncing. */
+.ahd-celebrate {
+  animation: ahd-celebrate-in 1s var(--ease-settle) both;
+}
+
+@keyframes ahd-celebrate-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Each line arrives after the one above it. */
+.ahd-celebrate-line {
+  animation: ahd-rise 0.8s var(--ease-settle) both;
+}
+
+/* The seal lands last and largest, turning a little as it comes. */
+.ahd-seal-rise {
+  animation: ahd-seal-land 1.3s var(--ease-settle) both;
+}
+
+@keyframes ahd-seal-land {
+  from {
+    opacity: 0;
+    transform: scale(0.55) rotate(-35deg);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ahd-seal-halo {
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--gold) 40%, transparent),
+    transparent 70%
+  );
+  filter: blur(18px);
+  animation: ahd-seal-breathe 4s ease-in-out infinite;
+}
+
+/* Light off the seal, turning slowly behind the whole panel. Masked to fade
+   out well before the edge so it never reads as a spinning graphic. */
+.ahd-rays {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in oklab, var(--gold) 13%, transparent) 12deg,
+    transparent 26deg,
+    transparent 45deg,
+    color-mix(in oklab, var(--gold) 10%, transparent) 57deg,
+    transparent 72deg,
+    transparent 90deg,
+    color-mix(in oklab, var(--gold) 13%, transparent) 102deg,
+    transparent 116deg,
+    transparent 180deg,
+    color-mix(in oklab, var(--gold) 11%, transparent) 192deg,
+    transparent 206deg,
+    transparent 270deg,
+    color-mix(in oklab, var(--gold) 12%, transparent) 282deg,
+    transparent 296deg,
+    transparent 360deg
+  );
+  mask-image: radial-gradient(circle at 50% 32%, #000 0%, transparent 62%);
+  -webkit-mask-image: radial-gradient(circle at 50% 32%, #000 0%, transparent 62%);
+  animation: ahd-rays-turn 44s linear infinite;
+}
+
+@keyframes ahd-rays-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
