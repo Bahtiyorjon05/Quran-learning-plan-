@@ -24,7 +24,8 @@
     "dashboard": "Boshqaruv paneli",
     "account": "Hisob",
     "home": "Bosh sahifa",
-    "settings": "Sozlamalar"
+    "settings": "Sozlamalar",
+    "dashboardShort": "Panel"
   },
   "landing": {
     "hero": {
@@ -518,7 +519,8 @@
       "openPage": "{page}-sahifani ochish",
       "browse": "Koʻrib chiqish",
       "heldSummary": "{held} sahifa yodlangan · oʻrtacha mustahkamlik {average}%",
-      "openPageNamed": "{page}-sahifa · {names}"
+      "openPageNamed": "{page}-sahifa · {names}",
+      "short": "Musʼhaf"
     },
     "today": {
       "heading": "Bugun",

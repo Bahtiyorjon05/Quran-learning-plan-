@@ -24,7 +24,8 @@
     "dashboard": "Панель",
     "account": "Аккаунт",
     "home": "Главная",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "dashboardShort": "Панель"
   },
   "landing": {
     "hero": {
@@ -518,7 +519,8 @@
       "openPage": "Открыть страницу {page}",
       "browse": "Обзор",
       "heldSummary": "{held} страниц выучено · средняя прочность {average}%",
-      "openPageNamed": "Страница {page} · {names}"
+      "openPageNamed": "Страница {page} · {names}",
+      "short": "Мусхаф"
     },
     "today": {
       "heading": "Сегодня",

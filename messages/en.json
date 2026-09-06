@@ -24,7 +24,8 @@
     "dashboard": "Dashboard",
     "account": "Account",
     "home": "Home",
-    "settings": "Settings"
+    "settings": "Settings",
+    "dashboardShort": "Home"
   },
   "landing": {
     "hero": {
@@ -518,7 +519,8 @@
       "openPage": "Open page {page}",
       "browse": "Browse",
       "heldSummary": "{held} pages held · {average}% average strength",
-      "openPageNamed": "Page {page} · {names}"
+      "openPageNamed": "Page {page} · {names}",
+      "short": "Mushaf"
     },
     "today": {
       "heading": "Today",

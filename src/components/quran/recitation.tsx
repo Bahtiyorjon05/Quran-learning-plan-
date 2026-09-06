@@ -552,7 +552,7 @@ export function Recitation({
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-2 text-[0.8125rem] font-medium text-[var(--text-strong)]">
             <Volume2 className="h-3.5 w-3.5 shrink-0 text-[var(--text-faint)]" />
-            {reciter.name[locale]}
+            <span className="truncate">{reciter.name[locale]}</span>
           </p>
           <p className="mt-0.5 truncate text-[0.75rem] text-[var(--text-muted)]">
             {!started
@@ -569,9 +569,14 @@ export function Recitation({
 
         <div className="flex shrink-0 items-center gap-1.5">
           {/* Both controls only mean anything for a reciter that has one file
-              per verse, so they are not shown for one that does not. */}
+              per verse, so they are not shown for one that does not.
+
+              And on a phone they are not shown out here at all: play, a name
+              and four round buttons in 390px broke the reciter's name over two
+              lines and truncated the status mid-word. They live in the options
+              panel below, which is one tap away and has the room. */}
           {perAyah && (
-            <>
+            <span className="hidden items-center gap-1.5 sm:flex">
               <button
                 type="button"
                 onClick={() => writeLocal(FOLLOW_KEY, String(!follow))}
@@ -611,7 +616,7 @@ export function Recitation({
               >
                 <SkipForward className="h-4 w-4 rtl:rotate-180" />
               </button>
-            </>
+            </span>
           )}
 
           <button

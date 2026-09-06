@@ -340,11 +340,11 @@ export default async function AppHomePage({
                 </Link>
               </div>
             ) : (
-              <div className="relative p-6 sm:p-10">
+              <div className="relative p-5 sm:p-10">
                 {/* The one panel on this screen that is not a readout. It is
                     the promise itself, so it is framed like a page. */}
                 <Illuminated inset="0.75rem" />
-                <div className="relative flex flex-col items-center gap-8 sm:flex-row sm:gap-10">
+                <div className="relative flex flex-col items-center gap-6 sm:flex-row sm:gap-10">
                   <CovenantArc
                     pace={pace}
                     fill={memorisedShare}

@@ -152,6 +152,10 @@ async function main() {
   console.log(`  seek bar while playing: ${seek === 1 ? "✓" : "✗"}`);
   if (seek !== 1) failures.push("no seek bar appeared once something was playing");
 
+  /* Speed lives with the player's other settings now: on a phone the
+     transport row could not hold play, a name and six controls at once. */
+  await page.getByRole("button", { name: /Sozlamalar|Options|Настройки/ }).first().click();
+  await page.waitForTimeout(400);
   await page.getByRole("button", { name: "0.5×" }).click();
   await page.waitForTimeout(400);
   const rate = await page.evaluate(() => document.querySelector("audio")?.playbackRate);
@@ -180,6 +184,13 @@ async function main() {
 
   /* ── The surah-only reciter is honest about what it cannot do ── */
   console.log("");
+  /* The reciters live with the speed, behind the same disclosure. */
+  const optionsToggle = page.getByRole("button", { name: /Sozlamalar|Options|Настройки/ }).first();
+  if ((await optionsToggle.getAttribute("aria-expanded")) !== "true") {
+    await optionsToggle.click();
+    await page.waitForTimeout(400);
+  }
+
   const badr = page.getByRole("button", { name: /Badr|Бадр/ }).first();
   if ((await badr.count()) === 0) {
     failures.push("Badr al-Turki is not offered");

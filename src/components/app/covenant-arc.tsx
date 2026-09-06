@@ -76,11 +76,13 @@ export function CovenantArc({
           reason the ring reads as lit rather than printed. */}
       <div
         aria-hidden
-        className="ahd-arc-halo pointer-events-none absolute h-32 w-32 rounded-full blur-2xl sm:h-36 sm:w-36"
+        className="ahd-arc-halo pointer-events-none absolute h-28 w-28 rounded-full blur-2xl sm:h-36 sm:w-36"
         style={{ background: `radial-gradient(circle, ${color}, transparent 68%)`, opacity: 0.4 }}
       />
 
-      <svg viewBox="0 0 128 128" className="relative h-36 w-36 -rotate-[225deg] sm:h-40 sm:w-40">
+      <svg viewBox="0 0 128 128" /* Smaller on a phone: at 9rem the ring alone took a third of the
+           screen before the covenant it describes had said anything. */
+        className="relative h-32 w-32 -rotate-[225deg] sm:h-40 sm:w-40">
         <defs>
           <linearGradient id="ahd-arc-fill" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity="0.55" />

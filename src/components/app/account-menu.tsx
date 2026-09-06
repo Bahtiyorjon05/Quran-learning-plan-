@@ -108,9 +108,14 @@ export function AccountMenu({
           role="menu"
           aria-label={t("account")}
           className={cn(
-            "animate-rise absolute end-0 top-11 z-50 w-64 overflow-hidden rounded-2xl border",
+            "animate-rise z-50 overflow-hidden rounded-2xl border",
             "border-[var(--line-strong)] bg-[var(--surface-raised)]",
             "shadow-[0_20px_50px_-20px_rgba(0,0,0,0.55)]",
+            /* Same reasoning as the bell: hung off the trigger on a laptop,
+               spanning the viewport on a phone rather than reaching past its
+               edge. */
+            "max-sm:fixed max-sm:inset-x-3 max-sm:top-[4.25rem]",
+            "sm:absolute sm:end-0 sm:top-11 sm:w-64",
           )}
         >
           <div className="border-b border-[var(--line-subtle)] px-4 py-3">

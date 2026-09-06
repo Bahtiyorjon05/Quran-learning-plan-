@@ -119,7 +119,17 @@ export function NotificationBell() {
         <div
           role="dialog"
           aria-label={t("notifications")}
-          className="animate-rise absolute end-0 top-11 z-50 w-72 rounded-2xl border border-[var(--line-strong)] bg-[var(--surface-raised)] p-4 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.55)]"
+          className={cn(
+            "animate-rise z-50 rounded-2xl border p-4",
+            "border-[var(--line-strong)] bg-[var(--surface-raised)]",
+            "shadow-[0_20px_50px_-20px_rgba(0,0,0,0.55)]",
+            /* Anchored to the button on a laptop. On a phone the bell sits
+               near the right edge with the account menu beside it, so a panel
+               hung off it reached past the left of the screen — it spans the
+               viewport instead, inset from both edges. */
+            "max-sm:fixed max-sm:inset-x-3 max-sm:top-[4.25rem]",
+            "sm:absolute sm:end-0 sm:top-11 sm:w-72",
+          )}
         >
           <p className="text-[0.875rem] font-medium text-[var(--text-strong)]">
             {on ? t("pushOn") : t("pushOff")}

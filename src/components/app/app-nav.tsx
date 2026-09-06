@@ -20,10 +20,13 @@ import { cn } from "@/lib/utils";
  */
 
 const DESTINATIONS = [
-  { href: "/app", icon: LayoutDashboard, key: "nav.dashboard" },
-  { href: "/app/practice", icon: Sparkles, key: "practice.title" },
-  { href: "/app/mistakes", icon: Target, key: "mistakes.title" },
-  { href: "/app/quran", icon: BookOpen, key: "app.mushaf.title" },
+  /* Two names each. The header has room for "Boshqaruv paneli"; a quarter of a
+     390px tab bar does not, and the long ones wrapped to two lines and pushed
+     the bar into the page. */
+  { href: "/app", icon: LayoutDashboard, key: "nav.dashboard", short: "nav.dashboardShort" },
+  { href: "/app/practice", icon: Sparkles, key: "practice.title", short: "practice.title" },
+  { href: "/app/mistakes", icon: Target, key: "mistakes.title", short: "mistakes.title" },
+  { href: "/app/quran", icon: BookOpen, key: "app.mushaf.title", short: "app.mushaf.short" },
 ] as const;
 
 /** Whether a destination owns the current page. */
@@ -89,14 +92,14 @@ export function AppTabBar() {
       )}
     >
       <div className="mx-auto flex max-w-md items-stretch">
-        {DESTINATIONS.map(({ href, icon: Icon, key }) => {
+        {DESTINATIONS.map(({ href, icon: Icon, short }) => {
           const current = isCurrent(pathname, href);
           return (
             <Link
               key={href}
               href={href}
               aria-current={current ? "page" : undefined}
-              className="group relative flex flex-1 flex-col items-center gap-1 px-2 pt-3 pb-2.5"
+              className="group relative flex min-w-0 flex-1 flex-col items-center gap-1 px-1.5 pt-3 pb-2.5"
             >
               {/* A short bar above the icon rather than a filled pill: it
                     reads at a glance and does not crowd a 48px-wide target. */}
@@ -116,13 +119,13 @@ export function AppTabBar() {
               />
               <span
                 className={cn(
-                  "text-[0.6875rem] leading-none transition-colors duration-300",
+                  "max-w-full truncate text-[0.6875rem] leading-none transition-colors duration-300",
                   current
                     ? "font-medium text-[var(--accent-strong)]"
                     : "text-[var(--text-faint)]",
                 )}
               >
-                {t(key)}
+                {t(short)}
               </span>
             </Link>
           );
