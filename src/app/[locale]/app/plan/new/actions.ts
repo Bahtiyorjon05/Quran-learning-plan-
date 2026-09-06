@@ -124,5 +124,7 @@ export async function createCovenant(
     return fail("unknown");
   }
 
-  return redirectTo("/app", locale);
+  /* Straight to the ahd itself. Somebody who has just written a promise
+     should read it back before they are shown a dashboard about it. */
+  return redirectTo("/app/plan", locale);
 }

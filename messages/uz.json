@@ -714,7 +714,42 @@
       "noStudyDays": "Haftaning kamida bitta kunini tanlang.",
       "tooFast": "Bu kunlik ulush hech kim uddalay olmaydigan darajada.",
       "unknown": "Nimadir notoʻgʻri ketdi. Qayta urinib koʻring."
-    }
+    },
+    "covenant": {
+      "back": "Boshqaruv paneliga",
+      "eyebrow": "Ahd",
+      "title": "Sizning ahdingiz",
+      "sentence": "Siz <scope></scope>ni — <pages></pages> sahifani — yod olishga ahd qildingiz. Har mashgʻulot kunida <daily></daily> qator, <end></end> sanasigacha.",
+      "niyyah": "Niyatingiz",
+      "started": "Boshlangan",
+      "deadline": "Tugatish sanasi",
+      "deadlineNow": "Tugatish sanasi",
+      "deadlineWas": "Avvalgi muddat",
+      "shortenedNote": "Muddat bir marta yaqinlashtirilgan.",
+      "days": "Mashgʻulot kunlari",
+      "everyDay": "Har kuni",
+      "rate": "Kunlik ulush",
+      "rateValue": "{lines} qator",
+      "rule": "Ahdning bitta sharti bor: muddat faqat yaqinlashadi, hech qachon uzaymaydi. Bu shartni siz tanladingiz.",
+      "toToday": "Bugungi vazifa",
+      "amend": "Muddatni yaqinlashtirish",
+      "keep": "Bu sahifa har doim shu yerda — istagan payt qaytib oʻqiysiz."
+    },
+    "scopes": {
+      "full": "butun Qurʼon",
+      "juz_range": "{from}–{to}-sahifalar",
+      "surah_range": "{from}–{to}-sahifalar",
+      "custom": "{from}–{to}-sahifalar"
+    },
+    "days": [
+      "Du",
+      "Se",
+      "Chor",
+      "Pay",
+      "Ju",
+      "Sha",
+      "Yak"
+    ]
   },
   "quran": {
     "index": {

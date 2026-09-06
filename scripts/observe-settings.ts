@@ -79,18 +79,36 @@ async function main() {
   await page.goto(`${BASE}/en/app/settings`, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("#displayName", { timeout: 20_000 });
 
+  /* There is no Save button any more: a decision writes the moment it is made,
+     and a typed field writes once the typing stops or the field is left. The
+     blur after each fill is what a person does anyway by moving on. */
   await page.fill("#displayName", "After");
+  await page.locator("#displayName").blur();
+  await page.waitForTimeout(1500);
   await page.selectOption("#reciter", "husary");
+  await page.waitForTimeout(1500);
   await page.fill("#studyTime", "21:15");
-  /* By name, not by type: the header carries a submit button of its own
-     (logging out), and "the only submit on the page" was never true. */
-  await page.getByRole("button", { name: /^Save$/ }).click();
+  await page.locator("#studyTime").blur();
   await page.waitForTimeout(2500);
 
-  const [saved] = (await sql`
-    select u.display_name, p.preferred_reciter, p.study_time::text as study_time
-    from users u join profiles p on p.user_id = u.id where u.id = ${user.id}
-  `) as Record<string, string>[];
+  /* Writes are serialised now — one in flight at a time, the next queued
+     behind it — so three quick changes land as three requests in a row rather
+     than at once. Waited for rather than assumed after a fixed pause. */
+  let saved: Record<string, string> = {};
+  for (let i = 0; i < 15; i++) {
+    [saved] = (await sql`
+      select u.display_name, p.preferred_reciter, p.study_time::text as study_time
+      from users u join profiles p on p.user_id = u.id where u.id = ${user.id}
+    `) as Record<string, string>[];
+    if (
+      saved.display_name === "After" &&
+      saved.preferred_reciter === "husary" &&
+      String(saved.study_time).startsWith("21:15")
+    ) {
+      break;
+    }
+    await page.waitForTimeout(600);
+  }
 
   console.log(`  1. settings saved  → ${JSON.stringify(saved)}`);
   if (saved.display_name !== "After") failures.push("the name did not save");

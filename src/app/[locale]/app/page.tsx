@@ -351,9 +351,12 @@ export default async function AppHomePage({
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-3">
-                      <h2 className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--text-strong)]">
+                      <Link
+                        href="/app/plan"
+                        className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--text-strong)] transition-colors hover:text-[var(--accent-strong)]"
+                      >
                         {ta("covenant.title")}
-                      </h2>
+                      </Link>
                       <span
                         className={cn(
                           "shrink-0 rounded-full border px-2.5 py-1 text-[0.625rem] font-semibold tracking-[0.12em] uppercase",

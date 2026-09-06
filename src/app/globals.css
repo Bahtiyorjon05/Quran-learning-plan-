@@ -114,6 +114,8 @@
      and the two are indistinguishable behind a blur. */
   --panel-from: var(--color-ink-800);
   --panel-to: var(--color-ink-900);
+  --panel-highlight: color-mix(in oklab, var(--text-strong) 7%, transparent);
+  --panel-shadow: 0 22px 48px -32px rgba(0, 0, 0, 0.7);
 
   /* Mushaf-mosaic strength ramp. Reversed between themes so that "stronger"
      always means "more present": brighter on ink, deeper on parchment. */
@@ -127,13 +129,15 @@
 :root[data-theme="light"] {
   color-scheme: light;
 
-  --surface-base: var(--color-parchment-50);
+  /* The ground carries the warmth and the panels stay white, so a card is
+     something laid *on* the page rather than a hairline drawn on it. */
+  --surface-base: var(--color-parchment-100);
   --surface-raised: #ffffff;
-  --surface-overlay: var(--color-parchment-100);
-  --surface-inset: var(--color-parchment-200);
+  --surface-overlay: var(--color-parchment-200);
+  --surface-inset: color-mix(in oklab, var(--color-parchment-200) 70%, #ffffff);
 
-  --line-subtle: color-mix(in oklab, var(--color-ink-900) 10%, transparent);
-  --line-strong: color-mix(in oklab, var(--color-ink-900) 20%, transparent);
+  --line-subtle: color-mix(in oklab, var(--color-ink-900) 9%, transparent);
+  --line-strong: color-mix(in oklab, var(--color-ink-900) 16%, transparent);
 
   --text-strong: var(--color-ink-900);
   --text-default: var(--color-ink-600);
@@ -153,7 +157,14 @@
   --texture: var(--color-ink-900);
 
   --panel-from: #ffffff;
-  --panel-to: color-mix(in oklab, var(--color-parchment-50) 92%, #ffffff);
+  --panel-to: color-mix(in oklab, var(--color-parchment-50) 55%, #ffffff);
+  /* White along the top edge, and a real shadow beneath: on paper, depth is
+     cast rather than lit. Two layers — a tight contact shadow so the edge is
+     crisp, and a wide soft one so the card floats. */
+  --panel-highlight: rgba(255, 255, 255, 0.9);
+  --panel-shadow:
+    0 1px 2px rgba(10, 15, 13, 0.05),
+    0 14px 34px -20px rgba(10, 15, 13, 0.28);
 
   --band-none: color-mix(in oklab, var(--text-strong) 8%, transparent);
   --band-learning: var(--color-emerald-200);
@@ -164,9 +175,13 @@
 :root[data-theme="sepia"] {
   color-scheme: light;
 
-  --surface-base: #f4ead6;
+  --surface-base: #f0e3ca;
   --panel-from: #fdf7ea;
-  --panel-to: var(--color-parchment-100);
+  --panel-to: color-mix(in oklab, var(--color-parchment-100) 60%, #fdf7ea);
+  --panel-highlight: rgba(255, 255, 255, 0.75);
+  --panel-shadow:
+    0 1px 2px rgba(60, 46, 20, 0.06),
+    0 14px 34px -20px rgba(60, 46, 20, 0.3);
 
   --surface-raised: #fbf4e5;
   --surface-overlay: #efe2c8;
@@ -1001,9 +1016,14 @@ body:has([data-app-tabbar]) {
   position: relative;
   border: 1px solid var(--line-strong);
   background: linear-gradient(158deg, var(--panel-from), var(--panel-to));
+  /* Both halves are tokens because the two themes want opposite things. On
+     night, a panel is lighter than the ground and catches a highlight along
+     its top edge. On parchment it is *whiter* than the ground and has to cast
+     a shadow instead — the same rule applied to both made light mode a set of
+     white cards on a white page, separated by nothing but a hairline. */
   box-shadow:
-    inset 0 1px 0 0 color-mix(in oklab, var(--text-strong) 7%, transparent),
-    0 22px 48px -32px rgba(0, 0, 0, 0.7);
+    inset 0 1px 0 0 var(--panel-highlight),
+    var(--panel-shadow);
   backdrop-filter: blur(8px);
 }
 

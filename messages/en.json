@@ -714,7 +714,42 @@
       "noStudyDays": "Choose at least one day of the week.",
       "tooFast": "That daily portion is beyond what anyone sustains.",
       "unknown": "Something went wrong. Please try again."
-    }
+    },
+    "covenant": {
+      "back": "Back to the dashboard",
+      "eyebrow": "The covenant",
+      "title": "Your ahd",
+      "sentence": "You undertook to memorise <scope></scope> — <pages></pages> pages — at <daily></daily> lines on every study day, by <end></end>.",
+      "niyyah": "Your intention",
+      "started": "Begun",
+      "deadline": "Deadline",
+      "deadlineNow": "Deadline",
+      "deadlineWas": "Originally",
+      "shortenedNote": "Brought closer once.",
+      "days": "Study days",
+      "everyDay": "Every day",
+      "rate": "Daily portion",
+      "rateValue": "{lines} lines",
+      "rule": "A covenant has one condition: the deadline may only come closer, never move out. You chose that condition yourself.",
+      "toToday": "Today's work",
+      "amend": "Bring the deadline closer",
+      "keep": "This page stays here — come back and read it whenever you like."
+    },
+    "scopes": {
+      "full": "the whole Qur'an",
+      "juz_range": "pages {from}–{to}",
+      "surah_range": "pages {from}–{to}",
+      "custom": "pages {from}–{to}"
+    },
+    "days": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ]
   },
   "quran": {
     "index": {

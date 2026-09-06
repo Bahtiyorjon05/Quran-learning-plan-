@@ -94,7 +94,7 @@ export default async function SettingsPage() {
                 field: its own screen, with its own rules about what may change. */}
               {plan && (
                 <Link
-                  href="/app/plan/amend"
+                  href="/app/plan"
                   className="group panel panel-interactive mt-5 flex items-center gap-4 rounded-3xl p-5 sm:p-6"
                 >
                   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-gold-500/30 bg-gold-500/10">
