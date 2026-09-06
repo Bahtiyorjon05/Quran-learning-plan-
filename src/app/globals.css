@@ -102,6 +102,11 @@
      parchment the same value is unreadable, so light themes take a deep gold. */
   --gold: var(--color-gold-300);
   --gold-strong: var(--color-gold-200);
+  /* The same gold as bare channels. The celebration paints with these rather
+     than with `color-mix()`, which Safari did not support until 16.2 — on a
+     phone a year or two old the whole shower came out invisible while every
+     desktop browser showed it perfectly. */
+  --gold-rgb: 233 201 106;
 
   /* Warning text. Warm clay, never an alarming red. */
   --danger: var(--color-clay-300);
@@ -153,6 +158,7 @@
 
   --gold: var(--color-gold-700);
   --gold-strong: var(--color-gold-800);
+  --gold-rgb: 133 99 26;
   --danger: var(--color-clay-600);
   --texture: var(--color-ink-900);
 
@@ -204,6 +210,7 @@
 
   --gold: var(--color-gold-700);
   --gold-strong: var(--color-gold-800);
+  --gold-rgb: 133 99 26;
   --danger: var(--color-clay-600);
   --texture: #4a3a1e;
 
@@ -1501,20 +1508,20 @@ body:has([data-app-tabbar]) {
   border-radius: 9999px;
   background: radial-gradient(
     circle,
-    color-mix(in oklab, white 78%, var(--gold)) 0%,
-    var(--gold) 30%,
-    color-mix(in oklab, var(--gold) 55%, transparent) 55%,
-    transparent 76%
+    #fff8e2 0%,
+    rgb(var(--gold-rgb)) 32%,
+    rgb(var(--gold-rgb) / 0.55) 56%,
+    rgb(var(--gold-rgb) / 0) 76%
   );
   box-shadow:
-    0 0 10px 2px color-mix(in oklab, var(--gold) 70%, transparent),
-    0 0 26px 6px color-mix(in oklab, var(--gold) 34%, transparent);
+    0 0 10px 2px rgb(var(--gold-rgb) / 0.7),
+    0 0 26px 6px rgb(var(--gold-rgb) / 0.34);
 }
 
 .ahd-fall .ahd-star {
   filter:
-    drop-shadow(0 0 5px color-mix(in oklab, var(--gold) 85%, transparent))
-    drop-shadow(0 0 16px color-mix(in oklab, var(--gold) 45%, transparent));
+    drop-shadow(0 0 5px rgb(var(--gold-rgb) / 0.85))
+    drop-shadow(0 0 16px rgb(var(--gold-rgb) / 0.45));
 }
 
 /* The bloom: one soft ring of light thrown off the moment it happens, sized to
@@ -1535,9 +1542,9 @@ body:has([data-app-tabbar]) {
   pointer-events: none;
   background: radial-gradient(
     circle,
-    color-mix(in oklab, var(--gold) 42%, transparent) 0%,
-    color-mix(in oklab, var(--gold) 14%, transparent) 38%,
-    transparent 66%
+    rgb(var(--gold-rgb) / 0.42) 0%,
+    rgb(var(--gold-rgb) / 0.14) 38%,
+    rgb(var(--gold-rgb) / 0) 66%
   );
   animation: ahd-bloom 1.5s cubic-bezier(0.16, 0.8, 0.3, 1) both;
 }

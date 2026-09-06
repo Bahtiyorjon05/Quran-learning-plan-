@@ -86,9 +86,38 @@ export function ServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
     /* After load: registering during it competes with the page's own requests
        for a connection, on the one visit where speed matters most. */
-    const register = () => void navigator.serviceWorker.register("/sw.js").catch(() => {});
+    /* Whether this page is already being served by a worker decides what a
+       change of worker means below. Read now, before registering. */
+    const wasControlled = Boolean(navigator.serviceWorker.controller);
+
+    const register = () => {
+      void navigator.serviceWorker
+        /* `updateViaCache: "none"` because the browser is otherwise entitled to
+           serve sw.js itself from the HTTP cache for a day. An installed app
+           could therefore sit on a shipped-days-ago build with no way to
+           notice, which is exactly what it looked like from the outside: the
+           site was fixed and the phone was not. */
+        .register("/sw.js", { updateViaCache: "none" })
+        .then((reg) => reg.update())
+        .catch(() => {});
+    };
+
+    /* A new worker taking over means the build changed underneath a running
+       app. Reload once so the page matches the code now serving it — but only
+       if something was serving it before, or the very first install would
+       bounce the reader on their first visit. */
+    let reloading = false;
+    const onChange = () => {
+      if (!wasControlled || reloading) return;
+      reloading = true;
+      window.location.reload();
+    };
+    navigator.serviceWorker.addEventListener("controllerchange", onChange);
+
     if (document.readyState === "complete") register();
     else window.addEventListener("load", register, { once: true });
+
+    return () => navigator.serviceWorker.removeEventListener("controllerchange", onChange);
   }, []);
 
   return null;

@@ -22,7 +22,7 @@
  * A stale answer to "did my page save" is worse than no answer.
  */
 
-const VERSION = "ahd-v1";
+const VERSION = "ahd-v2";
 const PAGES = `${VERSION}-pages`;
 const STATIC = `${VERSION}-static`;
 const AUDIO = `${VERSION}-audio`;
