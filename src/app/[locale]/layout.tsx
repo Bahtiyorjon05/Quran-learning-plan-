@@ -164,6 +164,24 @@ export default async function LocaleLayout({
           <ServiceWorker />
           {children}
         </NextIntlClientProvider>
+
+        {/* Counting how many people open which page, and nothing else.
+         *
+         * Loaded from the deployment's own path rather than through
+         * `@vercel/analytics`: that package declares optional peers for every
+         * framework it supports, and npm refused to resolve them against a
+         * Svelte/vite chain that has nothing to do with this app. The script
+         * is the same one the package loads.
+         *
+         * Production only. In development the path does not exist, and a 404
+         * in the console on every page load teaches you to ignore the console.
+         *
+         * It sets no cookies and follows nobody between sites — but it is
+         * still a third party seeing which pages are opened, so the privacy
+         * page says so in as many words. */}
+        {process.env.NODE_ENV === "production" && (
+          <script defer src="/_vercel/insights/script.js" />
+        )}
       </body>
     </html>
   );

@@ -981,7 +981,7 @@
         {
           "heading": "Nima saqlanmaydi",
           "body": [
-            "Reklama identifikatorlari yo‘q. Uchinchi tomon kuzatuv skriptlari yo‘q. Hech narsa sotilmaydi va hech kimga berilmaydi — chunki sotadigan odam ham yo‘q, bunday reja ham yo‘q.",
+            "Reklama identifikatorlari yo‘q, sizni kuzatib yuradigan cookie’lar yo‘q, boshqa saytda sizni tanib oladigan hech narsa yo‘q. Qaysi sahifa ochilgani, taxminan qaysi davlatdan va qanday qurilmadan ekani Vercel Web Analytics orqali sanaladi — cookie’siz va sizning ismingizsiz. Hech narsa sotilmaydi va hech kimga berilmaydi: sotadigan odam ham yo‘q, bunday reja ham yo‘q.",
             "Hisobsiz Qur’on o‘qish bizning tomonimizda umuman hech narsa saqlamaydi. Belgilagan sahifalaringiz o‘z brauzeringizda qoladi."
           ]
         },
