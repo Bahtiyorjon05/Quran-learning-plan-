@@ -1633,3 +1633,150 @@ body:has([data-app-tabbar]) {
     animation-duration: 0.9s;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   The celebration, in layers.
+
+   One falling mote is a nice touch. What makes a moment is several things
+   happening at once on different clocks: light arriving, gold falling, petals
+   turning slower than the gold because they are broader, rings going out from
+   where it happened, and shafts of light wheeling behind all of it. The tier
+   decides how many of those layers are lit and how much of each — a finished
+   page gets the first three, the whole Qur'an gets everything for eight
+   seconds.
+
+   Every layer animates transform, opacity and filter only.
+--------------------------------------------------------------------------- */
+
+/* Petals fall broadside-on, so they sway as they go and turn over. Two
+   animations on two elements: the outer falls, the inner sways. One element
+   cannot do both without the keyframes fighting over `transform`. */
+@keyframes ahd-sway {
+  from {
+    transform: translateX(-14px) rotate(-18deg);
+  }
+  to {
+    transform: translateX(14px) rotate(16deg);
+  }
+}
+
+.ahd-fall > i > span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  animation: ahd-sway var(--sway, 2.6s) ease-in-out infinite alternate;
+}
+
+.ahd-fall .ahd-petal {
+  color: var(--gold);
+  filter:
+    drop-shadow(0 0 6px rgb(var(--gold-rgb) / 0.7))
+    drop-shadow(0 0 18px rgb(var(--gold-rgb) / 0.35));
+}
+
+/* Rings go out from where it happened, like something dropped in water. */
+@keyframes ahd-ring {
+  from {
+    opacity: 0.7;
+    transform: scale(0.12);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+.ahd-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 90vmax;
+  width: 90vmax;
+  margin: -45vmax 0 0 -45vmax;
+  border: 2px solid rgb(var(--gold-rgb) / 0.45);
+  border-radius: 9999px;
+  box-shadow: 0 0 40px rgb(var(--gold-rgb) / 0.3);
+  animation: ahd-ring var(--d, 1.8s) cubic-bezier(0.2, 0.7, 0.3, 1) var(--delay, 0s) both;
+}
+
+/* Shafts of light, wheeling slowly behind everything else. */
+@keyframes ahd-shaft {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--a)) scaleY(0.55);
+  }
+  22% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--a) + 16deg)) scaleY(1.2);
+  }
+}
+
+.ahd-shaft {
+  position: absolute;
+  top: -25%;
+  left: 50%;
+  height: 130vmax;
+  width: 16vmax;
+  margin-left: -8vmax;
+  transform-origin: 50% 0;
+  background: linear-gradient(to bottom, rgb(var(--gold-rgb) / 0.4), transparent 68%);
+  filter: blur(18px);
+  animation: ahd-shaft var(--d, 3.6s) ease-out var(--delay, 0s) both;
+}
+
+/* Twinkles: points that catch and go out, scattered over the whole field. */
+@keyframes ahd-twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+  45%,
+  60% {
+    opacity: 1;
+    transform: scale(1) rotate(35deg);
+  }
+}
+
+.ahd-twinkle {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  height: var(--w);
+  width: var(--w);
+  color: var(--gold);
+  filter: drop-shadow(0 0 8px rgb(var(--gold-rgb) / 0.8));
+  animation: ahd-twinkle var(--d, 1.6s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ahd-fall > i > span,
+  .ahd-shaft,
+  .ahd-ring {
+    animation: none;
+  }
+
+  .ahd-twinkle {
+    animation: ahd-twinkle 2.4s ease-in-out var(--delay, 0s) both;
+  }
+}
+
+/* The foreground: a few large, out-of-focus petals passing in front of
+   everything, including the panel. Depth is what separates weather from a
+   sticker — without it the celebration is plainly *behind glass*, and the
+   middle of the screen, which is where the words are, has nothing happening in
+   it at all. Blurred because they are nearer than the eye's focus. */
+.ahd-fall-front {
+  z-index: 101;
+}
+
+.ahd-fall-front > i {
+  filter: blur(3px);
+}
+
+.ahd-fall-front .ahd-petal {
+  filter: blur(3.5px) drop-shadow(0 0 10px rgb(var(--gold-rgb) / 0.5));
+}

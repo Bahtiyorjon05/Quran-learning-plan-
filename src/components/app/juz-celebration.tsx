@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { Goldfall } from "@/components/ui/goldfall";
 import { Illuminated, Khatim, StarRule } from "@/components/ui/illumination";
 import { buttonStyles } from "@/components/ui/button";
 import { markJuzSeenAction } from "@/app/[locale]/app/milestone-actions";
+import { chime, paint, paintFront, type Tier } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 
 /**
@@ -31,9 +31,12 @@ import { cn } from "@/lib/utils";
  * of it there is, and what is said.
  */
 
-type Tier = "one" | "five" | "ten" | "twenty" | "thirty";
+type Weight = "one" | "five" | "ten" | "twenty" | "thirty";
 
-function tierOf(total: number): Tier {
+/** What `celebrate` is asked for: nought is a page, so a juz starts at one. */
+const DEPTH: Record<Weight, Tier> = { one: 1, five: 2, ten: 3, twenty: 4, thirty: 5 };
+
+function tierOf(total: number): Weight {
   if (total >= 30) return "thirty";
   if (total >= 20) return "twenty";
   if (total >= 10) return "ten";
@@ -46,12 +49,12 @@ function tierOf(total: number): Tier {
  * of gold falling past them — a scattering for one juz, a downpour for the
  * whole Qur'an.
  */
-const WEIGHT: Record<Tier, { rays: string; seal: string; panel: string; fall: number }> = {
-  one: { rays: "opacity-100", seal: "h-28 w-28", panel: "max-w-lg", fall: 130 },
-  five: { rays: "opacity-100", seal: "h-32 w-32", panel: "max-w-lg", fall: 165 },
-  ten: { rays: "opacity-100", seal: "h-36 w-36", panel: "max-w-xl", fall: 200 },
-  twenty: { rays: "opacity-100", seal: "h-40 w-40", panel: "max-w-xl", fall: 240 },
-  thirty: { rays: "opacity-100", seal: "h-44 w-44", panel: "max-w-2xl", fall: 300 },
+const WEIGHT: Record<Weight, { rays: string; seal: string; panel: string }> = {
+  one: { rays: "opacity-100", seal: "h-28 w-28", panel: "max-w-lg" },
+  five: { rays: "opacity-100", seal: "h-32 w-32", panel: "max-w-lg" },
+  ten: { rays: "opacity-100", seal: "h-36 w-36", panel: "max-w-xl" },
+  twenty: { rays: "opacity-100", seal: "h-40 w-40", panel: "max-w-xl" },
+  thirty: { rays: "opacity-100", seal: "h-44 w-44", panel: "max-w-2xl" },
 };
 
 export function JuzCelebration({
@@ -67,6 +70,8 @@ export function JuzCelebration({
   const t = useTranslations("app.milestone");
   const [open, setOpen] = useState(true);
   const dialog = useRef<HTMLDivElement>(null);
+  const weather = useRef<HTMLDivElement>(null);
+  const foreground = useRef<HTMLDivElement>(null);
 
   const tier = tierOf(total);
   const whole = tier === "thirty";
@@ -83,6 +88,27 @@ export function JuzCelebration({
   useEffect(() => {
     if (open) dialog.current?.focus();
   }, [open]);
+
+  /* The whole sky, painted into a layer of this dialog rather than onto the
+     body: it has to sit above the darkened ground and below the words, and
+     only something inside the dialog can be in the middle of that stack. */
+  useEffect(() => {
+    const host = weather.current;
+    const near = foreground.current;
+    if (!open || !host || !near) return;
+    const depth = DEPTH[tier];
+    const life = Math.max(paint(host, depth), paintFront(near, depth));
+    chime(depth);
+    const clear = window.setTimeout(() => {
+      host.replaceChildren();
+      near.replaceChildren();
+    }, life);
+    return () => {
+      window.clearTimeout(clear);
+      host.replaceChildren();
+      near.replaceChildren();
+    };
+  }, [open, tier]);
 
   function close() {
     setOpen(false);
@@ -119,7 +145,8 @@ export function JuzCelebration({
 
       {/* Falling in front of the darkened ground and behind the panel, so the
           words are never read through moving light. */}
-      <Goldfall count={weight.fall} className="z-0" />
+      <div ref={weather} aria-hidden className="ahd-fall z-0" />
+      <div ref={foreground} aria-hidden className="ahd-fall ahd-fall-front" />
 
       <div
         ref={dialog}

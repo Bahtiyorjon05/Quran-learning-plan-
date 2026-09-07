@@ -2,40 +2,30 @@
  * "Mashaallah" — a page, drawn straight onto the document.
  *
  * This one deliberately sits outside React. A server action re-renders the
- * page it was called from, and every React-shaped way of holding this moment
+ * screen it was called from, and every React-shaped way of holding this moment
  * — state on the button, a store read through `useSyncExternalStore`, a
  * watcher mounted in the layout — was torn down by that re-render before the
  * congratulation had been on screen for more than a frame. The JavaScript
  * context survives; React's tree does not.
  *
- * So the element is created, appended to `document.body`, and removed on a
- * timer. Nothing can reconcile it away because nothing owns it. The words are
- * handed in by the caller, which has the translator.
+ * So the card is created, appended to the body, and removed on a timer.
+ * Nothing can reconcile it away because nothing owns it. The words are handed
+ * in by the caller, which has the translator.
  *
- * The bigger moments — a juz, five, thirty — are ordinary React, because they
- * live on the dashboard where nothing is racing a form submission.
+ * The gold that falls around it comes from `celebrate`, shared with the juz
+ * moments, which are the same thing several sizes larger.
  */
+
+import { chime, paint } from "@/lib/celebrate";
 
 const HOLDS_FOR = 4600;
 const FADES_FOR = 550;
-/**
- * Enough to fill the screen — whichever screen it is.
- *
- * A fixed count is the wrong unit: a hundred and fifty across a phone is a
- * downpour and the same hundred and fifty across a laptop is drizzle, because
- * what the eye reads is motes per unit of width. So it is a rate, floored so a
- * narrow phone still gets a sky and capped so a wide monitor does not ask the
- * compositor for four hundred glowing things at once.
- */
-function moteCount() {
-  const width = typeof window === "undefined" ? 430 : window.innerWidth;
-  return Math.max(140, Math.min(320, Math.round(width / 2.6)));
-}
 
 let current: HTMLElement | null = null;
 let fade: ReturnType<typeof setTimeout> | null = null;
 let gone: ReturnType<typeof setTimeout> | null = null;
 let rain: ReturnType<typeof setTimeout> | null = null;
+let sky: HTMLElement | null = null;
 
 function dismiss() {
   if (!current) return;
@@ -46,7 +36,7 @@ function dismiss() {
   gone = setTimeout(() => node.remove(), FADES_FOR);
 }
 
-/** A page has been committed to memory. Say so. */
+/** A page has been committed to memory. Say so, and open the sky. */
 export function pageLearnt(words: { mashaallah: string; line: string }) {
   if (typeof document === "undefined") return;
 
@@ -58,10 +48,10 @@ export function pageLearnt(words: { mashaallah: string; line: string }) {
   host.setAttribute("role", "status");
   host.setAttribute("aria-live", "polite");
   host.className =
-    "ahd-page-cheer pointer-events-none fixed inset-x-0 bottom-24 z-[90] flex justify-center px-4 lg:bottom-10";
+    "ahd-page-cheer pointer-events-none fixed inset-x-0 bottom-24 z-[96] flex justify-center px-4 lg:bottom-10";
 
-  /* Built with the DOM rather than innerHTML: the name is the reader's and the
-     line carries a page number, and neither should ever be parsed as markup. */
+  /* Built with the DOM rather than innerHTML: the line carries a page number
+     and, one day, a name, and neither should ever be parsed as markup. */
   const card = document.createElement("div");
   card.className =
     "relative flex items-center gap-4 rounded-2xl border border-[var(--gold)]/40 " +
@@ -116,9 +106,9 @@ export function pageLearnt(words: { mashaallah: string; line: string }) {
 /**
  * Say it more precisely, without interrupting.
  *
- * The gold has to fall the instant somebody taps — waiting on the server means
- * waiting about three seconds, by which time they have looked away and the
- * celebration has missed its own moment. So the card goes up immediately
+ * The gold has to fall the instant somebody taps — waiting for the server
+ * means waiting about three seconds, by which time they have looked away and
+ * the celebration has missed its own moment. So the card goes up immediately
  * saying what the browser already knows, and this replaces the second line
  * with the exact pages once the server has said which they were. If the card
  * has already gone, nothing happens: a correction nobody is reading is noise.
@@ -129,59 +119,22 @@ export function refineLine(line: string) {
   if (el) el.textContent = line;
 }
 
-/**
- * Gold, falling past the whole screen.
- *
- * The React version of this lives in `<Goldfall />` and the CSS is shared; this
- * is the same shower built with the DOM, for the same reason the card is —
- * nothing here can be owned by a tree that a server action is about to replace.
- * It clears itself up once the slowest mote has left the bottom of the screen.
- */
+/** The whole screen, for a page: tier zero of the same celebration. */
 function goldFalls() {
-  const sky = document.createElement("div");
-  sky.setAttribute("aria-hidden", "true");
-  sky.className = "ahd-fall";
+  if (sky) sky.remove();
 
-  const wash = document.createElement("span");
-  wash.className = "ahd-wash";
-  sky.append(wash);
+  const host = document.createElement("div");
+  host.setAttribute("aria-hidden", "true");
+  host.className = "ahd-fall";
+  document.body.append(host);
+  sky = host;
 
-  const count = moteCount();
-  let longest = 0;
-  for (let i = 0; i < count; i++) {
-    /* Mixed rather than modular, and one lane each: see `<Goldfall />`, which
-       lays the same sky down for the juz moments. */
-    const r = (salt: number) => {
-      let h = Math.imul(i + 1, 374761393) ^ Math.imul(salt + 1, 668265263);
-      h = Math.imul(h ^ (h >>> 13), 1274126177);
-      return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-    };
-    const lane = (i / count) * 100;
-    const d = 2.6 + r(3) * 2.8;
-    const delay = r(4) * 2.4;
-    longest = Math.max(longest, d + delay);
+  const life = paint(host, 0);
+  chime(0);
 
-    const mote = document.createElement("i");
-    const star = i % 3 === 0;
-    mote.className = star ? "ahd-star" : "ahd-mote";
-    mote.style.cssText =
-      `--x:${(lane + r(1) * (100 / count)).toFixed(2)}%;--y:${(6 + r(8) * 82).toFixed(1)}%;` +
-      `--w:${(7 + r(2) * 14).toFixed(1)}px;` +
-      `--d:${d.toFixed(2)}s;--delay:${delay.toFixed(2)}s;` +
-      `--drift:${Math.round(r(5) * 130 - 65)}px;--spin:${Math.round(r(6) * 520 - 180)}deg;` +
-      `--dim:${(0.55 + r(7) * 0.45).toFixed(2)}`;
-    if (star) {
-      mote.innerHTML =
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
-        'stroke-linejoin="round" class="h-full w-full">' +
-        '<rect x="4.5" y="4.5" width="15" height="15" rx="1"></rect>' +
-        '<rect x="4.5" y="4.5" width="15" height="15" rx="1" transform="rotate(45 12 12)"></rect>' +
-        "</svg>";
-    }
-    sky.append(mote);
-  }
-
-  document.body.append(sky);
   if (rain) clearTimeout(rain);
-  rain = setTimeout(() => sky.remove(), (longest + 0.4) * 1000);
+  rain = setTimeout(() => {
+    host.remove();
+    if (sky === host) sky = null;
+  }, life);
 }
