@@ -42,7 +42,7 @@ import { PracticeInvite } from "@/components/app/practice-invite";
 import { MushafMosaic } from "@/components/app/mushaf-mosaic";
 import { TOTAL_PAGES } from "@/core/quran/mushaf";
 import { DailySheet, type TrackView } from "@/components/app/daily-sheet";
-import { describeLineRange } from "@/core/quran/mushaf";
+import { describeLineRange, LINES_PER_PAGE } from "@/core/quran/mushaf";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("nav");
@@ -100,8 +100,22 @@ function describeDevice(userAgent: string | null, fallback: string) {
 function buildTracks(
   today: NonNullable<Awaited<ReturnType<typeof loadToday>>>,
   ta: Awaited<ReturnType<typeof getTranslations>>,
+  /** Everything already committed to memory, so the same page is never new twice. */
+  memorised: ReadonlySet<number>,
 ): TrackView[] {
   const { sheet, done } = today;
+
+  /* Which whole pages ticking sabaq would finish — the same rule the action
+     applies, worked out here so the celebration can be certain the moment the
+     button is pressed rather than after a round trip. A nine-line portion
+     finishes nothing, and on most days that is the honest answer. */
+  const completes: number[] = [];
+  if (sheet.sabaq && !done.sabaq) {
+    const last = Math.floor(sheet.sabaq.toLine / LINES_PER_PAGE);
+    for (let page = today.plan.scopeFromPage; page <= last; page++) {
+      if (!memorised.has(page)) completes.push(page);
+    }
+  }
 
   let sabaqDetail: string | null = null;
   let sabaqPages: number[] = [];
@@ -138,6 +152,7 @@ function buildTracks(
       pages: sabaqPages,
       done: done.sabaq,
       empty: !sheet.sabaq,
+      completes,
     },
     {
       id: "sabqi",
@@ -435,7 +450,7 @@ export default async function AppHomePage({
             <div className="animate-rise mt-6 grid gap-5 [animation-delay:140ms] lg:grid-cols-[1.4fr_1fr]">
               <section className="panel rounded-3xl p-6 sm:p-7">
                 <DailySheet
-                  tracks={buildTracks(sheet, ta)}
+                  tracks={buildTracks(sheet, ta, new Set(pages.map((p) => p.page)))}
                   /* The streak is already in the greeting; showing it twice on
                      one screen makes it look like two different numbers. */
                   streak={0}

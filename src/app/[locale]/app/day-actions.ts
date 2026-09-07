@@ -34,6 +34,9 @@ export async function markTrack(_prev: MarkState, formData: FormData): Promise<M
   const today = await loadToday(user.id);
   if (!today) return { status: "error" };
 
+  /* Pages that crossed into memory on this tap, so the sheet can say so. */
+  let learnt: number[] = [];
+
   try {
     /* The day is frozen the moment it is first touched. Until then the sheet is
        derived, so an untouched day costs no writes; afterwards it must stop
@@ -55,7 +58,11 @@ export async function markTrack(_prev: MarkState, formData: FormData): Promise<M
       });
 
     if (done && track === "sabaq" && today.sheet.sabaq) {
-      await recordNewMemorization(user.id, today.sheet.sabaq.toLine, today.plan.scopeFromPage);
+      learnt = await recordNewMemorization(
+        user.id,
+        today.sheet.sabaq.toLine,
+        today.plan.scopeFromPage,
+      );
     }
     if (done && track !== "sabaq") {
       const pages = track === "sabqi" ? today.sheet.sabqi : today.sheet.manzil;
@@ -70,7 +77,7 @@ export async function markTrack(_prev: MarkState, formData: FormData): Promise<M
   }
 
   revalidatePath("/[locale]/app", "layout");
-  return { status: "ok", memorized: done };
+  return { status: "ok", memorized: done, learnt };
 }
 
 /**
@@ -80,9 +87,13 @@ export async function markTrack(_prev: MarkState, formData: FormData): Promise<M
  * would credit half a page of work as a whole one — and, compounded, finish the
  * Qur'an in 604 days rather than the 1,096 the covenant was signed for.
  */
-async function recordNewMemorization(userId: string, frontierLine: number, scopeFromPage: number) {
+async function recordNewMemorization(
+  userId: string,
+  frontierLine: number,
+  scopeFromPage: number,
+): Promise<number[]> {
   const lastCompletePage = Math.floor(frontierLine / LINES_PER_PAGE);
-  if (lastCompletePage < scopeFromPage) return;
+  if (lastCompletePage < scopeFromPage) return [];
 
   /* One statement, not one per page.
      This walked from the first page of the scope to the frontier and awaited an
@@ -103,14 +114,21 @@ async function recordNewMemorization(userId: string, frontierLine: number, scope
       lastReviewedAt: sql`now()`,
     });
   }
-  if (rows.length === 0) return;
+  if (rows.length === 0) return [];
 
-  await db
+  /* Returning tells the difference between a page that was written now and one
+     that was already there: the range is walked from the start of the scope
+     every time, so almost all of these are no-ops, and celebrating the whole
+     range would congratulate somebody for three hundred pages every morning. */
+  const written = await db
     .insert(memorizationUnits)
     .values(rows)
     .onConflictDoNothing({
       target: [memorizationUnits.userId, memorizationUnits.page],
-    });
+    })
+    .returning({ page: memorizationUnits.page });
+
+  return written.map((row) => row.page);
 }
 
 /** Reciting a page cleanly strengthens it and resets its clock. */

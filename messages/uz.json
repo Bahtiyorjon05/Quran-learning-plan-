@@ -574,7 +574,9 @@
       "hafizBody": "Otuz juz. Butun Qurʼon. Alloh qabul qilsin, unutishdan asrasin va u bilan amal qilishni nasib etsin.",
       "crown": "Kim Qurʼonni oʻqisa va undagiga amal qilsa, qiyomat kuni ota-onasiga toj kiydiriladi — uning nuri quyosh nuridan-da goʻzalroqdir.",
       "crownSource": "Abu Dovud 1453",
-      "hafizContinue": "Alhamdulilloh"
+      "hafizContinue": "Alhamdulilloh",
+      "pagesLearnt": "{count} sahifa yodlandi",
+      "sabaqLearnt": "Bugungi sabaq yodlandi"
     }
   },
   "onboarding": {

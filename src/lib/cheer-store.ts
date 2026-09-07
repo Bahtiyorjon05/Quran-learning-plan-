@@ -18,11 +18,19 @@
 
 const HOLDS_FOR = 4600;
 const FADES_FOR = 550;
-/* Enough to fill the screen. Twenty-two was dust and sixty-four was weather;
-   this is the sky opening. They keep arriving for two and a half seconds, so
-   the screen is full for as long as the words are on it rather than emptying
-   out behind them. */
-const MOTES = 150;
+/**
+ * Enough to fill the screen — whichever screen it is.
+ *
+ * A fixed count is the wrong unit: a hundred and fifty across a phone is a
+ * downpour and the same hundred and fifty across a laptop is drizzle, because
+ * what the eye reads is motes per unit of width. So it is a rate, floored so a
+ * narrow phone still gets a sky and capped so a wide monitor does not ask the
+ * compositor for four hundred glowing things at once.
+ */
+function moteCount() {
+  const width = typeof window === "undefined" ? 430 : window.innerWidth;
+  return Math.max(140, Math.min(320, Math.round(width / 2.6)));
+}
 
 let current: HTMLElement | null = null;
 let fade: ReturnType<typeof setTimeout> | null = null;
@@ -90,6 +98,7 @@ export function pageLearnt(words: { mashaallah: string; line: string }) {
 
   const line = document.createElement("span");
   line.className = "mt-0.5 block text-[0.8125rem] text-[var(--text-muted)]";
+  line.dataset.cheerLine = "";
   line.textContent = words.line;
 
   text.append(shout, line);
@@ -102,6 +111,22 @@ export function pageLearnt(words: { mashaallah: string; line: string }) {
   current = host;
   fade = setTimeout(dismiss, HOLDS_FOR);
   goldFalls();
+}
+
+/**
+ * Say it more precisely, without interrupting.
+ *
+ * The gold has to fall the instant somebody taps — waiting on the server means
+ * waiting about three seconds, by which time they have looked away and the
+ * celebration has missed its own moment. So the card goes up immediately
+ * saying what the browser already knows, and this replaces the second line
+ * with the exact pages once the server has said which they were. If the card
+ * has already gone, nothing happens: a correction nobody is reading is noise.
+ */
+export function refineLine(line: string) {
+  if (!current) return;
+  const el = current.querySelector<HTMLElement>("[data-cheer-line]");
+  if (el) el.textContent = line;
 }
 
 /**
@@ -121,8 +146,9 @@ function goldFalls() {
   wash.className = "ahd-wash";
   sky.append(wash);
 
+  const count = moteCount();
   let longest = 0;
-  for (let i = 0; i < MOTES; i++) {
+  for (let i = 0; i < count; i++) {
     /* Mixed rather than modular, and one lane each: see `<Goldfall />`, which
        lays the same sky down for the juz moments. */
     const r = (salt: number) => {
@@ -130,7 +156,7 @@ function goldFalls() {
       h = Math.imul(h ^ (h >>> 13), 1274126177);
       return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
     };
-    const lane = (i / MOTES) * 100;
+    const lane = (i / count) * 100;
     const d = 2.6 + r(3) * 2.8;
     const delay = r(4) * 2.4;
     longest = Math.max(longest, d + delay);
@@ -139,7 +165,7 @@ function goldFalls() {
     const star = i % 3 === 0;
     mote.className = star ? "ahd-star" : "ahd-mote";
     mote.style.cssText =
-      `--x:${(lane + r(1) * (100 / MOTES)).toFixed(2)}%;--y:${(6 + r(8) * 82).toFixed(1)}%;` +
+      `--x:${(lane + r(1) * (100 / count)).toFixed(2)}%;--y:${(6 + r(8) * 82).toFixed(1)}%;` +
       `--w:${(7 + r(2) * 14).toFixed(1)}px;` +
       `--d:${d.toFixed(2)}s;--delay:${delay.toFixed(2)}s;` +
       `--drift:${Math.round(r(5) * 130 - 65)}px;--spin:${Math.round(r(6) * 520 - 180)}deg;` +

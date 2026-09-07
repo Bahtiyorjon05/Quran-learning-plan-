@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useOptimistic, startTransition } from "react";
+import { useOptimistic, useState, startTransition } from "react";
 import { useTranslations } from "next-intl";
 import {
   ArrowRight,
@@ -15,6 +15,7 @@ import {
 import { Link } from "@/i18n/navigation";
 import { MARK_IDLE } from "@/core/plan/mark-state";
 import { markTrack } from "@/app/[locale]/app/day-actions";
+import { pageLearnt, refineLine } from "@/lib/cheer-store";
 import { buttonStyles } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,13 @@ export type TrackView = {
   done: boolean;
   /** Nothing is owed on this track today. */
   empty: boolean;
+  /**
+   * Whole pages that ticking this track would commit to memory — worked out on
+   * the server while the page was built, so the browser knows before the tap
+   * rather than three seconds after it. Sabaq only; empty when today's portion
+   * ends mid-page, which is most days on a slow covenant.
+   */
+  completes?: number[];
 };
 
 const ICONS = { sabaq: Sprout, sabqi: RefreshCw, manzil: Layers } as const;
@@ -96,7 +104,8 @@ function TrackRow({
   role: string;
 }) {
   const t = useTranslations("app.today");
-  const [, submit, pending] = useActionState(markTrack, MARK_IDLE);
+  const tm = useTranslations("app.milestone");
+  const [pending, setPending] = useState(false);
   const [done, setDone] = useOptimistic(track.done);
 
   const Icon = ICONS[track.id];
@@ -156,9 +165,32 @@ function TrackRow({
           {!track.empty && (
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <form
-                action={(formData) => {
+                /* The action is called here rather than through
+                   `useActionState`, and what comes back is read in this
+                   closure. It marks a *layout*, so by the time the result would
+                   have arrived as React state this component has been replaced
+                   — the update lands on a tree already being torn down and the
+                   congratulation never happens. A closure survives that; the
+                   tree it was created in does not. */
+                action={async (formData) => {
+                  const t0 = performance.now();
                   startTransition(() => setDone(!done));
-                  submit(formData);
+                  setPending(true);
+                  try {
+                    const result = await markTrack(MARK_IDLE, formData);
+                    console.log("[sheet] after", Math.round(performance.now() - t0), "ms:", JSON.stringify(result));
+                    if (result.status === "ok" && result.learnt?.length) {
+                      pageLearnt({
+                        mashaallah: tm("mashaallah"),
+                        line:
+                          result.learnt.length === 1
+                            ? tm("pageLearnt", { page: result.learnt[0] })
+                            : tm("pagesLearnt", { count: result.learnt.length }),
+                      });
+                    }
+                  } finally {
+                    setPending(false);
+                  }
                 }}
               >
                 <input type="hidden" name="track" value={track.id} />
