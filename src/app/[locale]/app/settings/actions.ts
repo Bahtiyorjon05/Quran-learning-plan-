@@ -33,6 +33,7 @@ const schema = z.object({
   timeZone: z.string().trim().min(1).max(64),
   reminders: z.string().optional(),
   weekly: z.string().optional(),
+  sound: z.string().optional(),
 });
 
 export async function saveSettings(
@@ -44,7 +45,7 @@ export async function saveSettings(
   const parsed = schema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { status: "error" };
 
-  const { displayName, studyTime, reciter, timeZone, reminders, weekly } = parsed.data;
+  const { displayName, studyTime, reciter, timeZone, reminders, weekly, sound } = parsed.data;
 
   try {
     /* A time zone the runtime cannot resolve would silently move somebody's
@@ -65,6 +66,7 @@ export async function saveSettings(
           timeZone,
           remindersEnabled: reminders === "on",
           weeklyEmail: weekly === "on",
+          celebrationSound: sound === "on",
         })
         .where(eq(profiles.userId, user.id));
     });

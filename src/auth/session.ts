@@ -102,6 +102,8 @@ export type CurrentUser = {
   locale: "uz" | "en" | "ru";
   timeZone: string;
   theme: "dark" | "light" | "sepia";
+  /** Whether a milestone is allowed to make a sound on this account. */
+  celebrationSound: boolean;
 };
 
 /**
@@ -130,6 +132,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
       locale: profiles.locale,
       timeZone: profiles.timeZone,
       theme: profiles.theme,
+      celebrationSound: profiles.celebrationSound,
     })
     .from(sessions)
     .innerJoin(users, eq(users.id, sessions.userId))
@@ -164,6 +167,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     locale: row.locale ?? "uz",
     timeZone: row.timeZone ?? "Asia/Tashkent",
     theme: row.theme ?? "dark",
+    celebrationSound: row.celebrationSound ?? true,
   };
 });
 

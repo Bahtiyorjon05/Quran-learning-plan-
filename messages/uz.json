@@ -1234,7 +1234,9 @@
     "pushTest": "Sinov yuborish",
     "pushSent": "Yuborildi",
     "pushNothing": "Yetib bormadi",
-    "pushReady": "Bu qurilma tayyor"
+    "pushReady": "Bu qurilma tayyor",
+    "sound": "Tabrik ovozi",
+    "soundHint": "Sahifa yoki juz tugaganda jaranglaydi. Darsda o‘chirib qo‘ying."
   },
   "amend": {
     "title": "Ahdni oʻzgartirish",

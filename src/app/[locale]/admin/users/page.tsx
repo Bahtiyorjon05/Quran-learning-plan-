@@ -187,6 +187,13 @@ export default async function AdminUsersPage({
  */
 function PersonPanel({ person, timeZone }: { person: AdminUser; timeZone: string }) {
   const state = paceOf(person);
+  /* Nothing held, nothing drilled, no day kept, and no covenant to show. */
+  const untouched =
+    !state &&
+    person.pagesHeld === 0 &&
+    person.drills === 0 &&
+    person.daysKept === 0 &&
+    person.openMistakes === 0;
 
   return (
     <div className="min-w-0 rounded-2xl border border-[var(--line-subtle)] p-4">
@@ -195,6 +202,15 @@ function PersonPanel({ person, timeZone }: { person: AdminUser; timeZone: string
         {state && <BandChip band={state.pace.band} />}
       </div>
 
+      {/* Somebody who has done nothing yet gets one quiet line rather than six
+          columns of em-dashes. Half of any user list is people who signed up
+          and stopped, and a grid of dashes for each of them buries the ones
+          who are actually working — which is the only thing this page is for. */}
+      {untouched ? (
+        <p className="mt-3 text-[0.8125rem] text-[var(--text-faint)]">
+          Nothing yet · last seen {ago(person.lastSeenAt)}
+        </p>
+      ) : (
       <div className="mt-3.5 grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-6">
         <div className="min-w-0">
           <CovenantTrack person={person} state={state} />
@@ -218,6 +234,7 @@ function PersonPanel({ person, timeZone }: { person: AdminUser; timeZone: string
 
         <ActivityStrip counts={person.activity} timeZone={timeZone} />
       </div>
+      )}
 
       <p className="mt-3.5 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-[var(--line-subtle)] pt-2.5 text-[0.6875rem] text-[var(--text-faint)]">
         <span>Joined {whenIn(timeZone).format(person.createdAt)}</span>

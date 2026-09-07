@@ -31,6 +31,7 @@ export default async function SettingsPage() {
       timeZone: profiles.timeZone,
       reminders: profiles.remindersEnabled,
       weekly: profiles.weeklyEmail,
+      sound: profiles.celebrationSound,
     })
     .from(profiles)
     .where(eq(profiles.userId, user.id))
@@ -77,6 +78,7 @@ export default async function SettingsPage() {
                 timeZone={profile?.timeZone ?? "Asia/Tashkent"}
                 reminders={profile?.reminders ?? true}
                 weekly={profile?.weekly ?? true}
+                sound={profile?.sound ?? true}
               />
 
             {/* The second password, in with the rest of the account. Reached

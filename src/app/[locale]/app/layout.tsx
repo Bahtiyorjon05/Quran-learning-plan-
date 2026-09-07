@@ -24,6 +24,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <>
+      {/* The celebration is drawn outside React, by a module with no way to
+          read a server value — so the answer is stamped on the window before
+          anything can ask for it. A script rather than a data attribute
+          because the element it would sit on belongs to the root layout,
+          which does not know who is signed in. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `window.__ahdSound=${user.celebrationSound ? "true" : "false"}`,
+        }}
+      />
       {children}
       {juz.unseen.length > 0 && (
         <JuzCelebration

@@ -1234,7 +1234,9 @@
     "pushTest": "Send a test",
     "pushSent": "Sent",
     "pushNothing": "Nothing arrived",
-    "pushReady": "This device is ready"
+    "pushReady": "This device is ready",
+    "sound": "Celebration sound",
+    "soundHint": "A bell when a page or a juz is finished. Off in a lesson, on at home."
   },
   "amend": {
     "title": "Amend your covenant",

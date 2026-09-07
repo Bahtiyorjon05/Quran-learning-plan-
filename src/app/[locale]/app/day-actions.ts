@@ -3,11 +3,13 @@
 import { z } from "zod";
 import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 
 import { db } from "@/db/client";
 import { memorizationUnits, planDays, profiles } from "@/db/schema";
 import { requireOnboardedUser } from "@/auth/guard";
 import { recordJuzMilestones } from "@/core/milestones/juz";
+import { announceJuz } from "@/core/milestones/announce";
 import { addDays } from "@/core/date/civil";
 import { LINES_PER_PAGE } from "@/core/quran/mushaf";
 import type { MarkState } from "@/core/plan/mark-state";
@@ -35,8 +37,10 @@ export async function markTrack(_prev: MarkState, formData: FormData): Promise<M
   const today = await loadToday(user.id);
   if (!today) return { status: "error" };
 
-  /* Pages that crossed into memory on this tap, so the sheet can say so. */
+  /* Pages that crossed into memory on this tap, so the sheet can say so, and
+     any juz they completed, so the other devices hear about it. */
   let learnt: number[] = [];
+  let finished: Awaited<ReturnType<typeof recordJuzMilestones>> = [];
 
   try {
     /* The day is frozen the moment it is first touched. Until then the sheet is
@@ -74,7 +78,7 @@ export async function markTrack(_prev: MarkState, formData: FormData): Promise<M
        recorded from the reader's own button, so the people using the app the
        ordinary way — nearly all of them — reached ten juz and were told
        nothing, because nothing had been written down to tell them about. */
-    if (learnt.length) await recordJuzMilestones(user.id);
+    if (learnt.length) finished = await recordJuzMilestones(user.id);
 
     await recomputeProgress(user.id);
     await updateStreak(user.id, today.plan.id, today.date);
@@ -84,6 +88,10 @@ export async function markTrack(_prev: MarkState, formData: FormData): Promise<M
   }
 
   revalidatePath("/[locale]/app", "layout");
+
+  /* After the response: this tap already takes long enough. */
+  after(() => announceJuz(user.id, user.locale, finished));
+
   return { status: "ok", memorized: done, learnt };
 }
 

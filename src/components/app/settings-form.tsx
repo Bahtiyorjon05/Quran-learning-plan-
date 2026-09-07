@@ -64,6 +64,7 @@ export function SettingsForm({
   timeZone,
   reminders,
   weekly,
+  sound,
 }: {
   displayName: string;
   email: string;
@@ -72,6 +73,7 @@ export function SettingsForm({
   timeZone: string;
   reminders: boolean;
   weekly: boolean;
+  sound: boolean;
 }) {
   const t = useTranslations("settings");
   const locale = useLocale() as "uz" | "en" | "ru";
@@ -231,6 +233,14 @@ export function SettingsForm({
           hint={t("remindersHint")}
           onChange={saveNow}
         />
+        <Switch
+          name="sound"
+          defaultChecked={sound}
+          label={t("sound")}
+          hint={t("soundHint")}
+          onChange={saveNow}
+        />
+
         <Switch
           name="weekly"
           defaultChecked={weekly}

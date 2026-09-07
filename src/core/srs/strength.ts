@@ -154,9 +154,19 @@ export function review(unit: UnitState, quality: Quality, daysSinceReview: numbe
 
   /* Strength climbs toward the grade's ceiling rather than jumping to it: three
      clean recitations should be worth more than one, and a single good day
-     should not certify a page as solid. */
+     should not certify a page as solid.
+
+     Rounded up, and never by less than a point while there is room. Rounding
+     to nearest stalled a page for ever at ninety-nine — the remaining gap
+     shrank faster than the rounding could see it, so 99 + 0.45 came back as 99
+     again and no amount of perfect recitation could finish the last point.
+     A page that cannot be finished is a page whose tile never goes fully dark,
+     which is exactly the thing the mosaic is for. */
   const ceiling = quality === 5 ? 100 : quality === 4 ? 88 : 72;
-  const strength = Math.min(100, Math.round(current + (ceiling - current) * 0.45));
+  const strength =
+    current >= ceiling
+      ? current
+      : Math.min(ceiling, Math.max(current + 1, Math.ceil(current + (ceiling - current) * 0.45)));
 
   return {
     strength: Math.max(strength, current),

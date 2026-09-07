@@ -22,6 +22,13 @@
       "when": 1787414493464,
       "tag": "0002_password_set_later",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788753522725,
+      "tag": "0003_fair_greymalkin",
+      "breakpoints": true
     }
   ]
 }

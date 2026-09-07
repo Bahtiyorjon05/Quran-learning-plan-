@@ -1,5 +1,7 @@
 import { AhdMark } from "@/components/brand/logo";
 import { Header } from "@/components/site/header";
+import { Khatim, StarRule } from "@/components/ui/illumination";
+import { Motes } from "@/components/ui/motes";
 import { Footer } from "@/components/site/footer";
 import { Measure } from "@/components/ui/section";
 import { cn } from "@/lib/utils";
@@ -63,13 +65,25 @@ export function ProsePage({
             <div className="ahd-aurora ahd-aurora-b opacity-50" />
             <div className="girih absolute inset-0 opacity-[0.03]" />
             <div className="ahd-grain absolute inset-0" />
+            <Motes />
             <div className="absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(to_bottom,transparent,var(--surface-base))]" />
           </div>
 
           <Measure>
             <div className="animate-rise mx-auto max-w-2xl text-center">
-              <div className="mx-auto w-fit">
-                <AhdMark size={56} />
+              {/* The mark inside a ring of gold, the way every other titled
+                  surface in the app introduces itself. Without it these pages
+                  read as documentation that happens to share a font. */}
+              <div className="relative mx-auto grid h-[4.5rem] w-[4.5rem] place-items-center">
+                <span
+                  aria-hidden
+                  className="absolute inset-0 rounded-full border border-[var(--gold)]/30"
+                />
+                <span
+                  aria-hidden
+                  className="absolute inset-[0.35rem] rounded-full bg-[rgb(var(--gold-rgb)/0.07)]"
+                />
+                <AhdMark size={44} />
               </div>
               <h1 className="mt-7 font-[family-name:var(--font-display)] text-[2.25rem] leading-[1.1] font-light text-balance text-[var(--text-strong)] sm:text-[3rem]">
                 {title}
@@ -79,8 +93,10 @@ export function ProsePage({
                   {lead}
                 </p>
               )}
+              <StarRule className="mx-auto mt-8 max-w-[14rem]" />
+
               {updated && (
-                <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--line-subtle)] px-3.5 py-1.5 text-[0.6875rem] tracking-[0.14em] text-[var(--text-faint)] uppercase">
+                <p className="mt-7 inline-flex items-center gap-2 rounded-full border border-[var(--line-subtle)] px-3.5 py-1.5 text-[0.6875rem] tracking-[0.14em] text-[var(--text-faint)] uppercase">
                   {updated}
                 </p>
               )}
@@ -100,7 +116,8 @@ export function ProsePage({
                 aria-label={title}
                 className="hidden lg:sticky lg:top-28 lg:block lg:self-start"
               >
-                <p className="text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+                <p className="flex items-center gap-2 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+                  <Khatim className="h-3.5 w-3.5 shrink-0 text-[var(--gold)]" />
                   {title}
                 </p>
                 <ol className="mt-4 space-y-2.5 border-s border-[var(--line-subtle)] ps-4">

@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 
 import { db } from "@/db/client";
 import { memorizationUnits } from "@/db/schema";
@@ -16,6 +17,7 @@ import type { MarkState } from "@/core/plan/mark-state";
    or 4% depending only on which of the two had written last. */
 import { recomputeProgress } from "@/app/[locale]/app/today";
 import { recordJuzMilestones } from "@/core/milestones/juz";
+import { announceJuz } from "@/core/milestones/announce";
 
 const schema = z.object({
   page: z.coerce.number().int().min(1).max(TOTAL_PAGES),
@@ -45,6 +47,9 @@ export async function setPageMemorized(
 
   const { page, surah } = parsed.data;
   const memorized = parsed.data.memorized === "true";
+
+  /* Anything finished by this mark, collected from whichever branch runs. */
+  let announce: Awaited<ReturnType<typeof recordJuzMilestones>> = [];
 
   /* A page carrying several short surahs cannot be claimed as one thing.
      Somebody who has Al-Kawthar by heart should be able to say so without also
@@ -91,7 +96,7 @@ export async function setPageMemorized(
       }
 
       await recomputeProgress(user.id);
-      await recordJuzMilestones(user.id);
+      announce = await recordJuzMilestones(user.id);
       /* The dashboard and the mushaf read from this, so their cached copies
          are dropped — but not this reader's own route. Invalidating that made
          every mark replace the reader's subtree, which is a lot of work to
@@ -131,9 +136,9 @@ export async function setPageMemorized(
     }
 
     await recomputeProgress(user.id);
-    /* A juz finished by this mark is written down now, and celebrated the
-       next time a dashboard is opened — on whichever device that is. */
-    await recordJuzMilestones(user.id);
+    /* A juz finished by this mark is written down now, and celebrated on the
+       next screen this reader opens — on whichever device that is. */
+    announce = await recordJuzMilestones(user.id);
   } catch (error) {
     console.error("[quran] could not mark page:", error);
     return { status: "error" };

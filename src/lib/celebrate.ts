@@ -322,6 +322,10 @@ function strike(ctx: AudioContext, to: AudioNode, at: number, freq: number, leve
 }
 
 export function chime(tier: Tier) {
+  /* Silence is a setting, and it is checked here rather than at every call
+     site so that no future caller can forget it. */
+  if ((window as unknown as { __ahdSound?: boolean }).__ahdSound === false) return;
+
   try {
     const Ctor =
       window.AudioContext ??

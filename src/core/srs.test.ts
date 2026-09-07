@@ -113,6 +113,26 @@ describe("a review", () => {
     expect(unit.intervalDays).toBeGreaterThan(6);
   });
 
+  it("lets a page actually be finished, rather than stalling one point short", () => {
+    /* The mosaic exists to be filled in. Rounding to nearest used to leave a
+       page at ninety-nine for ever: the remaining gap shrank faster than the
+       rounding could see it, so no amount of perfect recitation completed it. */
+    let unit: UnitState = FRESH;
+    for (let i = 0; i < 24; i++) unit = review(unit, 5, 0);
+    expect(unit.strength).toBe(100);
+  });
+
+  it("never lets a clean recitation leave a page where it found it", () => {
+    /* Every drill the reader finishes has to move something, or practice is
+       a screen that costs ten minutes and reports nothing. */
+    let unit: UnitState = FRESH;
+    for (let i = 0; i < 20; i++) {
+      const next = review(unit, 5, 0);
+      if (unit.strength < 100) expect(next.strength).toBeGreaterThan(unit.strength);
+      unit = next;
+    }
+  });
+
   it("builds strength over several clean recitations rather than in one", () => {
     /* One good day should not certify a page. */
     const first = review(FRESH, 5, 0);

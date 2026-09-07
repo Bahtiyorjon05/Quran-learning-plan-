@@ -117,6 +117,12 @@ export const profiles = pgTable("profiles", {
      copy of it carries the way to stop it. */
   weeklyEmail: boolean().notNull().default(true),
 
+  /* The sound a milestone makes. On by default, because somebody who has just
+     finished a page should hear that they have — but a hifz app is used in
+     mosques, in lessons, and next to sleeping children, and a celebration that
+     cannot be silenced is a celebration that gets the app closed. */
+  celebrationSound: boolean().notNull().default(true),
+
   currentStreak: integer().notNull().default(0),
   longestStreak: integer().notNull().default(0),
   lastCompleteDate: timestamp({ withTimezone: true, mode: "string" }),
