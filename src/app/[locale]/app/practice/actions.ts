@@ -123,6 +123,57 @@ export async function submitDrill(
       const strengthBefore = decayedStrength(before, days);
       const after = review(before, quality, days);
 
+      /* One score per drill, claimed before anything is moved.
+       *
+       * The drill is rebuilt deterministically from who, what, how and the
+       * nonce, so the same submission can arrive twice — a double tap, a retry
+       * on a bad connection, or somebody replaying it on purpose — and every
+       * arrival used to be another clean recitation: strength climbing, the
+       * next revision pushed further out, the page quietly leaving the
+       * rotation. The log carries the drill's own identity and a unique index
+       * refuses the second one. It is written *first* so that the refusal
+       * happens before the strength is touched rather than after it. */
+      const drillKey = `${page}:${mode}:${level}:${nonce}`;
+
+      const [logged] = await tx
+        .insert(reviewLogs)
+        .values({
+          userId: user.id,
+          unitId: unit.id,
+          page,
+          drillKey,
+          type: "test",
+          quality,
+          mistakeCount: result.total - result.correct,
+          durationSec,
+          strengthBefore,
+          strengthAfter: after.strength,
+        })
+        .onConflictDoNothing({ target: [reviewLogs.userId, reviewLogs.drillKey] })
+        .returning({ id: reviewLogs.id });
+
+      /* Already scored: nothing has been written, and the reader is shown the
+         result they were shown the first time rather than an error. */
+      if (!logged) {
+        const [previous] = await tx
+          .select({
+            quality: reviewLogs.quality,
+            strengthBefore: reviewLogs.strengthBefore,
+            strengthAfter: reviewLogs.strengthAfter,
+          })
+          .from(reviewLogs)
+          .where(and(eq(reviewLogs.userId, user.id), eq(reviewLogs.drillKey, drillKey)))
+          .limit(1);
+
+        return {
+          quality: (previous?.quality ?? quality) as typeof quality,
+          strengthBefore: previous?.strengthBefore ?? strengthBefore,
+          strengthAfter: previous?.strengthAfter ?? after.strength,
+          lapsed: false,
+          needsRelearning: false,
+        };
+      }
+
       await tx
         .update(memorizationUnits)
         .set({
@@ -136,18 +187,6 @@ export async function submitDrill(
           updatedAt: sql`now()`,
         })
         .where(eq(memorizationUnits.id, unit.id));
-
-      await tx.insert(reviewLogs).values({
-        userId: user.id,
-        unitId: unit.id,
-        page,
-        type: "test",
-        quality,
-        mistakeCount: result.total - result.correct,
-        durationSec,
-        strengthBefore,
-        strengthAfter: after.strength,
-      });
 
       if (missed.length > 0) {
         await tx.insert(mistakes).values(

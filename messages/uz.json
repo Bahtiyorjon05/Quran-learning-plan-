@@ -350,7 +350,8 @@
       "twoFactorNotOn": "Bu hisobda ikkinchi parol yoqilmagan.",
       "twoFactorInvalid": "Ikkinchi parol notoʻgʻri. Yana {remaining} marta urinib koʻrasiz.",
       "twoFactorLocked": "Koʻp marta notoʻgʻri kiritildi. {minutes} daqiqadan soʻng qayta urinib koʻring yoki ikkinchi parolni tiklang.",
-      "twoFactorSameAsPassword": "Ikkinchi parol odatdagi parolingizdan boshqa boʻlsin — aks holda ikkita qulf bitta kalitga ochiladi."
+      "twoFactorSameAsPassword": "Ikkinchi parol odatdagi parolingizdan boshqa boʻlsin — aks holda ikkita qulf bitta kalitga ochiladi.",
+      "passwordAlreadySet": "Bu hisobda allaqachon parol bor. O‘zgartirish uchun “parolni unutdim”dan foydalaning."
     },
     "validation": {
       "required": "Bu maydon toʻldirilishi shart",

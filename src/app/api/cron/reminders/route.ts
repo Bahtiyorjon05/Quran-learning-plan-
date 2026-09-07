@@ -1,8 +1,10 @@
-import { and, eq, isNotNull, sql } from "drizzle-orm";
+import { and, eq, inArray, isNotNull, sql } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { plans, profiles, pushSubscriptions, users } from "@/db/schema";
 import { pushToUser } from "@/push/send";
+import { timingSafeEqual } from "node:crypto";
+
 import { env } from "@/lib/env";
 import en from "../../../../../messages/en.json";
 import ru from "../../../../../messages/ru.json";
@@ -33,7 +35,15 @@ const MESSAGES = { en, ru, uz } as const;
 function authorised(request: Request): boolean {
   const secret = env.CRON_SECRET;
   if (!secret) return false;
-  return request.headers.get("authorization") === `Bearer ${secret}`;
+
+  const offered = request.headers.get("authorization") ?? "";
+  const expected = `Bearer ${secret}`;
+  /* Compared byte for byte in constant time. `===` on a secret returns as soon
+     as two bytes differ, and the difference is measurable over enough
+     requests. */
+  const a = Buffer.from(offered);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 export async function GET(request: Request) {
@@ -41,12 +51,22 @@ export async function GET(request: Request) {
     return Response.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  /* The hour, in each person's own zone, compared with the hour they chose.
-     Done in SQL so one query covers every zone at once. */
+  /* Everyone whose chosen hour has come round today and who has not been sent
+     today's reminder yet — in their own zone, in SQL, so one query covers
+     every zone at once.
+     
+     Deliberately "the time has passed and nothing has gone out today" rather
+     than "the current hour equals the chosen hour". The hourly pass is a
+     GitHub Actions schedule, and GitHub drops runs under load: the real
+     spacing in production was closer to two hours, so an exact-hour match
+     silently skipped every reader whose hour fell in a dropped run while the
+     endpoint went on answering 200. Now a late pass still catches them, and
+     the date stamp stops a second pass sending it twice. */
   const due = await db
     .selectDistinct({
       id: users.id,
       locale: profiles.locale,
+      localDate: sql<string>`(now() at time zone ${profiles.timeZone})::date`.as("local_date"),
     })
     .from(users)
     .innerJoin(profiles, eq(profiles.userId, users.id))
@@ -56,22 +76,43 @@ export async function GET(request: Request) {
       and(
         eq(profiles.remindersEnabled, true),
         isNotNull(profiles.studyTime),
-        sql`date_part('hour', (now() at time zone ${profiles.timeZone})) = date_part('hour', ${profiles.studyTime})`,
+        sql`(now() at time zone ${profiles.timeZone})::time >= ${profiles.studyTime}`,
+        sql`(${profiles.remindedOn} is null or ${profiles.remindedOn} < (now() at time zone ${profiles.timeZone})::date)`,
       ),
     );
 
   let delivered = 0;
 
-  for (const person of due) {
-    const locale = (person.locale ?? "uz") as Locale;
-    const copy = MESSAGES[locale].push.daily;
-    delivered += await pushToUser(person.id, {
-      title: copy.title,
-      body: copy.body,
-      url: "/app",
-      /* One reminder replaces yesterday's rather than stacking beneath it. */
-      tag: "ahd-daily",
-    });
+  /* In batches rather than one at a time. Each send is a round trip to a push
+     service, and a few thousand of them in series is a function that times out
+     halfway down the list — leaving the tail of the alphabet reminded only on
+     the days the run happened to be quick. */
+  const BATCH = 20;
+  for (let i = 0; i < due.length; i += BATCH) {
+    const batch = due.slice(i, i + BATCH);
+
+    const counts = await Promise.all(
+      batch.map((person) => {
+        const locale = (person.locale ?? "uz") as Locale;
+        const copy = MESSAGES[locale].push.daily;
+        return pushToUser(person.id, {
+          title: copy.title,
+          body: copy.body,
+          url: "/app",
+          /* One reminder replaces yesterday's rather than stacking beneath it. */
+          tag: "ahd-daily",
+        }).catch(() => 0);
+      }),
+    );
+    delivered += counts.reduce((sum, n) => sum + n, 0);
+
+    /* Stamped whatever the push service said. A failed delivery that is retried
+       every hour for the rest of the day is worse than a reminder missed: the
+       reader either has a working subscription tomorrow or they do not. */
+    await db
+      .update(profiles)
+      .set({ remindedOn: sql`(now() at time zone ${profiles.timeZone})::date` })
+      .where(inArray(profiles.userId, batch.map((person) => person.id)));
   }
 
   return Response.json({ ok: true, considered: due.length, delivered });

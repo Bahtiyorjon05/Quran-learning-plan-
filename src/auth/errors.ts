@@ -7,6 +7,9 @@
  */
 export const AUTH_ERROR_CODES = [
   "emailTaken",
+  /* Somebody tried to set a first password on an account that already has
+     one. Only reachable by calling the action directly. */
+  "passwordAlreadySet",
   "invalidCredentials",
   "accountLocked",
   "emailNotVerified",

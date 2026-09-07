@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  date,
   index,
   integer,
   pgEnum,
@@ -110,6 +111,11 @@ export const profiles = pgTable("profiles", {
   /* The hour they told us they would study. Reminders key off this. */
   studyTime: time(),
   remindersEnabled: boolean().notNull().default(true),
+
+  /* The last local date a reminder went out, so one goes out per day and not
+     one per hourly pass. Stored as the reader's own calendar day: "did they
+     get today's" is a question about their Tuesday, not about UTC's. */
+  remindedOn: date({ mode: "string" }),
 
   /* The weekly report, on by default and switchable off.
      Opt-out rather than opt-in: it reports on a promise the reader made, which

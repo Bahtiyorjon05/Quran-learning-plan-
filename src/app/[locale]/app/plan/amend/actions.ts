@@ -33,12 +33,28 @@ const schema = z.object({
   newEndDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
 
-/** How many times this covenant has been shortened. One is the limit. */
+/**
+ * How many times this covenant has been shortened. One is the limit.
+ *
+ * Guarded and scoped like everything else here. Every exported function in a
+ * "use server" file is a public endpoint, and this one took a plan id from
+ * whoever called it — so it would answer questions about somebody else's
+ * covenant to anybody who could name it.
+ */
 export async function timesShortened(planId: string): Promise<number> {
+  const user = await requireOnboardedUser();
+
   const [row] = await db
     .select({ n: count() })
     .from(planAmendments)
-    .where(and(eq(planAmendments.planId, planId), eq(planAmendments.kind, "shortened")));
+    .innerJoin(plans, eq(plans.id, planAmendments.planId))
+    .where(
+      and(
+        eq(planAmendments.planId, planId),
+        eq(planAmendments.kind, "shortened"),
+        eq(plans.userId, user.id),
+      ),
+    );
   return row?.n ?? 0;
 }
 

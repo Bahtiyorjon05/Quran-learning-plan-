@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, isNotNull, sql } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { memorizationUnits, planDays, plans, profiles } from "@/db/schema";
@@ -57,6 +57,16 @@ export async function loadToday(userId: string): Promise<Today | null> {
 
   const date = todayIn(profile?.timeZone ?? "Asia/Tashkent");
 
+  /* Whole pages only.
+   *
+   * A page can be held for some of the surahs sitting on it — somebody who has
+   * Al-Kawthar by heart may say so without also claiming Al-Ma'un beside it —
+   * and such a page is shown as held in the mushaf, because that is the point
+   * of being able to mark it. But it is not a unit of revision: putting it in
+   * sabqi asks them to recite a page they know a third of, every day, and
+   * counting it in the frontier moves the covenant forward on work that has
+   * not been done. The juz milestones have always drawn this line; everything
+   * else was ignoring it. */
   const units = await db
     .select({
       page: memorizationUnits.page,
@@ -65,13 +75,20 @@ export async function loadToday(userId: string): Promise<Today | null> {
       lastReviewedAt: memorizationUnits.lastReviewedAt,
     })
     .from(memorizationUnits)
-    .where(and(eq(memorizationUnits.userId, userId), eq(memorizationUnits.state, "memorized")));
+    .where(
+      and(
+        eq(memorizationUnits.userId, userId),
+        eq(memorizationUnits.state, "memorized"),
+        isNull(memorizationUnits.surahs),
+      ),
+    );
 
+  const zone = profile?.timeZone ?? "Asia/Tashkent";
   const memorized: MemorizedPage[] = units.map((u) => ({
     page: u.page,
     strength: u.strength,
-    firstMemorizedAt: toCivil(u.firstMemorizedAt) ?? date,
-    lastReviewedAt: toCivil(u.lastReviewedAt),
+    firstMemorizedAt: toCivil(u.firstMemorizedAt, zone) ?? date,
+    lastReviewedAt: toCivil(u.lastReviewedAt, zone),
   }));
 
   const scope: PlanScope =
@@ -149,9 +166,17 @@ export async function loadToday(userId: string): Promise<Today | null> {
   };
 }
 
-function toCivil(value: Date | null): CivilDate | null {
+/**
+ * An instant, as a calendar day where the reader is.
+ *
+ * It used to slice the ISO string, which is the day in UTC — and every other
+ * date in this file is the reader's own. Nine hours east, a page memorised at
+ * eight in the morning was recorded as yesterday, so it aged out of sabaq a
+ * day early and joined the monthly rotation before its month was up.
+ */
+function toCivil(value: Date | null, timeZone: string): CivilDate | null {
   if (!value) return null;
-  return value.toISOString().slice(0, 10);
+  return todayIn(timeZone, value);
 }
 
 /**
@@ -195,7 +220,14 @@ export async function recomputeProgress(userId: string) {
   const held = await db
     .select({ page: memorizationUnits.page })
     .from(memorizationUnits)
-    .where(and(eq(memorizationUnits.userId, userId), eq(memorizationUnits.state, "memorized")));
+    .where(
+      and(
+        eq(memorizationUnits.userId, userId),
+        eq(memorizationUnits.state, "memorized"),
+        /* A page held in part has not been passed through. */
+        isNull(memorizationUnits.surahs),
+      ),
+    );
 
   const pages = new Set(held.map((h) => h.page));
   let run = 0;

@@ -22,7 +22,21 @@
  * A stale answer to "did my page save" is worse than no answer.
  */
 
-const VERSION = "ahd-v2";
+const VERSION = "ahd-v3";
+
+/* Pages behind the sign-in, which are never written to the cache.
+
+   Everything under these is personal — a name, a covenant, a progress figure,
+   an email address on the settings screen. The download path already refuses
+   to keep the signed-in reader for exactly this reason ("caching it would put
+   one person's progress in front of whoever picks up the device next"), but
+   the runtime cache was keeping every page anybody navigated to, this included,
+   and nothing cleared it at sign-out. A borrowed phone in aeroplane mode
+   showed the last person's dashboard.
+
+   The version above is bumped alongside this, so any copy an older worker kept
+   is dropped on activation rather than lingering for the life of the install. */
+const PRIVATE = /^(?:\/(?:en|ru))?\/(?:app|admin)(?:\/|$)/;
 const PAGES = `${VERSION}-pages`;
 const STATIC = `${VERSION}-static`;
 const AUDIO = `${VERSION}-audio`;
@@ -150,10 +164,14 @@ self.addEventListener("fetch", (event) => {
 
   /* ── Pages ── */
   if (request.mode === "navigate") {
+    const personal = PRIVATE.test(url.pathname);
+
     event.respondWith(
       (async () => {
         try {
           const response = await fetch(request);
+          /* Signed-in pages are served and forgotten. */
+          if (personal) return response;
           /* `cache.put` refuses a redirected response, and locale routing means
              plenty of these arrive that way — so the copy that is kept is
              rebuilt from the body. Without this the put rejected quietly and

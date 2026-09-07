@@ -114,6 +114,14 @@ export const reviewLogs = pgTable(
       .references(() => memorizationUnits.id, { onDelete: "cascade" }),
     page: smallint().notNull(),
 
+    /* Which drill this was: mode, level and nonce, exactly as the session was
+       built from them. A drill is rebuilt deterministically from those, so the
+       same submission can be replayed — by a double tap, by a retry on a bad
+       connection, or on purpose — and each replay used to count as another
+       clean recitation, climbing the strength and pushing the next revision
+       further out. Null for the older rows, which predate the column. */
+    drillKey: text(),
+
     type: reviewType().notNull(),
     quality: smallint().notNull(),
     mistakeCount: integer().notNull().default(0),
@@ -126,6 +134,10 @@ export const reviewLogs = pgTable(
   },
   (t) => [
     index("review_logs_user_created_at_idx").on(t.userId, t.createdAt.desc()),
+    /* One score per drill. The uniqueness is what makes the replay harmless
+       rather than the check that precedes it, which two requests can pass at
+       the same moment. */
+    uniqueIndex("review_logs_user_drill_key").on(t.userId, t.drillKey),
     index("review_logs_unit_id_idx").on(t.unitId),
     check("review_logs_quality_range", sql`${t.quality} between 0 and 5`),
     check("review_logs_mistake_count_non_negative", sql`${t.mistakeCount} >= 0`),

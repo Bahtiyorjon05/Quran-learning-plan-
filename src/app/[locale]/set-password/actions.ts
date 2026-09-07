@@ -31,6 +31,15 @@ export async function setPasswordAction(
   const user = await requireUser();
   const locale = (await getLocale()) as Locale;
 
+  /* Checked here and not only on the page. A server action is its own endpoint
+     — a page-level redirect does not protect it — and without this, anybody
+     holding a live session could set a new password without knowing the
+     current one, which is every account-takeover story there is. There is no
+     "change password" flow yet; when there is, it asks for the old one. */
+  if (user.hasPassword) {
+    return { status: "error", error: { code: "passwordAlreadySet" } };
+  }
+
   const parsed = schema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};

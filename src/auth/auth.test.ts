@@ -509,6 +509,37 @@ describe("resetting a password", () => {
     expect(jar.get("ahd_session")).toBeTruthy();
   });
 
+  it("caps guesses in total, not per round trip", async () => {
+    /* The count used to be read, compared and written back in JavaScript, so
+       guesses fired together all read the same number and all got to compare.
+       Five meant five *each*. Spending the attempt in one statement, before
+       the comparison, is what makes the cap a real one. */
+    const { email } = await activate("resetflood");
+
+    outbox.length = 0;
+    await requestPasswordReset({ email, locale: "uz", ctx });
+    const wrong = String((Number(lastCode()) + 7) % 1_000_000).padStart(6, "0");
+
+    const attempts = await Promise.allSettled(
+      Array.from({ length: 12 }, () =>
+        checkResetCode({ email, code: wrong, ctx }),
+      ),
+    );
+
+    /* Every one is refused, and once the cap is reached the reason changes. */
+    expect(attempts.every((a) => a.status === "rejected")).toBe(true);
+    const reasons = attempts.map((a) =>
+      a.status === "rejected" ? (a.reason as { code?: string }).code : "resolved",
+    );
+    expect(reasons).toContain("codeAttemptsExceeded");
+
+    /* And the real code is dead too: the guesses were spent against it. */
+    outbox.length = 0;
+    await expect(
+      resetPassword({ email, code: "000000", password: "a-much-longer-secret", ctx }),
+    ).rejects.toMatchObject({ code: "codeAttemptsExceeded" });
+  });
+
   it("rejects a wrong reset code", async () => {
     const { email } = await activate("resetwrong");
 

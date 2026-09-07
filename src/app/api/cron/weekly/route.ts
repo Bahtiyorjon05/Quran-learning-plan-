@@ -1,4 +1,4 @@
-import { and, eq, isNotNull, sql } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { memorizationUnits, plans, profiles, users } from "@/db/schema";
@@ -8,6 +8,8 @@ import { countStudyDays } from "@/core/plan/schedule";
 import { decayedStrength, FRAGILE_BELOW, type UnitState } from "@/core/srs/strength";
 import { weeklyReportEmail, type WeeklyFigures } from "@/email/templates";
 import { sendMail } from "@/email/mailer";
+import { timingSafeEqual } from "node:crypto";
+
 import { env } from "@/lib/env";
 import type { Locale } from "@/i18n/routing";
 
@@ -39,7 +41,12 @@ function authorised(request: Request): boolean {
   /* No secret configured means this cannot be called at all, rather than
      meaning it is open. */
   if (!secret) return false;
-  return request.headers.get("authorization") === `Bearer ${secret}`;
+
+  /* Compared byte for byte in constant time: `===` on a secret returns as soon
+     as two bytes differ, and that difference is measurable over enough tries. */
+  const offered = Buffer.from(request.headers.get("authorization") ?? "");
+  const expected = Buffer.from(`Bearer ${secret}`);
+  return offered.length === expected.length && timingSafeEqual(offered, expected);
 }
 
 export async function GET(request: Request) {
@@ -139,7 +146,13 @@ async function weekFor(
       lastReviewedAt: memorizationUnits.lastReviewedAt,
     })
     .from(memorizationUnits)
-    .where(and(eq(memorizationUnits.userId, userId), eq(memorizationUnits.state, "memorized")));
+    .where(
+      and(
+        eq(memorizationUnits.userId, userId),
+        eq(memorizationUnits.state, "memorized"),
+        isNull(memorizationUnits.surahs),
+      ),
+    );
 
   const now = Date.now();
   const fragile = units.filter((unit) => {

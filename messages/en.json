@@ -350,7 +350,8 @@
       "twoFactorNotOn": "This account has no second password.",
       "twoFactorInvalid": "That is not the second password. {remaining} attempts left.",
       "twoFactorLocked": "Too many wrong answers. Try again in {minutes} minutes, or reset the second password.",
-      "twoFactorSameAsPassword": "The second password must differ from your usual one — otherwise both locks open with the same key."
+      "twoFactorSameAsPassword": "The second password must differ from your usual one — otherwise both locks open with the same key.",
+      "passwordAlreadySet": "This account already has a password. Use “forgot password” to change it."
     },
     "validation": {
       "required": "This field is required",

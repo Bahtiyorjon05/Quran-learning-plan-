@@ -1,10 +1,14 @@
 import "server-only";
 
-import { getTranslations } from "next-intl/server";
+import en from "../../../messages/en.json";
+import ru from "../../../messages/ru.json";
+import uz from "../../../messages/uz.json";
 
 import { pushToUser } from "@/push/send";
 import type { Locale } from "@/i18n/routing";
 import type { NewMilestone } from "./juz";
+
+const MESSAGES = { en, ru, uz } as const;
 
 /**
  * Tell the person's other devices.
@@ -28,10 +32,14 @@ export async function announceJuz(
   const highest = milestones.reduce((max, m) => (m.juz > max.juz ? m : max), milestones[0]);
 
   try {
-    const t = await getTranslations({ locale, namespace: "push.juz" });
+    /* The copy is read from the bundled messages rather than through
+       `getTranslations`. This runs after the response has gone, where the
+       request context that next-intl reads from is being torn down — the cron
+       route has always taken it this way, for the same reason. */
+    const copy = MESSAGES[locale].push.juz;
     await pushToUser(userId, {
-      title: t("title", { juz: highest.juz }),
-      body: t("body"),
+      title: copy.title.replace("{juz}", String(highest.juz)),
+      body: copy.body,
       url: "/app",
       /* One notification about juz at a time: a later one replaces the last
          rather than stacking a column of them in the tray. */

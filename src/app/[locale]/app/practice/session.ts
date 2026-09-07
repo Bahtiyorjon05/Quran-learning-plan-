@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { memorizationUnits, profiles } from "@/db/schema";
@@ -62,7 +62,17 @@ export async function practicablePages(
       lastReviewedAt: memorizationUnits.lastReviewedAt,
     })
     .from(memorizationUnits)
-    .where(and(eq(memorizationUnits.userId, userId), eq(memorizationUnits.state, "memorized")));
+    .where(
+      and(
+        eq(memorizationUnits.userId, userId),
+        eq(memorizationUnits.state, "memorized"),
+        /* Whole pages only, everywhere. A page held for one of its surahs is a
+           real thing and the reader can see it marked in the mushaf — but it
+           is not a page held, and offering it here would put it in the mosaic,
+           in the shortlist, and then in a drill that refuses to score it. */
+        isNull(memorizationUnits.surahs),
+      ),
+    );
 
   const items = rows.map((row) => {
     const unit: UnitState = {
@@ -241,6 +251,10 @@ export async function isHeld(userId: string, page: number): Promise<boolean> {
         eq(memorizationUnits.userId, userId),
         eq(memorizationUnits.page, page),
         eq(memorizationUnits.state, "memorized"),
+        /* Held in part is not held for this purpose: a drill covers the whole
+           page, so scoring one against a page somebody knows a third of would
+           mark them down for ayahs they never claimed. */
+        isNull(memorizationUnits.surahs),
       ),
     )
     .limit(1);
@@ -252,6 +266,12 @@ export async function heldPageCount(userId: string): Promise<number> {
   const [row] = await db
     .select({ pages: sql<number>`count(*)::int` })
     .from(memorizationUnits)
-    .where(and(eq(memorizationUnits.userId, userId), eq(memorizationUnits.state, "memorized")));
+    .where(
+      and(
+        eq(memorizationUnits.userId, userId),
+        eq(memorizationUnits.state, "memorized"),
+        isNull(memorizationUnits.surahs),
+      ),
+    );
   return row?.pages ?? 0;
 }

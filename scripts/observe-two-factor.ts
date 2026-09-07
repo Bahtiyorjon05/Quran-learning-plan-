@@ -144,15 +144,23 @@ async function main() {
   const ctx2 = await browser.newContext({ viewport: { width: 1280, height: 950 } });
   await ctx2.addCookies([{ name: "ahd_session", value: fresh, domain: new URL(BASE).hostname, path: "/", httpOnly: true, sameSite: "Lax" }]);
   const p2 = await ctx2.newPage();
+  /* Waited for rather than sampled.
+   *
+   * There is a `loading.tsx` over /app, so the shell starts streaming before
+   * the guard has finished asking the database about the second factor — the
+   * redirect then arrives inside the stream and the browser follows it a
+   * moment later. A fixed pause read the URL while it was still /en/app and
+   * reported a hole that is not there: the streamed shell carries no personal
+   * data, and every route behind the wall ends at the challenge. */
   await p2.goto(`${BASE}/en/app`, { waitUntil: "domcontentloaded" });
-  await p2.waitForTimeout(1500);
+  await p2.waitForURL(/two-factor/, { timeout: 8000 }).catch(() => {});
   const landed = new URL(p2.url()).pathname;
   console.log(`  3. /app with the factor on → ${landed}`);
   if (!/two-factor/.test(landed)) failures.push(`a session that has not cleared the factor reached ${landed}`);
 
   /* ── 4. And so is every other screen behind the wall ── */
   await p2.goto(`${BASE}/en/app/settings`, { waitUntil: "domcontentloaded" });
-  await p2.waitForTimeout(1200);
+  await p2.waitForURL(/two-factor/, { timeout: 8000 }).catch(() => {});
   const settingsLanded = new URL(p2.url()).pathname;
   console.log(`  4. /app/settings likewise → ${settingsLanded}`);
   if (!/two-factor/.test(settingsLanded)) {
@@ -160,6 +168,10 @@ async function main() {
   }
 
   /* ── 5. The challenge offers the way out ── */
+  await p2
+    .getByRole("button", { name: /Forgotten your second password/i })
+    .waitFor({ timeout: 5000 })
+    .catch(() => {});
   const forgot = await p2.getByRole("button", { name: /Forgotten your second password/i }).count();
   console.log(`  5. the way out is offered → ${forgot > 0 ? "yes" : "MISSING"}`);
   if (forgot === 0) failures.push("the challenge screen offers no way to reset a forgotten second password");

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq, isNotNull, sql } from "drizzle-orm";
+import { and, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import {
@@ -658,7 +658,12 @@ export async function loadDepth(): Promise<AdminDepth> {
         })
         .from(memorizationUnits)
         .innerJoin(users, eq(users.id, memorizationUnits.userId))
-        .where(eq(memorizationUnits.state, "memorized"))
+        .where(
+          and(
+            eq(memorizationUnits.state, "memorized"),
+            isNull(memorizationUnits.surahs),
+          ),
+        )
         .groupBy(users.id, users.displayName, users.email)
         .orderBy(desc(sql`count(${memorizationUnits.id})`))
         .limit(8),

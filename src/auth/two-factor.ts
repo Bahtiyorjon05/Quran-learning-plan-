@@ -300,19 +300,27 @@ export async function verifySecondFactor(input: {
   }
 
   if (!(await verifyPassword(row.passwordHash, input.password))) {
-    const failed = row.failedCount + 1;
+    /* Incremented in the database, for the same reason the login counter is:
+       a counter read in JavaScript is a counter that parallel guesses share. */
+    const [counted] = await db
+      .update(twoFactors)
+      .set({ failedCount: sql`${twoFactors.failedCount} + 1`, updatedAt: sql`now()` })
+      .where(eq(twoFactors.userId, input.userId))
+      .returning({ failed: twoFactors.failedCount });
+
+    const failed = counted?.failed ?? row.failedCount + 1;
     const locked = failed >= SECOND_FACTOR_MAX_FAILURES;
 
-    await db
-      .update(twoFactors)
-      .set({
-        failedCount: locked ? 0 : failed,
-        lockedUntil: locked
-          ? new Date(Date.now() + SECOND_FACTOR_LOCKOUT_MINUTES * 60_000)
-          : row.lockedUntil,
-        updatedAt: sql`now()`,
-      })
-      .where(eq(twoFactors.userId, input.userId));
+    if (locked) {
+      await db
+        .update(twoFactors)
+        .set({
+          failedCount: 0,
+          lockedUntil: new Date(Date.now() + SECOND_FACTOR_LOCKOUT_MINUTES * 60_000),
+          updatedAt: sql`now()`,
+        })
+        .where(eq(twoFactors.userId, input.userId));
+    }
 
     await recordAuthEvent({ kind: "two_factor_failed", userId: input.userId, ctx: input.ctx });
 

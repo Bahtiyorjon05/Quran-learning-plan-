@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, lt, sql } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import {
@@ -50,6 +50,32 @@ import {
 
 export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
+}
+
+/**
+ * Spend one guess, or refuse.
+ *
+ * The count has to be spent *before* the code is compared, and the cap has to
+ * live in the same statement as the increment. Reading `attempts`, comparing
+ * the code and then writing `attempts + 1` gave an attacker as many guesses as
+ * they could hold requests open: fifty parallel attempts all read zero, all
+ * got to compare, and all wrote one. Five meant five per round trip rather
+ * than five in total.
+ *
+ * Returns how many guesses are left, or null when there are none.
+ */
+async function spendAttempt(
+  table: typeof emailVerificationCodes | typeof passwordResetCodes,
+  id: string,
+): Promise<number | null> {
+  const [row] = await db
+    .update(table)
+    .set({ attempts: sql`${table.attempts} + 1` })
+    .where(and(eq(table.id, id), lt(table.attempts, OTP_MAX_ATTEMPTS)))
+    .returning({ attempts: table.attempts });
+
+  if (!row) return null;
+  return OTP_MAX_ATTEMPTS - row.attempts;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -232,27 +258,29 @@ export async function verifyEmail(input: { code: string; ctx: RequestContext }) 
 
   if (!row) throw new AuthError("verificationExpired");
   if (row.expiresAt.getTime() < Date.now()) throw new AuthError("codeExpired");
-  if (row.attempts >= OTP_MAX_ATTEMPTS) throw new AuthError("codeAttemptsExceeded");
+
+  /* Spent before the comparison, so a guess costs the same whether it races
+     another one or not. */
+  const remaining = await spendAttempt(emailVerificationCodes, row.id);
+  if (remaining === null) throw new AuthError("codeAttemptsExceeded");
 
   const supplied = hashOtp(pending.userId, input.code.trim());
 
   if (!safeEqualHex(supplied, row.codeHash)) {
-    await db
-      .update(emailVerificationCodes)
-      .set({ attempts: row.attempts + 1 })
-      .where(eq(emailVerificationCodes.id, row.id));
-
-    if (row.attempts + 1 >= OTP_MAX_ATTEMPTS) throw new AuthError("codeAttemptsExceeded");
-    throw new AuthError("codeInvalid", {
-      remaining: OTP_MAX_ATTEMPTS - (row.attempts + 1),
-    });
+    if (remaining === 0) throw new AuthError("codeAttemptsExceeded");
+    throw new AuthError("codeInvalid", { remaining });
   }
 
   await db.transaction(async (tx) => {
-    await tx
+    /* Consumed conditionally: two requests carrying the same correct code can
+       arrive together, and only one of them may be the one that spends it. */
+    const [consumed] = await tx
       .update(emailVerificationCodes)
       .set({ consumedAt: sql`now()` })
-      .where(eq(emailVerificationCodes.id, row.id));
+      .where(and(eq(emailVerificationCodes.id, row.id), isNull(emailVerificationCodes.consumedAt)))
+      .returning({ id: emailVerificationCodes.id });
+
+    if (!consumed) throw new AuthError("verificationExpired");
 
     await tx
       .update(users)
@@ -370,16 +398,24 @@ export async function login(input: {
   const ok = await verifyPassword(user.passwordHash, input.password);
 
   if (!ok) {
-    const failed = user.failedLoginCount + 1;
+    /* Counted in the database rather than in JavaScript: parallel guesses all
+       read the same number and all wrote the same number back, so the lockout
+       could be walked straight past by attempting several at once. */
+    const [counted] = await db
+      .update(users)
+      .set({ failedLoginCount: sql`${users.failedLoginCount} + 1` })
+      .where(eq(users.id, user.id))
+      .returning({ failed: users.failedLoginCount });
+
+    const failed = counted?.failed ?? user.failedLoginCount + 1;
     const lockFor = lockoutMinutes(failed);
 
-    await db
-      .update(users)
-      .set({
-        failedLoginCount: failed,
-        lockedUntil: lockFor > 0 ? minutesFromNow(lockFor) : null,
-      })
-      .where(eq(users.id, user.id));
+    if (lockFor > 0) {
+      await db
+        .update(users)
+        .set({ lockedUntil: minutesFromNow(lockFor) })
+        .where(eq(users.id, user.id));
+    }
 
     await recordAuthEvent({ kind: "login_failure", userId: user.id, email, ctx: input.ctx });
 
@@ -498,18 +534,13 @@ export async function checkResetCode(input: {
 
   if (!row) throw new AuthError("codeInvalid");
   if (row.expiresAt.getTime() < Date.now()) throw new AuthError("codeExpired");
-  if (row.attempts >= OTP_MAX_ATTEMPTS) throw new AuthError("codeAttemptsExceeded");
+
+  const remaining = await spendAttempt(passwordResetCodes, row.id);
+  if (remaining === null) throw new AuthError("codeAttemptsExceeded");
 
   if (!safeEqualHex(hashOtp(user.id, input.code.trim()), row.codeHash)) {
-    await db
-      .update(passwordResetCodes)
-      .set({ attempts: row.attempts + 1 })
-      .where(eq(passwordResetCodes.id, row.id));
-
-    if (row.attempts + 1 >= OTP_MAX_ATTEMPTS) throw new AuthError("codeAttemptsExceeded");
-    throw new AuthError("codeInvalid", {
-      remaining: OTP_MAX_ATTEMPTS - (row.attempts + 1),
-    });
+    if (remaining === 0) throw new AuthError("codeAttemptsExceeded");
+    throw new AuthError("codeInvalid", { remaining });
   }
 
   return { ok: true as const };
@@ -546,27 +577,28 @@ export async function resetPassword(input: {
 
   if (!row) throw new AuthError("codeInvalid");
   if (row.expiresAt.getTime() < Date.now()) throw new AuthError("codeExpired");
-  if (row.attempts >= OTP_MAX_ATTEMPTS) throw new AuthError("codeAttemptsExceeded");
+
+  const remaining = await spendAttempt(passwordResetCodes, row.id);
+  if (remaining === null) throw new AuthError("codeAttemptsExceeded");
 
   if (!safeEqualHex(hashOtp(user.id, input.code.trim()), row.codeHash)) {
-    await db
-      .update(passwordResetCodes)
-      .set({ attempts: row.attempts + 1 })
-      .where(eq(passwordResetCodes.id, row.id));
-
-    if (row.attempts + 1 >= OTP_MAX_ATTEMPTS) throw new AuthError("codeAttemptsExceeded");
-    throw new AuthError("codeInvalid", {
-      remaining: OTP_MAX_ATTEMPTS - (row.attempts + 1),
-    });
+    if (remaining === 0) throw new AuthError("codeAttemptsExceeded");
+    throw new AuthError("codeInvalid", { remaining });
   }
 
   const passwordHash = await hashPassword(input.password);
 
   await db.transaction(async (tx) => {
-    await tx
+    /* Only one of two racing requests may spend the code — the other finds it
+       already consumed and is turned away rather than setting a second
+       password from the same six digits. */
+    const [consumed] = await tx
       .update(passwordResetCodes)
       .set({ consumedAt: sql`now()` })
-      .where(eq(passwordResetCodes.id, row.id));
+      .where(and(eq(passwordResetCodes.id, row.id), isNull(passwordResetCodes.consumedAt)))
+      .returning({ id: passwordResetCodes.id });
+
+    if (!consumed) throw new AuthError("codeInvalid");
 
     await tx
       .update(users)
