@@ -30,28 +30,32 @@ type Layers = {
 };
 
 /*
- * The floor is high on purpose.
+ * Restraint, because more stopped being better.
  *
- * Finishing a page is the thing that actually happens — most days, for years —
- * and it was getting the thinnest version of this while the grand ones nobody
- * reaches for months got everything. So a page now gets every layer: shafts,
- * orbs, rings, sixty-odd blossoms and the near layer in front. The tiers above
- * it still climb, but they climb from something already worth seeing rather
- * than from a handful of specks.
+ * Three hundred motes and seventy blossoms over a page of Qur'an is not a
+ * celebration, it is an obstruction: the words underneath disappear, the card
+ * saying what happened competes with the noise in front of it, and the whole
+ * thing reads as a screensaver rather than as a moment. The eye cannot hold
+ * many moving things at once, so the counts now assume it.
+ *
+ * Three seconds for a page. Long enough to see, short enough that nobody waits
+ * for their own screen back — and brevity is most of what makes a thing feel
+ * expensive rather than indulgent.
  */
 const LAYERS: Record<Tier, Layers> = {
-  /* A page. */
-  0: { rainRate: 1.7, petals: 64, rings: 3, shafts: 6, twinkles: 28, orbs: 7, near: 7, span: 5.6 },
-  /* A juz. */
-  1: { rainRate: 1.5, petals: 92, rings: 4, shafts: 9, twinkles: 38, orbs: 9, near: 10, span: 6.4 },
+  /* A page: a fall of light, a few blossoms, one ring. Nothing in front. */
+  0: { rainRate: 6, petals: 11, rings: 1, shafts: 0, twinkles: 9, orbs: 3, near: 0, span: 3 },
+  /* A juz, and up. These have a panel of their own to sit behind, so they can
+     carry more — and they climb by adding layers, not by adding clutter. */
+  1: { rainRate: 5, petals: 18, rings: 2, shafts: 3, twinkles: 14, orbs: 4, near: 3, span: 3.6 },
   /* Five. */
-  2: { rainRate: 1.35, petals: 122, rings: 5, shafts: 12, twinkles: 46, orbs: 11, near: 13, span: 7 },
+  2: { rainRate: 4.4, petals: 24, rings: 2, shafts: 5, twinkles: 18, orbs: 5, near: 4, span: 4 },
   /* Ten. */
-  3: { rainRate: 1.25, petals: 150, rings: 6, shafts: 15, twinkles: 54, orbs: 13, near: 16, span: 7.6 },
+  3: { rainRate: 3.8, petals: 30, rings: 3, shafts: 6, twinkles: 22, orbs: 6, near: 5, span: 4.4 },
   /* Twenty. */
-  4: { rainRate: 1.15, petals: 182, rings: 7, shafts: 18, twinkles: 62, orbs: 15, near: 19, span: 8.2 },
-  /* Thirty: the whole Qur'an. */
-  5: { rainRate: 1, petals: 220, rings: 8, shafts: 22, twinkles: 74, orbs: 18, near: 24, span: 9 },
+  4: { rainRate: 3.2, petals: 38, rings: 3, shafts: 8, twinkles: 26, orbs: 7, near: 6, span: 4.8 },
+  /* Thirty: the whole Qur'an, and the only one that earns five seconds. */
+  5: { rainRate: 2.6, petals: 48, rings: 4, shafts: 10, twinkles: 32, orbs: 8, near: 8, span: 5.2 },
 };
 
 /** A hash, not a sequence: `i * k % m` correlates every field with every other. */
@@ -98,21 +102,24 @@ const PETAL = (() => {
    variation a real fall of petals has. */
 const TINTS = ["#e9c96a", "#f3dfa4", "#d9ab3f"];
 
-function fallingBit(i: number, count: number, petal: boolean) {
+function fallingBit(i: number, count: number, petal: boolean, stretch: number) {
   const r = (salt: number) => noise(i, salt);
   const lane = (i / count) * 100;
-  /* Petals are broader, so they fall slower — the same reason they do outside. */
-  const d = petal ? 3.6 + r(3) * 3 : 2.6 + r(3) * 2.8;
-  const delay = r(4) * 2.4;
+  /* Petals are broader, so they fall slower — the same reason they do outside.
+     Both are scaled to the tier's own span, so the last one leaves the screen
+     as the card does. A particle still crossing after the words have gone is
+     litter, not weather. */
+  const d = (petal ? 2 + r(3) * 0.7 : 1.7 + r(3) * 0.6) * stretch;
+  const delay = r(4) * 0.5 * stretch;
 
   const el = document.createElement("i");
   el.style.cssText =
     `--x:${(lane + r(1) * (100 / count)).toFixed(2)}%;` +
     `--y:${(6 + r(8) * 82).toFixed(1)}%;` +
-    `--w:${(petal ? 13 + r(2) * 15 : 7 + r(2) * 14).toFixed(1)}px;` +
+    `--w:${(petal ? 12 + r(2) * 10 : 5 + r(2) * 8).toFixed(1)}px;` +
     `--d:${d.toFixed(2)}s;--delay:${delay.toFixed(2)}s;` +
     `--drift:${Math.round(r(5) * 150 - 75)}px;--spin:${Math.round(r(6) * 560 - 200)}deg;` +
-    `--dim:${(0.55 + r(7) * 0.45).toFixed(2)};--sway:${(1.8 + r(9) * 1.8).toFixed(2)}s`;
+    `--dim:${(0.4 + r(7) * 0.4).toFixed(2)};--sway:${(1.2 + r(9) * 1).toFixed(2)}s`;
 
   if (petal) {
     el.className = "ahd-petal";
@@ -155,29 +162,32 @@ export function paint(host: HTMLElement, tier: Tier): number {
     shaft.className = "ahd-shaft";
     shaft.style.cssText =
       `--a:${Math.round((i / Math.max(1, layers.shafts)) * 360 - 180)}deg;` +
-      `--d:${(2.8 + noise(i, 11) * 2.6).toFixed(2)}s;` +
-      `--delay:${(noise(i, 12) * 1.4).toFixed(2)}s`;
+      `--d:${(2.2 + noise(i, 11) * 1.2).toFixed(2)}s;` +
+      `--delay:${(noise(i, 12) * 0.5).toFixed(2)}s`;
     host.append(shaft);
   }
 
   for (let i = 0; i < layers.rings; i++) {
     const ring = document.createElement("span");
     ring.className = "ahd-ring";
-    ring.style.cssText = `--d:${(1.6 + i * 0.35).toFixed(2)}s;--delay:${(i * 0.42).toFixed(2)}s`;
+    ring.style.cssText = `--d:${(1.3 + i * 0.25).toFixed(2)}s;--delay:${(i * 0.3).toFixed(2)}s`;
     host.append(ring);
   }
 
-  /* Density is a rate, not a count: the same number across a laptop that fills
-     a phone is drizzle. */
-  const rain = Math.max(140, Math.min(340, Math.round(width / layers.rainRate)));
+  /* Still a rate rather than a count, so a laptop is not drizzle — but capped
+     low enough that the page underneath is still a page. */
+  const rain = Math.max(46, Math.min(130, Math.round(width / layers.rainRate)));
+  /* Everything is timed against three seconds, and the bigger tiers simply
+     take longer in the same proportions. */
+  const stretch = layers.span / 3;
   for (let i = 0; i < rain; i++) {
-    const bit = fallingBit(i, rain, false);
+    const bit = fallingBit(i, rain, false, stretch);
     host.append(bit.el);
     longest = Math.max(longest, bit.life);
   }
 
   for (let i = 0; i < layers.petals; i++) {
-    const bit = fallingBit(i, layers.petals, true);
+    const bit = fallingBit(i, layers.petals, true, stretch);
     host.append(bit.el);
     longest = Math.max(longest, bit.life);
   }
@@ -187,9 +197,9 @@ export function paint(host: HTMLElement, tier: Tier): number {
     orb.className = "ahd-orb";
     orb.style.cssText =
       `--x:${(noise(i, 31) * 100).toFixed(1)}%;--y:${(noise(i, 32) * 100).toFixed(1)}%;` +
-      `--w:${(90 + noise(i, 33) * 260).toFixed(0)}px;` +
-      `--d:${(2.6 + noise(i, 34) * 2.6).toFixed(2)}s;--delay:${(noise(i, 35) * 2.2).toFixed(2)}s;` +
-      `--dim:${(0.35 + noise(i, 36) * 0.35).toFixed(2)}`;
+      `--w:${(120 + noise(i, 33) * 200).toFixed(0)}px;` +
+      `--d:${(1.8 + noise(i, 34) * 0.9).toFixed(2)}s;--delay:${(noise(i, 35) * 0.6).toFixed(2)}s;` +
+      `--dim:${(0.16 + noise(i, 36) * 0.16).toFixed(2)}`;
     host.append(orb);
   }
 
@@ -199,8 +209,8 @@ export function paint(host: HTMLElement, tier: Tier): number {
     spark.innerHTML = STAR;
     spark.style.cssText =
       `--x:${(noise(i, 21) * 96).toFixed(1)}%;--y:${(noise(i, 22) * 92).toFixed(1)}%;` +
-      `--w:${(9 + noise(i, 23) * 16).toFixed(1)}px;` +
-      `--d:${(1.2 + noise(i, 24) * 1.4).toFixed(2)}s;--delay:${(noise(i, 25) * 2.4).toFixed(2)}s`;
+      `--w:${(8 + noise(i, 23) * 11).toFixed(1)}px;` +
+      `--d:${(1 + noise(i, 24) * 0.7).toFixed(2)}s;--delay:${(noise(i, 25) * 1.1).toFixed(2)}s`;
     host.append(spark);
   }
 
@@ -222,8 +232,9 @@ export function paintFront(host: HTMLElement, tier: Tier): number {
 
   for (let i = 0; i < count; i++) {
     const r = (salt: number) => noise(i + 100, salt);
-    const d = 4.4 + r(3) * 3.2;
-    const delay = r(4) * 2.6;
+    const stretch = LAYERS[tier].span / 3;
+    const d = (2.2 + r(3) * 0.6) * stretch;
+    const delay = r(4) * 0.5 * stretch;
     longest = Math.max(longest, d + delay);
 
     const el = document.createElement("i");
@@ -231,10 +242,10 @@ export function paintFront(host: HTMLElement, tier: Tier): number {
     el.style.color = TINTS[i % TINTS.length];
     el.style.cssText +=
       `--x:${(r(1) * 100).toFixed(2)}%;--y:${(10 + r(8) * 70).toFixed(1)}%;` +
-      `--w:${(34 + r(2) * 40).toFixed(1)}px;` +
+      `--w:${(26 + r(2) * 24).toFixed(1)}px;` +
       `--d:${d.toFixed(2)}s;--delay:${delay.toFixed(2)}s;` +
       `--drift:${Math.round(r(5) * 220 - 110)}px;--spin:${Math.round(r(6) * 400 - 140)}deg;` +
-      `--dim:${(0.3 + r(7) * 0.3).toFixed(2)};--sway:${(2.4 + r(9) * 2).toFixed(2)}s`;
+      `--dim:${(0.2 + r(7) * 0.22).toFixed(2)};--sway:${(1.6 + r(9) * 1.2).toFixed(2)}s`;
     const inner = document.createElement("span");
     inner.innerHTML = PETAL;
     el.append(inner);

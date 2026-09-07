@@ -16,10 +16,10 @@
  * moments, which are the same thing several sizes larger.
  */
 
-import { chime, paint, paintFront } from "@/lib/celebrate";
+import { chime, paint } from "@/lib/celebrate";
 
-const HOLDS_FOR = 5400;
-const FADES_FOR = 550;
+const HOLDS_FOR = 3000;
+const FADES_FOR = 450;
 
 let current: HTMLElement | null = null;
 let fade: ReturnType<typeof setTimeout> | null = null;
@@ -120,12 +120,11 @@ export function refineLine(line: string) {
 }
 
 /**
- * The whole screen, for a page.
+ * The sky, for a page.
  *
- * Two layers, not one: everything falls behind the page being read, and a few
- * large blurred blossoms drift in front of it. The near layer is what makes it
- * look like the reader is inside the weather rather than watching it through a
- * window, and it costs seven elements.
+ * One layer only. The near layer — big blurred blossoms passing in front —
+ * belongs to the juz moments, which have a panel of their own to sit behind.
+ * Over a page of Qur'an it is simply something in the way of reading.
  */
 function goldFalls() {
   for (const old of sky) old.remove();
@@ -134,20 +133,15 @@ function goldFalls() {
   const back = document.createElement("div");
   back.setAttribute("aria-hidden", "true");
   back.className = "ahd-fall";
+  document.body.append(back);
+  sky = [back];
 
-  const near = document.createElement("div");
-  near.setAttribute("aria-hidden", "true");
-  near.className = "ahd-fall ahd-fall-front";
-
-  document.body.append(back, near);
-  sky = [back, near];
-
-  const life = Math.max(paint(back, 0), paintFront(near, 0));
+  const life = paint(back, 0);
   chime(0);
 
   if (rain) clearTimeout(rain);
   rain = setTimeout(() => {
-    for (const layer of [back, near]) layer.remove();
-    sky = sky.filter((layer) => layer !== back && layer !== near);
+    back.remove();
+    sky = sky.filter((layer) => layer !== back);
   }, life);
 }

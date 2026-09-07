@@ -1507,11 +1507,14 @@ body:has([data-app-tabbar]) {
 .ahd-wash {
   position: absolute;
   inset: -20%;
+  /* Light around the edges rather than across the middle. Gold poured over the
+     centre of the screen is gold poured over the words, and the words are what
+     the screen is for. */
   background:
-    radial-gradient(38% 30% at 22% 12%, rgb(var(--gold-rgb) / 0.3), transparent 70%),
-    radial-gradient(46% 34% at 78% 26%, rgb(var(--gold-rgb) / 0.24), transparent 72%),
-    radial-gradient(60% 40% at 50% 96%, rgb(var(--gold-rgb) / 0.28), transparent 74%);
-  animation: ahd-wash 4.6s ease-in-out both;
+    radial-gradient(42% 26% at 18% 6%, rgb(var(--gold-rgb) / 0.22), transparent 72%),
+    radial-gradient(48% 28% at 82% 12%, rgb(var(--gold-rgb) / 0.18), transparent 74%),
+    radial-gradient(70% 30% at 50% 102%, rgb(var(--gold-rgb) / 0.2), transparent 76%);
+  animation: ahd-wash 3s ease-in-out both;
 }
 
 .ahd-fall > i {
@@ -1617,11 +1620,14 @@ body:has([data-app-tabbar]) {
 .ahd-wash {
   position: absolute;
   inset: -20%;
+  /* Light around the edges rather than across the middle. Gold poured over the
+     centre of the screen is gold poured over the words, and the words are what
+     the screen is for. */
   background:
-    radial-gradient(38% 30% at 22% 12%, rgb(var(--gold-rgb) / 0.3), transparent 70%),
-    radial-gradient(46% 34% at 78% 26%, rgb(var(--gold-rgb) / 0.24), transparent 72%),
-    radial-gradient(60% 40% at 50% 96%, rgb(var(--gold-rgb) / 0.28), transparent 74%);
-  animation: ahd-wash 4.6s ease-in-out both;
+    radial-gradient(42% 26% at 18% 6%, rgb(var(--gold-rgb) / 0.22), transparent 72%),
+    radial-gradient(48% 28% at 82% 12%, rgb(var(--gold-rgb) / 0.18), transparent 74%),
+    radial-gradient(70% 30% at 50% 102%, rgb(var(--gold-rgb) / 0.2), transparent 76%);
+  animation: ahd-wash 3s ease-in-out both;
 }
 
 .ahd-fall > i {
@@ -1774,7 +1780,7 @@ body:has([data-app-tabbar]) {
 }
 
 .ahd-fall-front > i {
-  filter: blur(3px);
+  filter: blur(4px);
 }
 
 .ahd-fall-front .ahd-petal {
