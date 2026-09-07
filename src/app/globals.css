@@ -1780,3 +1780,44 @@ body:has([data-app-tabbar]) {
 .ahd-fall-front .ahd-petal {
   filter: blur(3.5px) drop-shadow(0 0 10px rgb(var(--gold-rgb) / 0.5));
 }
+
+/* Orbs: big soft pools of light that swell and fade where they are, behind
+   everything falling. They are what stops a shower from reading as a flat
+   sheet of particles — the eye needs something slow behind the fast things. */
+@keyframes ahd-orb {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) translateY(14px);
+  }
+  40% {
+    opacity: var(--dim, 0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35) translateY(-26px);
+  }
+}
+
+.ahd-orb {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  height: var(--w);
+  width: var(--w);
+  margin: calc(var(--w) / -2) 0 0 calc(var(--w) / -2);
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgb(var(--gold-rgb) / 0.55) 0%,
+    rgb(var(--gold-rgb) / 0.22) 42%,
+    rgb(var(--gold-rgb) / 0) 70%
+  );
+  filter: blur(6px);
+  animation: ahd-orb var(--d) ease-in-out var(--delay) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ahd-orb {
+    animation-duration: 2.6s;
+  }
+}

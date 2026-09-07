@@ -16,16 +16,16 @@
  * moments, which are the same thing several sizes larger.
  */
 
-import { chime, paint } from "@/lib/celebrate";
+import { chime, paint, paintFront } from "@/lib/celebrate";
 
-const HOLDS_FOR = 4600;
+const HOLDS_FOR = 5400;
 const FADES_FOR = 550;
 
 let current: HTMLElement | null = null;
 let fade: ReturnType<typeof setTimeout> | null = null;
 let gone: ReturnType<typeof setTimeout> | null = null;
 let rain: ReturnType<typeof setTimeout> | null = null;
-let sky: HTMLElement | null = null;
+let sky: HTMLElement[] = [];
 
 function dismiss() {
   if (!current) return;
@@ -119,22 +119,35 @@ export function refineLine(line: string) {
   if (el) el.textContent = line;
 }
 
-/** The whole screen, for a page: tier zero of the same celebration. */
+/**
+ * The whole screen, for a page.
+ *
+ * Two layers, not one: everything falls behind the page being read, and a few
+ * large blurred blossoms drift in front of it. The near layer is what makes it
+ * look like the reader is inside the weather rather than watching it through a
+ * window, and it costs seven elements.
+ */
 function goldFalls() {
-  if (sky) sky.remove();
+  for (const old of sky) old.remove();
+  sky = [];
 
-  const host = document.createElement("div");
-  host.setAttribute("aria-hidden", "true");
-  host.className = "ahd-fall";
-  document.body.append(host);
-  sky = host;
+  const back = document.createElement("div");
+  back.setAttribute("aria-hidden", "true");
+  back.className = "ahd-fall";
 
-  const life = paint(host, 0);
+  const near = document.createElement("div");
+  near.setAttribute("aria-hidden", "true");
+  near.className = "ahd-fall ahd-fall-front";
+
+  document.body.append(back, near);
+  sky = [back, near];
+
+  const life = Math.max(paint(back, 0), paintFront(near, 0));
   chime(0);
 
   if (rain) clearTimeout(rain);
   rain = setTimeout(() => {
-    host.remove();
-    if (sky === host) sky = null;
+    for (const layer of [back, near]) layer.remove();
+    sky = sky.filter((layer) => layer !== back && layer !== near);
   }, life);
 }

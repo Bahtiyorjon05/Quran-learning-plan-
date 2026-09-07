@@ -22,23 +22,36 @@ type Layers = {
   rings: number;
   shafts: number;
   twinkles: number;
+  orbs: number;
+  /** Big, blurred blossoms drifting in front of everything. */
+  near: number;
   /** How long the whole thing runs, in seconds. */
   span: number;
 };
 
+/*
+ * The floor is high on purpose.
+ *
+ * Finishing a page is the thing that actually happens — most days, for years —
+ * and it was getting the thinnest version of this while the grand ones nobody
+ * reaches for months got everything. So a page now gets every layer: shafts,
+ * orbs, rings, sixty-odd blossoms and the near layer in front. The tiers above
+ * it still climb, but they climb from something already worth seeing rather
+ * than from a handful of specks.
+ */
 const LAYERS: Record<Tier, Layers> = {
-  /* A page. Full of gold, over in four seconds. */
-  0: { rainRate: 2.6, petals: 14, rings: 1, shafts: 0, twinkles: 8, span: 4.4 },
-  /* A juz. The light starts wheeling. */
-  1: { rainRate: 2.1, petals: 30, rings: 2, shafts: 4, twinkles: 16, span: 5.6 },
+  /* A page. */
+  0: { rainRate: 1.7, petals: 64, rings: 3, shafts: 6, twinkles: 28, orbs: 7, near: 7, span: 5.6 },
+  /* A juz. */
+  1: { rainRate: 1.5, petals: 92, rings: 4, shafts: 9, twinkles: 38, orbs: 9, near: 10, span: 6.4 },
   /* Five. */
-  2: { rainRate: 1.8, petals: 44, rings: 3, shafts: 6, twinkles: 24, span: 6.4 },
+  2: { rainRate: 1.35, petals: 122, rings: 5, shafts: 12, twinkles: 46, orbs: 11, near: 13, span: 7 },
   /* Ten. */
-  3: { rainRate: 1.6, petals: 58, rings: 4, shafts: 8, twinkles: 32, span: 7 },
+  3: { rainRate: 1.25, petals: 150, rings: 6, shafts: 15, twinkles: 54, orbs: 13, near: 16, span: 7.6 },
   /* Twenty. */
-  4: { rainRate: 1.4, petals: 74, rings: 5, shafts: 10, twinkles: 40, span: 7.6 },
-  /* Thirty: the whole Qur'an. Everything, for eight seconds. */
-  5: { rainRate: 1.2, petals: 96, rings: 6, shafts: 14, twinkles: 52, span: 8.4 },
+  4: { rainRate: 1.15, petals: 182, rings: 7, shafts: 18, twinkles: 62, orbs: 15, near: 19, span: 8.2 },
+  /* Thirty: the whole Qur'an. */
+  5: { rainRate: 1, petals: 220, rings: 8, shafts: 22, twinkles: 74, orbs: 18, near: 24, span: 9 },
 };
 
 /** A hash, not a sequence: `i * k % m` correlates every field with every other. */
@@ -55,21 +68,35 @@ const STAR =
   '<rect x="4.5" y="4.5" width="15" height="15" rx="1" transform="rotate(45 12 12)"></rect>' +
   "</svg>";
 
-/* A rosette rather than a garden flower: eight petals around a centre is the
-   shape already carved into every panel of this app. */
+/* A rosette rather than a garden flower: petals around a centre is the shape
+   already carved into every panel of this app. Two rings of them, the inner
+   set offset and paler, so it reads as a blossom with depth rather than as a
+   cog — one ring of identical ellipses is a gear, and a gear is not a
+   celebration. */
 const PETAL = (() => {
-  const leaves = Array.from(
+  const outer = Array.from(
     { length: 8 },
     (_, i) =>
-      `<ellipse cx="12" cy="6.4" rx="2.5" ry="5.2" transform="rotate(${i * 45} 12 12)"></ellipse>`,
+      `<ellipse cx="12" cy="5.9" rx="2.45" ry="5.5" transform="rotate(${i * 45} 12 12)"></ellipse>`,
+  ).join("");
+  const inner = Array.from(
+    { length: 8 },
+    (_, i) =>
+      `<ellipse cx="12" cy="8.4" rx="1.7" ry="3.4" opacity="0.72" fill="#fff3cf" ` +
+      `transform="rotate(${i * 45 + 22.5} 12 12)"></ellipse>`,
   ).join("");
   return (
     '<svg viewBox="0 0 24 24" fill="currentColor" style="height:100%;width:100%">' +
-    leaves +
-    '<circle cx="12" cy="12" r="2.1" fill="#fff8e2"></circle>' +
+    outer +
+    inner +
+    '<circle cx="12" cy="12" r="1.9" fill="#fffaf0"></circle>' +
     "</svg>"
   );
 })();
+
+/* Blossoms are not all one gold. Three tints, so a screenful of them has the
+   variation a real fall of petals has. */
+const TINTS = ["#e9c96a", "#f3dfa4", "#d9ab3f"];
 
 function fallingBit(i: number, count: number, petal: boolean) {
   const r = (salt: number) => noise(i, salt);
@@ -89,6 +116,7 @@ function fallingBit(i: number, count: number, petal: boolean) {
 
   if (petal) {
     el.className = "ahd-petal";
+    el.style.color = TINTS[i % TINTS.length];
     /* The outer element falls, the inner one sways: one element cannot do both
        without the two sets of keyframes fighting over `transform`. */
     const inner = document.createElement("span");
@@ -154,6 +182,17 @@ export function paint(host: HTMLElement, tier: Tier): number {
     longest = Math.max(longest, bit.life);
   }
 
+  for (let i = 0; i < layers.orbs; i++) {
+    const orb = document.createElement("span");
+    orb.className = "ahd-orb";
+    orb.style.cssText =
+      `--x:${(noise(i, 31) * 100).toFixed(1)}%;--y:${(noise(i, 32) * 100).toFixed(1)}%;` +
+      `--w:${(90 + noise(i, 33) * 260).toFixed(0)}px;` +
+      `--d:${(2.6 + noise(i, 34) * 2.6).toFixed(2)}s;--delay:${(noise(i, 35) * 2.2).toFixed(2)}s;` +
+      `--dim:${(0.35 + noise(i, 36) * 0.35).toFixed(2)}`;
+    host.append(orb);
+  }
+
   for (let i = 0; i < layers.twinkles; i++) {
     const spark = document.createElement("span");
     spark.className = "ahd-twinkle";
@@ -178,7 +217,7 @@ export function paint(host: HTMLElement, tier: Tier): number {
  * away, and they must never be sharp enough to compete with the reading.
  */
 export function paintFront(host: HTMLElement, tier: Tier): number {
-  const count = 5 + tier * 3;
+  const count = LAYERS[tier].near;
   let longest = 0;
 
   for (let i = 0; i < count; i++) {
@@ -189,7 +228,8 @@ export function paintFront(host: HTMLElement, tier: Tier): number {
 
     const el = document.createElement("i");
     el.className = "ahd-petal";
-    el.style.cssText =
+    el.style.color = TINTS[i % TINTS.length];
+    el.style.cssText +=
       `--x:${(r(1) * 100).toFixed(2)}%;--y:${(10 + r(8) * 70).toFixed(1)}%;` +
       `--w:${(34 + r(2) * 40).toFixed(1)}px;` +
       `--d:${d.toFixed(2)}s;--delay:${delay.toFixed(2)}s;` +
