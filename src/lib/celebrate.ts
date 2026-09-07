@@ -45,17 +45,21 @@ type Layers = {
 const LAYERS: Record<Tier, Layers> = {
   /* A page: a fall of light, a few blossoms, one ring. Nothing in front. */
   0: { rainRate: 6, petals: 11, rings: 1, shafts: 0, twinkles: 9, orbs: 3, near: 0, span: 3 },
-  /* A juz, and up. These have a panel of their own to sit behind, so they can
-     carry more — and they climb by adding layers, not by adding clutter. */
-  1: { rainRate: 5, petals: 18, rings: 2, shafts: 3, twinkles: 14, orbs: 4, near: 3, span: 3.6 },
+  /* A juz, and up. These are different in kind, not degree: the screen is
+     given over to them, the ground behind is darkened, and there is a panel
+     holding the words — so blossoms may fall as thickly as they like without
+     landing on anything anybody is trying to read. Months of work each; they
+     are allowed to take the room. */
+  1: { rainRate: 3.4, petals: 40, rings: 3, shafts: 5, twinkles: 20, orbs: 6, near: 6, span: 4.6 },
   /* Five. */
-  2: { rainRate: 4.4, petals: 24, rings: 2, shafts: 5, twinkles: 18, orbs: 5, near: 4, span: 4 },
+  2: { rainRate: 3, petals: 58, rings: 3, shafts: 7, twinkles: 26, orbs: 7, near: 8, span: 5.2 },
   /* Ten. */
-  3: { rainRate: 3.8, petals: 30, rings: 3, shafts: 6, twinkles: 22, orbs: 6, near: 5, span: 4.4 },
+  3: { rainRate: 2.6, petals: 78, rings: 4, shafts: 9, twinkles: 32, orbs: 9, near: 10, span: 5.8 },
   /* Twenty. */
-  4: { rainRate: 3.2, petals: 38, rings: 3, shafts: 8, twinkles: 26, orbs: 7, near: 6, span: 4.8 },
-  /* Thirty: the whole Qur'an, and the only one that earns five seconds. */
-  5: { rainRate: 2.6, petals: 48, rings: 4, shafts: 10, twinkles: 32, orbs: 8, near: 8, span: 5.2 },
+  4: { rainRate: 2.2, petals: 100, rings: 5, shafts: 11, twinkles: 40, orbs: 11, near: 12, span: 6.4 },
+  /* Thirty: the whole Qur'an. Nothing else in the app is allowed to look like
+     this, which is the only reason it means anything when it happens. */
+  5: { rainRate: 1.8, petals: 130, rings: 6, shafts: 14, twinkles: 50, orbs: 13, near: 16, span: 7.2 },
 };
 
 /** A hash, not a sequence: `i * k % m` correlates every field with every other. */
@@ -174,9 +178,11 @@ export function paint(host: HTMLElement, tier: Tier): number {
     host.append(ring);
   }
 
-  /* Still a rate rather than a count, so a laptop is not drizzle — but capped
-     low enough that the page underneath is still a page. */
-  const rain = Math.max(46, Math.min(130, Math.round(width / layers.rainRate)));
+  /* Still a rate rather than a count, so a laptop is not drizzle. The ceiling
+     rises with the tier: over a page it has to stay light enough to read
+     through, and over a darkened screen with a panel on it, it does not. */
+  const ceiling = 130 + tier * 42;
+  const rain = Math.max(46, Math.min(ceiling, Math.round(width / layers.rainRate)));
   /* Everything is timed against three seconds, and the bigger tiers simply
      take longer in the same proportions. */
   const stretch = layers.span / 3;
@@ -256,17 +262,65 @@ export function paintFront(host: HTMLElement, tier: Tier): number {
 }
 
 /**
- * A bell.
+ * The sound of it.
  *
  * Synthesised rather than downloaded: a struck bell is a handful of sine
  * partials over an exponential decay, which costs nothing to ship, works with
  * no network, and cannot be the file that failed to load at the one moment
- * that mattered. It is quiet on purpose, and climbs as the tier rises — one
- * note for a page, six for the whole Qur'an.
+ * that mattered.
+ *
+ * A page gets a single note. A juz and above get a phrase — a low drone
+ * underneath, a melody climbing a pentatonic above it, and at ten and beyond a
+ * chord to land on — all of it through a reverb built from a decaying burst of
+ * noise, because dry sine tones sound like a microwave finishing and a tail on
+ * them sounds like a room.
  *
  * Nothing is thrown if the browser refuses. Sound is the part of this that is
  * allowed to be missing; a phone on silent is a choice, not a fault.
  */
+
+/* D major pentatonic across two octaves. Consonant with itself in any order,
+   so a phrase can be assembled from it without landing on a sour interval. */
+const SCALE = [293.66, 329.63, 391.99, 440, 523.25, 587.33, 659.25, 783.99, 880, 1046.5];
+
+/** A room, made from noise that decays. */
+function reverb(ctx: AudioContext, seconds: number) {
+  const rate = ctx.sampleRate;
+  const length = Math.floor(rate * seconds);
+  const buffer = ctx.createBuffer(2, length, rate);
+  for (let channel = 0; channel < 2; channel++) {
+    const data = buffer.getChannelData(channel);
+    for (let i = 0; i < length; i++) {
+      /* Exponential decay, which is what a real tail does. */
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.6);
+    }
+  }
+  const node = ctx.createConvolver();
+  node.buffer = buffer;
+  return node;
+}
+
+/** One struck note: the strike, the octave hum, and a fifth above that. */
+function strike(ctx: AudioContext, to: AudioNode, at: number, freq: number, level: number) {
+  const partials = [
+    { ratio: 1, gain: level, decay: 3 },
+    { ratio: 2, gain: level * 0.42, decay: 2 },
+    { ratio: 3.01, gain: level * 0.2, decay: 1.3 },
+  ];
+  for (const partial of partials) {
+    const osc = ctx.createOscillator();
+    const amp = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq * partial.ratio;
+    amp.gain.setValueAtTime(0.0001, at);
+    amp.gain.exponentialRampToValueAtTime(partial.gain, at + 0.014);
+    amp.gain.exponentialRampToValueAtTime(0.0001, at + partial.decay);
+    osc.connect(amp).connect(to);
+    osc.start(at);
+    osc.stop(at + partial.decay + 0.05);
+  }
+}
+
 export function chime(tier: Tier) {
   try {
     const Ctor =
@@ -277,40 +331,65 @@ export function chime(tier: Tier) {
     const ctx = new Ctor();
     void ctx.resume?.();
 
-    /* A pentatonic run, which is consonant with itself in any order — so the
-       tiers can share a scale without one of them landing on a sour interval. */
-    const scale = [587.33, 659.25, 783.99, 880, 1046.5, 1174.66];
-    const notes = Math.min(scale.length, 1 + tier);
-    const now = ctx.currentTime;
+    const master = ctx.createGain();
+    master.gain.value = 0.9;
+    master.connect(ctx.destination);
 
+    /* Dry and wet in parallel, so the notes keep their attack and still have a
+       tail. All of it quiet: this plays without being asked for. */
+    const wet = ctx.createGain();
+    wet.gain.value = tier === 0 ? 0.35 : 0.55;
+    wet.connect(reverb(ctx, tier === 0 ? 1.6 : 3)).connect(master);
+
+    const bus = ctx.createGain();
+    bus.gain.value = 1;
+    bus.connect(master);
+    bus.connect(wet);
+
+    const now = ctx.currentTime + 0.03;
+
+    if (tier === 0) {
+      strike(ctx, bus, now, SCALE[5], 0.16);
+      window.setTimeout(() => void ctx.close?.(), 3400);
+      return;
+    }
+
+    /* The phrase. Longer and slower as the tier rises — a run of eleven notes
+       hurried through in a second is a ringtone; the same notes given room to
+       ring are an occasion. */
+    const notes = 3 + tier * 2;
+    const step = 0.34 - tier * 0.015;
     for (let n = 0; n < notes; n++) {
-      const at = now + n * 0.26;
-      const base = scale[n];
-      /* Three partials: the strike, the hum an octave up, and a fifth above
-         that. One sine is a test tone; these three are a bell. */
-      const partials = [
-        { ratio: 1, gain: 0.16, decay: 2.6 },
-        { ratio: 2, gain: 0.07, decay: 1.8 },
-        { ratio: 3.01, gain: 0.035, decay: 1.2 },
-      ];
-      for (const partial of partials) {
-        const osc = ctx.createOscillator();
-        const amp = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.value = base * partial.ratio;
-        amp.gain.setValueAtTime(0.0001, at);
-        amp.gain.exponentialRampToValueAtTime(partial.gain, at + 0.012);
-        amp.gain.exponentialRampToValueAtTime(0.0001, at + partial.decay);
-        osc.connect(amp).connect(ctx.destination);
-        osc.start(at);
-        osc.stop(at + partial.decay + 0.05);
+      strike(ctx, bus, now + n * step, SCALE[n % SCALE.length], 0.13);
+    }
+
+    /* A drone underneath, swelling and falling away. It is what turns a
+       sequence of notes into music. */
+    const span = LAYERS[tier].span;
+    for (const freq of [73.42, 110]) {
+      const osc = ctx.createOscillator();
+      const amp = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      amp.gain.setValueAtTime(0.0001, now);
+      amp.gain.exponentialRampToValueAtTime(0.05, now + 0.9);
+      amp.gain.setValueAtTime(0.05, now + span * 0.6);
+      amp.gain.exponentialRampToValueAtTime(0.0001, now + span);
+      osc.connect(amp).connect(bus);
+      osc.start(now);
+      osc.stop(now + span + 0.2);
+    }
+
+    /* From ten juz, the phrase lands on a chord rather than trailing off. */
+    if (tier >= 3) {
+      const at = now + notes * step + 0.2;
+      for (const freq of [293.66, 369.99, 440, 587.33]) {
+        strike(ctx, bus, at, freq, 0.1);
       }
     }
 
-    /* Close it once it has rung out, or a tab that celebrates often collects
-       audio contexts until the browser refuses to make another. */
-    window.setTimeout(() => void ctx.close?.(), (notes * 0.26 + 3) * 1000);
+    window.setTimeout(() => void ctx.close?.(), (span + 4) * 1000);
   } catch {
-    /* No sound. The gold is the celebration; the bell is a courtesy. */
+    /* No sound. The gold is the celebration; the music is a courtesy. */
   }
 }

@@ -26,7 +26,6 @@ import { Illuminated } from "@/components/ui/illumination";
 import { Motes } from "@/components/ui/motes";
 import { Greeting } from "@/components/app/greeting";
 import { JuzSeals } from "@/components/app/juz-seals";
-import { JuzCelebration } from "@/components/app/juz-celebration";
 import { juzProgress } from "@/core/milestones/juz";
 import { Measure } from "@/components/ui/section";
 import { Link } from "@/i18n/navigation";
@@ -281,15 +280,9 @@ export default async function AppHomePage({
       <Atmosphere />
       <AppHeader />
 
-      {/* Anything finished but never shown. A juz completed on a phone at
-          midnight is still marked on the laptop in the morning. */}
-      {juz.unseen.length > 0 && (
-        <JuzCelebration
-          juz={juz.unseen}
-          total={juz.held.length}
-          name={user.displayName || user.email}
-        />
-      )}
+      {/* The celebration itself is mounted in the layout now, so a juz
+          finished in the mushaf is announced there rather than only once the
+          reader comes home. */}
 
       <TimeZoneSync current={profile?.timeZone ?? "Asia/Tashkent"} />
 

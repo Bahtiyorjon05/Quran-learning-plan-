@@ -75,6 +75,8 @@ export function JuzCelebration({
 
   const tier = tierOf(total);
   const whole = tier === "thirty";
+  /* Ten juz and beyond are watched in the dark. */
+  const dark = tier === "ten" || tier === "twenty" || whole;
   const weight = WEIGHT[tier];
 
   useEffect(() => {
@@ -135,10 +137,14 @@ export function JuzCelebration({
         onClick={close}
         className={cn(
           "fixed inset-0 cursor-default backdrop-blur-md",
-          /* At thirty the ground goes almost black: nothing else on the screen
-             should be competing for the eye. */
-          whole
-            ? "bg-[color-mix(in_oklab,var(--surface-base)_94%,transparent)]"
+          /* From ten juz the room goes dark whatever the theme — the lights
+             going down in a hall. On parchment a "darkened" ground made of the
+             page's own colour is barely a shade, and gold on it is a rumour;
+             on ink it blazes. The first juz and the fifth keep the lighter
+             ground: they happen often enough that blacking out the screen
+             would start to feel like an interruption. */
+          dark
+            ? "bg-[rgb(7_11_9_/_0.9)]"
             : "bg-[color-mix(in_oklab,var(--surface-base)_82%,transparent)]",
         )}
       />
@@ -157,6 +163,9 @@ export function JuzCelebration({
           whole
             ? "border-[var(--gold)]/45 shadow-[0_50px_140px_-30px_rgba(0,0,0,0.75)]"
             : "border-[var(--line-strong)] shadow-[0_40px_120px_-30px_rgba(0,0,0,0.7)]",
+          /* Lit from outside as well as within, so the panel reads as the one
+             thing in the room with a light on it. */
+          dark && "ring-1 ring-[rgb(var(--gold-rgb)/0.35)]",
           weight.panel,
         )}
       >
