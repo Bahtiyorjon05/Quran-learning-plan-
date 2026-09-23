@@ -1,6 +1,6 @@
 "use client";
 
-import { Play } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 
 /**
  * Recite from this verse.
@@ -14,6 +14,11 @@ import { Play } from "lucide-react";
  * The Arabic is server-rendered and must never re-render — that is the whole
  * reason the reciting verse is marked with a DOM attribute instead of React
  * state — and threading a callback down to six hundred verses would undo it.
+ *
+ * The same button stops it. Both icons are rendered and CSS shows whichever
+ * the verse's own `data-reciting` mark calls for: giving six hundred buttons a
+ * piece of React state to watch would cost more than the feature is worth, and
+ * the player already marks the verse it is sounding.
  */
 export function AyahPlay({ ayahKey, label }: { ayahKey: string; label: string }) {
   return (
@@ -25,9 +30,10 @@ export function AyahPlay({ ayahKey, label }: { ayahKey: string; label: string })
       onClick={() =>
         document.dispatchEvent(new CustomEvent("ahd-play-ayah", { detail: ayahKey }))
       }
-      className="inline-grid h-7 w-7 shrink-0 place-items-center rounded-full border border-[var(--line-subtle)] text-[var(--text-faint)] transition-[color,border-color,background-color] duration-300 hover:border-[var(--accent)]/50 hover:text-[var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+      className="ahd-ayah-button inline-grid h-7 w-7 shrink-0 place-items-center rounded-full border border-[var(--line-subtle)] text-[var(--text-faint)] transition-[color,border-color,background-color] duration-300 hover:border-[var(--accent)]/50 hover:text-[var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
     >
-      <Play className="h-3 w-3 translate-x-px" strokeWidth={2} />
+      <Play className="ahd-ayah-play h-3 w-3 translate-x-px" strokeWidth={2} />
+      <Pause className="ahd-ayah-pause h-3 w-3" strokeWidth={2} />
     </button>
   );
 }

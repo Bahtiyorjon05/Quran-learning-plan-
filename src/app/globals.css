@@ -1827,3 +1827,29 @@ body:has([data-app-tabbar]) {
     animation-duration: 2.6s;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   The play button beside a verse, which is also the stop button.
+
+   Which icon shows is decided by the verse's own `data-reciting` mark — the
+   one the player already sets to highlight what is sounding — rather than by
+   state. Six hundred verses on a page, and not one of them re-renders.
+--------------------------------------------------------------------------- */
+
+.ahd-ayah-button .ahd-ayah-pause {
+  display: none;
+}
+
+[data-reciting] .ahd-ayah-button .ahd-ayah-play {
+  display: none;
+}
+
+[data-reciting] .ahd-ayah-button .ahd-ayah-pause {
+  display: block;
+}
+
+/* Sounding right now, so it reads as active rather than as one more control. */
+[data-reciting] .ahd-ayah-button {
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+  color: var(--accent);
+}

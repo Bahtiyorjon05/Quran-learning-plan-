@@ -356,7 +356,20 @@ export function Recitation({
     const onRequest = (event: Event) => {
       const key = (event as CustomEvent<string>).detail;
       const at = ayahs.findIndex((ayah) => ayah.k === key);
-      if (at >= 0) playAt(at);
+      if (at < 0) return;
+
+      /* The same verse again means stop it. Tapping the verse you are already
+         listening to and having it start from the beginning is the one thing
+         the button could do that nobody wants — and with no way to stop, the
+         only way out was the player at the top of the page. */
+      const audio = audioRef.current;
+      if (at === index && audio) {
+        if (audio.paused) void audio.play().catch(() => setFailed(true));
+        else audio.pause();
+        return;
+      }
+
+      playAt(at);
     };
 
     document.addEventListener("ahd-play-ayah", onRequest);
