@@ -7,8 +7,10 @@ import {
   Pause,
   Play,
   Repeat,
+  SkipBack,
   SkipForward,
   SlidersHorizontal,
+  Square,
   Volume2,
 } from "lucide-react";
 
@@ -33,8 +35,11 @@ import { cn } from "@/lib/utils";
  *   - The verse being recited is marked in the text, and the page scrolls to
  *     keep it in view. Following a recitation while hunting for your place is
  *     the thing that makes people give up on listening while they learn.
- *   - Repeat loops one verse rather than the page. The same verse, ten times,
- *     is how a page is actually committed to memory.
+ *   - Repeat works on one verse rather than the page. The same verse, ten
+ *     times, is how a page is actually committed to memory.
+ *   - The end of the page is a choice — stop, go round again, or turn over —
+ *     because finishing the page you are learning and being carried on into
+ *     one you have not started is the opposite of what memorising wants.
  *   - A reciter who cannot do either says so, rather than quietly behaving
  *     differently. Badr al-Turki is one file per surah with no timing data, so
  *     nothing can know which verse is sounding.
@@ -128,13 +133,49 @@ const ORPHAN_GRACE_MS = 1500;
 let orphanTimer: ReturnType<typeof setTimeout> | null = null;
 
 const RECITER_KEY = "ahd-reciter";
-const REPEAT_KEY = "ahd-repeat-ayah";
+/* The old on/off repeat, which meant "this ayah, forever". Still honoured for
+   anyone who switched it on before it became a count. */
+const LEGACY_REPEAT_KEY = "ahd-repeat-ayah";
+const REPEAT_KEY = "ahd-repeat-times";
 const FOLLOW_KEY = "ahd-follow-recitation";
 const SPEED_KEY = "ahd-recitation-speed";
+const END_KEY = "ahd-recitation-end";
 
 /** Slow enough to follow a hard ayah, and never so fast it stops being tajwid. */
 const SPEEDS = [0.5, 0.75, 1, 1.25] as const;
 type Speed = (typeof SPEEDS)[number];
+
+/**
+ * How many times each ayah is heard before the next one.
+ *
+ * A count rather than an on/off switch: "each verse three times, then the
+ * next" is how a page is actually taken in, and a loop that never moves on
+ * means reaching for the screen after every verse. Infinity is the old
+ * behaviour — this one verse until you say otherwise.
+ */
+const REPEATS = [1, 3, 5, 10, Infinity] as const;
+
+function readRepeat(stored: string | null, legacy: string | null): number {
+  if (stored === "inf") return Infinity;
+  const times = Number(stored);
+  if (stored !== null && (REPEATS as readonly number[]).includes(times))
+    return times;
+  return legacy === "true" ? Infinity : 1;
+}
+
+function repeatLabel(times: number): string {
+  return times === Infinity ? "∞" : `${times}×`;
+}
+
+/**
+ * What happens once the last ayah has been heard.
+ *
+ * Turning the page by itself used to be the only behaviour, and for someone
+ * memorising one page it is exactly wrong: they finish the page they are
+ * learning and are carried on into one they have not started. So it is a
+ * choice, and stopping is the default.
+ */
+type EndMode = "stop" | "repeat" | "next";
 
 export type PlayableAyah = { k: string; s: number; a: number };
 
@@ -148,8 +189,9 @@ export function Recitation({
    * Where the text carries on, if it does.
    *
    * A page of the mushaf is a unit of print, not of recitation — nobody stops
-   * mid-surah because the paper ran out. Given this, the last ayah of a page
-   * turns to the next one and keeps going.
+   * mid-surah because the paper ran out. Given this, "turn the page" is
+   * offered as what happens at the end, and the last ayah of a page can carry
+   * on into the next one.
    */
   nextHref?: string;
   /**
@@ -167,7 +209,21 @@ export function Recitation({
   const router = useRouter();
 
   const reciter = reciterById(useLocalValue(RECITER_KEY) ?? "");
-  const repeatOne = useLocalValue(REPEAT_KEY) === "true";
+  const repeatTimes = readRepeat(
+    useLocalValue(REPEAT_KEY),
+    useLocalValue(LEGACY_REPEAT_KEY),
+  );
+
+  /* "Turn the page" is only a choice where there is a page to turn to. A
+     surah or a juz read whole has nowhere further to go, so a stored "next"
+     means stop there. */
+  const storedEnd = useLocalValue(END_KEY);
+  const atEnd: EndMode =
+    storedEnd === "repeat"
+      ? "repeat"
+      : storedEnd === "next" && nextHref
+        ? "next"
+        : "stop";
 
   /* Half speed is the reason this control exists: a difficult ayah taken slowly
      is the oldest trick in hifz, and every reciter here is too fast for a
@@ -193,6 +249,9 @@ export function Recitation({
      Kept in state because the mark has to move to a different element, and set
      only from event handlers — never from inside an effect. */
   const [sayingBasmala, setSayingBasmala] = useState(false);
+  /* Which hearing of the current ayah this is, from zero, when each is heard
+     more than once. */
+  const [pass, setPass] = useState(0);
 
   /* Position, for the seek bar. Kept in state because it has to be drawn, and
      updated from the element's own timeupdate rather than a timer — the
@@ -225,6 +284,7 @@ export function Recitation({
       audio.removeAttribute("src");
       audio.load();
       delete audio.dataset.index;
+      delete audio.dataset.basmala;
     }
     audio.dataset.pageKey = pageKey;
 
@@ -248,6 +308,8 @@ export function Recitation({
     const onPlaying = () => setLoading(false);
     const onWaiting = () => setLoading(true);
     const onError = () => {
+      /* Emptying the element to stop it is not a failure. */
+      if (!audio.getAttribute("src")) return;
       setLoading(false);
       setFailed(true);
     };
@@ -322,27 +384,36 @@ export function Recitation({
         setLoading(true);
         audio.src = sourceFor(reciter.id, index);
         if (index + 1 < ayahs.length) warm([sourceFor(reciter.id, index + 1)]);
-        void audio.play().catch(() => {
-          setLoading(false);
-          setFailed(true);
-        });
+        start(audio);
         return;
       }
 
       /* A surah file has already played the whole chapter, so there is nothing
-         after it. A verse file moves on, or repeats. */
-      if (!perAyah) return setIndex(null);
+         after it but the chapter again, if that was asked for. */
+      if (!perAyah) {
+        if (atEnd === "repeat") return playAt(index);
+        return stop();
+      }
 
-      /* The end of the page, with more text after it: turn over and keep
-         reciting. The flag rides on the element because the component that
-         reads it is not this one — it is the next page's. */
-      if (!repeatOne && index + 1 >= ayahs.length && nextHref) {
+      /* This ayah again, until it has been heard as many times as asked. */
+      const heard = pass + 1;
+      if (heard < repeatTimes)
+        return playAt(index, { basmala: false, pass: heard });
+
+      if (index + 1 < ayahs.length) return playAt(index + 1);
+
+      /* The end of the page. */
+      if (atEnd === "repeat") return playAt(0);
+
+      /* Turn over and keep reciting. The flag rides on the element because
+         the component that reads it is not this one — it is the next page's. */
+      if (atEnd === "next" && nextHref) {
         audio.dataset.autostart = "1";
         router.push(nextHref);
         return;
       }
 
-      playAt(repeatOne ? index : index + 1, !repeatOne);
+      stop();
     };
 
     audio.addEventListener("ended", onEnded);
@@ -358,16 +429,11 @@ export function Recitation({
       const at = ayahs.findIndex((ayah) => ayah.k === key);
       if (at < 0) return;
 
-      /* The same verse again means stop it. Tapping the verse you are already
-         listening to and having it start from the beginning is the one thing
-         the button could do that nobody wants — and with no way to stop, the
-         only way out was the player at the top of the page. */
-      const audio = audioRef.current;
-      if (at === index && audio) {
-        if (audio.paused) void audio.play().catch(() => setFailed(true));
-        else audio.pause();
-        return;
-      }
+      /* The same verse again means pause it, and again after that resumes.
+         Tapping the verse you are already listening to and having it start
+         from the beginning is the one thing the button could do that nobody
+         wants. */
+      if (at === index) return paused ? resume() : pause();
 
       playAt(at);
     };
@@ -376,27 +442,47 @@ export function Recitation({
     return () => document.removeEventListener("ahd-play-ayah", onRequest);
   });
 
-  /* playbackRate is a property of the element, not of the file, so it has to
-     be set again after every new src. */
+  /* playbackRate is reset to defaultPlaybackRate by every new src, so both are
+     set: the default carries the speed across the change of verse, rather than
+     the first moments of each one playing at normal speed. */
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) audio.playbackRate = speed;
+    if (!audio) return;
+    audio.defaultPlaybackRate = speed;
+    audio.playbackRate = speed;
   });
 
-  /* The mark, and the scroll that follows it. */
+  /* The mark: which verse is lit, and whether its own button shows play or
+     pause. Written onto the DOM so the server-rendered Arabic never re-renders.
+
+     The two are separate attributes on purpose. `data-reciting` is the light,
+     and while the Basmala sounds it belongs on the Basmala. `data-ayah-state`
+     is the button, and it stays on the verse being worked through — paused or
+     not, Basmala or not — so that verse's button always does the right thing
+     and says so. */
   useEffect(() => {
     const current = index === null ? null : ayahs[index];
-
-    /* While the Basmala sounds the mark belongs on the Basmala, not on the
-       ayah it opens — otherwise the page highlights a verse that is not being
-       recited yet, which is exactly the thing following along cannot survive. */
     const onBasmala = sayingBasmala && current !== null;
+    const playLabel = t("play");
+    const pauseLabel = t("pause");
 
     for (const node of document.querySelectorAll("[data-ayah]")) {
-      node.toggleAttribute(
-        "data-reciting",
-        !onBasmala && node.getAttribute("data-ayah") === current?.k,
-      );
+      const mine =
+        current !== null && node.getAttribute("data-ayah") === current.k;
+      node.toggleAttribute("data-reciting", mine && !onBasmala);
+
+      if (mine)
+        node.setAttribute("data-ayah-state", paused ? "paused" : "playing");
+      else node.removeAttribute("data-ayah-state");
+
+      /* The label has to follow the icon, or a screen reader announces "play"
+         on the button that is about to stop the recitation. */
+      const button = node.querySelector("[data-ayah-play]");
+      const label = mine && !paused ? pauseLabel : playLabel;
+      if (button && button.getAttribute("aria-label") !== label) {
+        button.setAttribute("aria-label", label);
+        button.setAttribute("title", label);
+      }
     }
 
     for (const node of document.querySelectorAll("[data-basmala]")) {
@@ -405,10 +491,16 @@ export function Recitation({
         onBasmala && node.getAttribute("data-basmala") === String(current?.s),
       );
     }
+  }, [index, ayahs, sayingBasmala, paused, t]);
 
+  /* The scroll that follows the mark. Kept apart from it so that pausing —
+     which changes the mark — never drags the page back to a verse the reader
+     has deliberately scrolled away from. */
+  useEffect(() => {
+    const current = index === null ? null : ayahs[index];
     if (!follow || !current) return;
 
-    const node = onBasmala
+    const node = sayingBasmala
       ? document.querySelector(`[data-basmala="${current.s}"]`)
       : document.querySelector(`[data-ayah="${current.k}"]`);
     if (!(node instanceof HTMLElement)) return;
@@ -436,22 +528,75 @@ export function Recitation({
   useEffect(
     () => () => {
       setTimeout(() => {
-        if (
-          document.querySelector("[data-ahd-recitation]") instanceof
-          HTMLAudioElement
-        ) {
-          const audio = document.querySelector(
-            "[data-ahd-recitation]",
-          ) as HTMLAudioElement;
-          if (!audio.paused) return;
-        }
+        const audio = document.querySelector("[data-ahd-recitation]");
+        if (audio instanceof HTMLAudioElement && !audio.paused) return;
         for (const node of document.querySelectorAll("[data-reciting]")) {
           node.removeAttribute("data-reciting");
+        }
+        for (const node of document.querySelectorAll("[data-ayah-state]")) {
+          node.removeAttribute("data-ayah-state");
         }
       }, 0);
     },
     [],
   );
+
+  /* The phone's own controls — the lock screen, headphones, a car — reach the
+     same functions the buttons do. Registered once; they read the latest
+     versions through a ref, so they never act on a stale page. */
+  const controls = useRef({ resume, pause, stop, step });
+  useEffect(() => {
+    controls.current = { resume, pause, stop, step };
+  });
+
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator))
+      return;
+    const session = navigator.mediaSession;
+    const handlers: [MediaSessionAction, MediaSessionActionHandler][] = [
+      ["play", () => controls.current.resume()],
+      ["pause", () => controls.current.pause()],
+      ["stop", () => controls.current.stop()],
+      ["previoustrack", () => controls.current.step(-1)],
+      ["nexttrack", () => controls.current.step(1)],
+    ];
+    for (const [action, handler] of handlers) {
+      try {
+        session.setActionHandler(action, handler);
+      } catch {
+        /* An action this browser does not know. The rest still work. */
+      }
+    }
+    return () => {
+      for (const [action] of handlers) {
+        try {
+          session.setActionHandler(action, null);
+        } catch {
+          /* As above. */
+        }
+      }
+    };
+  }, []);
+
+  const current = index === null ? null : ayahs[index];
+  const nowPlaying = current
+    ? perAyah
+      ? t("nowPlaying", { ayah: `${current.s}:${current.a}` })
+      : t("nowPlayingSurah")
+    : null;
+
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator))
+      return;
+    if (!nowPlaying || typeof MediaMetadata === "undefined") {
+      navigator.mediaSession.metadata = null;
+      return;
+    }
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: nowPlaying,
+      artist: reciter.name[locale],
+    });
+  }, [nowPlaying, reciter, locale]);
 
   function sourceFor(id: string, at: number): string {
     const r = reciterById(id);
@@ -460,14 +605,37 @@ export function Recitation({
       : surahAudioUrl(id, ayahs[at].s);
   }
 
-  /** `withBasmala` is false when looping one ayah: the opening belongs to
-   *  arriving at a surah, not to every repetition of its first verse. */
-  function playAt(next: number, withBasmala = true) {
-    if (next < 0 || next >= ayahs.length) {
-      setIndex(null);
-      return;
-    }
+  /**
+   * Play whatever the element now points at.
+   *
+   * A play() that is overtaken by a new src — skipping on before the last
+   * verse had loaded — rejects with AbortError. That is not a failure: the
+   * verse that replaced it is on its way. Reporting it as one put "that ayah
+   * would not play" over a verse that was playing perfectly well.
+   */
+  function start(audio: HTMLAudioElement) {
+    void audio.play().catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      setLoading(false);
+      setFailed(true);
+    });
+  }
+
+  /**
+   * Start the ayah at `next`.
+   *
+   * `basmala` is false when repeating one ayah: the opening belongs to
+   * arriving at a surah, not to every repetition of its first verse. `pass`
+   * is which hearing of it this is.
+   */
+  function playAt(
+    next: number,
+    { basmala: withBasmala = true, pass: hearing = 0 } = {},
+  ) {
+    if (next < 0 || next >= ayahs.length) return stop();
+
     setIndex(next);
+    setPass(hearing);
     setFailed(false);
     setLoading(true);
     setPosition(0);
@@ -493,10 +661,7 @@ export function Recitation({
     else delete audio.dataset.basmala;
     setSayingBasmala(basmala);
 
-    void audio.play().catch(() => {
-      setLoading(false);
-      setFailed(true);
-    });
+    start(audio);
 
     /* And what comes after it, so the next file is not waited for. Only for a
        per-ayah reciter — a whole-surah file has nothing queued behind it.
@@ -515,12 +680,50 @@ export function Recitation({
     }
   }
 
-  function toggle() {
+  function resume() {
     const audio = audioRef.current;
     if (!audio) return;
     if (index === null) return playAt(0);
-    if (paused) void audio.play().catch(() => setFailed(true));
-    else audio.pause();
+    /* A verse that failed to load will not play by being asked again; it has
+       to be fetched again. */
+    if (failed || !audio.getAttribute("src")) return playAt(index, { pass });
+    start(audio);
+  }
+
+  function pause() {
+    audioRef.current?.pause();
+  }
+
+  function toggle() {
+    if (index !== null && !paused) pause();
+    else resume();
+  }
+
+  /** Back to nothing: no verse lit, and play starts from the top again. */
+  function stop() {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+      delete audio.dataset.index;
+      delete audio.dataset.basmala;
+      delete audio.dataset.autostart;
+    }
+    setIndex(null);
+    setPass(0);
+    setSayingBasmala(false);
+    setLoading(false);
+    setFailed(false);
+    setPosition(0);
+    setDuration(0);
+  }
+
+  /** The ayah before or after this one, on this page. */
+  function step(by: 1 | -1) {
+    if (index === null) return by === 1 ? playAt(0) : undefined;
+    const to = index + by;
+    if (to >= 0 && to < ayahs.length) playAt(to);
   }
 
   /* Changing reciter mid-page restarts where you are in the new voice rather
@@ -531,31 +734,58 @@ export function Recitation({
     const audio = audioRef.current;
     if (index === null || !audio) return;
     const wasPlaying = !paused;
-    audio.src =
-      audio.dataset.basmala === "1"
-        ? basmalaAudioUrl(id)
-        : sourceFor(id, index);
-    if (wasPlaying) void audio.play().catch(() => setFailed(true));
+
+    /* Only a verse-by-verse reciter has a separate Basmala. Moving to one who
+       recites the whole surah skips straight to the verse. */
+    const basmala =
+      audio.dataset.basmala === "1" && reciterById(id).kind === "ayah";
+    if (!basmala) delete audio.dataset.basmala;
+    setSayingBasmala(basmala);
+    setFailed(false);
+
+    audio.src = basmala ? basmalaAudioUrl(id) : sourceFor(id, index);
+    if (wasPlaying) start(audio);
+  }
+
+  function chooseRepeat(times: number) {
+    writeLocal(REPEAT_KEY, times === Infinity ? "inf" : String(times));
+    /* The old switch would otherwise bring "forever" back after "once". */
+    writeLocal(LEGACY_REPEAT_KEY, "false");
+    /* Counting starts again from the hearing now sounding. */
+    setPass(0);
+  }
+
+  function cycleRepeat() {
+    const at = (REPEATS as readonly number[]).indexOf(repeatTimes);
+    chooseRepeat(REPEATS[(at + 1) % REPEATS.length]);
   }
 
   const started = index !== null;
+  const playing = started && !paused;
   /* Everything that is set once and then left alone — speed, which voice, what
      to keep for offline — lives behind this. Only the transport stays out. */
   const [options, setOptions] = useState(false);
 
+  const ends: { mode: EndMode; label: string }[] = [
+    { mode: "stop", label: t("endStop") },
+    { mode: "repeat", label: t("endRepeat") },
+    ...(nextHref ? [{ mode: "next" as const, label: t("endNext") }] : []),
+  ];
+
   return (
     <div className="rounded-2xl border border-[var(--line-strong)] bg-[var(--surface-raised)]/40 p-4 sm:p-5">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={toggle}
           data-recitation-toggle
-          aria-label={started && !paused ? t("pause") : t("play")}
+          aria-label={playing ? t("pause") : t("play")}
+          title={playing ? t("pause") : t("play")}
           className="inline-grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--accent-ground)] text-[var(--on-accent)] transition-[background-color] duration-300 hover:bg-[var(--accent-strong)]"
         >
-          {loading ? (
+          {loading && playing ? (
             <Loader2 className="h-4.5 w-4.5 animate-spin" />
-          ) : started && !paused ? (
+          ) : playing ? (
             <Pause className="h-4.5 w-4.5" />
           ) : (
             <Play className="h-4.5 w-4.5 translate-x-px" />
@@ -567,87 +797,122 @@ export function Recitation({
             <Volume2 className="h-3.5 w-3.5 shrink-0 text-[var(--text-faint)]" />
             <span className="truncate">{reciter.name[locale]}</span>
           </p>
-          <p className="mt-0.5 truncate text-[0.75rem] text-[var(--text-muted)]">
+          <p
+            aria-live="polite"
+            className="mt-0.5 truncate text-[0.75rem] text-[var(--text-muted)]"
+          >
             {!started
               ? t("idle")
               : failed
                 ? t("failed")
-                : perAyah
-                  ? t("nowPlaying", {
-                      ayah: `${ayahs[index].s}:${ayahs[index].a}`,
-                    })
-                  : t("nowPlayingSurah")}
+                : paused
+                  ? t("paused")
+                  : nowPlaying}
+            {started && !failed && perAyah && repeatTimes > 1 && (
+              <span className="ms-1.5 text-[var(--text-faint)] tabular-nums">
+                · {pass + 1}/{repeatTimes === Infinity ? "∞" : repeatTimes}
+              </span>
+            )}
           </p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-1.5">
-          {/* Both controls only mean anything for a reciter that has one file
-              per verse, so they are not shown for one that does not.
+        <button
+          type="button"
+          onClick={() => setOptions((open) => !open)}
+          aria-expanded={options}
+          aria-label={t("options")}
+          title={t("options")}
+          className={cn(
+            "inline-grid h-9 w-9 shrink-0 place-items-center rounded-full border transition-colors duration-300",
+            options
+              ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
+              : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
+          )}
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+        </button>
+      </div>
 
-              And on a phone they are not shown out here at all: play, a name
-              and four round buttons in 390px broke the reciter's name over two
-              lines and truncated the status mid-word. They live in the options
-              panel below, which is one tap away and has the room. */}
+      {/* ── Transport ──
+          Its own row, at every width. These used to sit beside the reciter's
+          name and were hidden on a phone to make room — with nowhere else to
+          find them, so on the device most people listen on there was no way
+          to repeat a verse, skip one or stop. */}
+      <div className="mt-3 flex items-center justify-between gap-2 border-t border-[var(--line-subtle)] pt-3">
+        <div className="flex items-center gap-1.5">
           {perAyah && (
-            <span className="hidden items-center gap-1.5 sm:flex">
-              <button
-                type="button"
-                onClick={() => writeLocal(FOLLOW_KEY, String(!follow))}
-                aria-pressed={follow}
-                title={t("follow")}
-                className={cn(
-                  "inline-grid h-9 w-9 place-items-center rounded-full border text-[0.6875rem] font-semibold transition-colors duration-300",
-                  follow
-                    ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
-                    : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
-                )}
-              >
-                ↧
-              </button>
-
-              <button
-                type="button"
-                onClick={() => writeLocal(REPEAT_KEY, String(!repeatOne))}
-                aria-pressed={repeatOne}
-                title={t("repeat")}
-                className={cn(
-                  "inline-grid h-9 w-9 place-items-center rounded-full border transition-colors duration-300",
-                  repeatOne
-                    ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
-                    : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
-                )}
-              >
-                <Repeat className="h-4 w-4" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => index !== null && playAt(index + 1)}
-                disabled={index === null || index >= ayahs.length - 1}
-                aria-label={t("next")}
-                className="inline-grid h-9 w-9 place-items-center rounded-full border border-[var(--line-strong)] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)] disabled:opacity-35"
-              >
-                <SkipForward className="h-4 w-4 rtl:rotate-180" />
-              </button>
-            </span>
+            <button
+              type="button"
+              onClick={() => step(-1)}
+              disabled={index === null || index <= 0}
+              aria-label={t("previous")}
+              title={t("previous")}
+              className={transportButton}
+            >
+              <SkipBack className="h-4 w-4 rtl:rotate-180" />
+            </button>
           )}
 
           <button
             type="button"
-            onClick={() => setOptions((open) => !open)}
-            aria-expanded={options}
-            aria-label={t("options")}
-            title={t("options")}
-            className={cn(
-              "inline-grid h-9 w-9 place-items-center rounded-full border transition-colors duration-300",
-              options
-                ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
-                : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
-            )}
+            onClick={stop}
+            disabled={!started}
+            aria-label={t("stop")}
+            title={t("stop")}
+            className={transportButton}
           >
-            <SlidersHorizontal className="h-4 w-4" />
+            <Square className="h-3.5 w-3.5" />
           </button>
+
+          {perAyah && (
+            <button
+              type="button"
+              onClick={() => step(1)}
+              disabled={index !== null && index >= ayahs.length - 1}
+              aria-label={t("next")}
+              title={t("next")}
+              className={transportButton}
+            >
+              <SkipForward className="h-4 w-4 rtl:rotate-180" />
+            </button>
+          )}
         </div>
+
+        {/* Both only mean anything for a reciter with one file per verse, so
+            they are not shown for one without. */}
+        {perAyah && (
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={cycleRepeat}
+              aria-pressed={repeatTimes > 1}
+              aria-label={`${t("repeatEach")}: ${repeatLabel(repeatTimes)}`}
+              title={`${t("repeatEach")}: ${repeatLabel(repeatTimes)}`}
+              className={cn(toggleButton(repeatTimes > 1), "relative")}
+            >
+              <Repeat className="h-4 w-4" />
+              {repeatTimes > 1 && (
+                <span className="absolute -end-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--accent-ground)] px-1 text-[0.5625rem] leading-none font-semibold text-[var(--on-accent)] tabular-nums">
+                  {repeatTimes === Infinity ? "∞" : repeatTimes}
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => writeLocal(FOLLOW_KEY, String(!follow))}
+              aria-pressed={follow}
+              aria-label={t("follow")}
+              title={t("follow")}
+              className={cn(
+                toggleButton(follow),
+                "text-[0.6875rem] font-semibold",
+              )}
+            >
+              ↧
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── Position ──
@@ -687,29 +952,53 @@ export function Recitation({
 
       {options && (
         <>
+          {/* ── Repeat ── */}
+          {perAyah && (
+            <OptionRow label={t("repeatEach")}>
+              {REPEATS.map((times) => (
+                <button
+                  key={times}
+                  type="button"
+                  onClick={() => chooseRepeat(times)}
+                  aria-pressed={times === repeatTimes}
+                  title={times === Infinity ? t("repeatForever") : undefined}
+                  className={chip(times === repeatTimes, "tabular-nums")}
+                >
+                  {repeatLabel(times)}
+                </button>
+              ))}
+            </OptionRow>
+          )}
+
+          {/* ── At the end ── */}
+          <OptionRow label={t("atEnd")}>
+            {ends.map(({ mode, label }) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => writeLocal(END_KEY, mode)}
+                aria-pressed={mode === atEnd}
+                className={chip(mode === atEnd)}
+              >
+                {label}
+              </button>
+            ))}
+          </OptionRow>
+
           {/* ── Speed ── */}
-          <div className="mt-4 flex flex-wrap items-center gap-1.5">
-            <span className="me-1 text-[0.6875rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
-              {t("speed")}
-            </span>
+          <OptionRow label={t("speed")}>
             {SPEEDS.map((option) => (
               <button
                 key={option}
                 type="button"
                 onClick={() => writeLocal(SPEED_KEY, String(option))}
                 aria-pressed={option === speed}
-                className={cn(
-                  "rounded-full border px-2.5 py-1 text-[0.6875rem] tabular-nums",
-                  "transition-[border-color,background-color,color] duration-300",
-                  option === speed
-                    ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
-                    : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
-                )}
+                className={chip(option === speed, "tabular-nums")}
               >
                 {option}&times;
               </button>
             ))}
-          </div>
+          </OptionRow>
 
           {/* The reciters, named in the reader's own language. Buttons rather than
           a dropdown, for the same reason the language switcher is buttons: one
@@ -754,6 +1043,47 @@ export function Recitation({
           {t("failedHelp")}
         </p>
       )}
+    </div>
+  );
+}
+
+const transportButton =
+  "inline-grid h-9 w-9 place-items-center rounded-full border border-[var(--line-strong)] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)] disabled:pointer-events-none disabled:opacity-35";
+
+function toggleButton(on: boolean): string {
+  return cn(
+    "inline-grid h-9 w-9 place-items-center rounded-full border transition-colors duration-300",
+    on
+      ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
+      : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
+  );
+}
+
+function chip(on: boolean, extra?: string): string {
+  return cn(
+    "rounded-full border px-2.5 py-1 text-[0.6875rem]",
+    "transition-[border-color,background-color,color] duration-300",
+    on
+      ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
+      : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
+    extra,
+  );
+}
+
+/** One labelled line of choices in the options panel. */
+function OptionRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-1.5">
+      <span className="me-1 text-[0.6875rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
+        {label}
+      </span>
+      {children}
     </div>
   );
 }

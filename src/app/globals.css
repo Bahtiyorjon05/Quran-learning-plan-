@@ -1081,9 +1081,10 @@ body:has([data-app-tabbar]) {
   }
 }
 
-/* The verse being recited lights its own play control. Driven by the same
-   attribute the player writes onto the verse, so nothing re-renders to do it. */
-[data-reciting] [data-ayah-play] {
+/* The verse being recited lights its own play control — paused or not, and
+   while its Basmala is still sounding. Driven by the attribute the player
+   writes onto the verse, so nothing re-renders to do it. */
+[data-ayah-state] [data-ayah-play] {
   border-color: color-mix(in oklab, var(--accent) 55%, transparent);
   background-color: color-mix(in oklab, var(--accent) 14%, transparent);
   color: var(--accent-strong);
@@ -1829,27 +1830,24 @@ body:has([data-app-tabbar]) {
 }
 
 /* ---------------------------------------------------------------------------
-   The play button beside a verse, which is also the stop button.
+   The play button beside a verse, which is also the pause button.
 
-   Which icon shows is decided by the verse's own `data-reciting` mark — the
-   one the player already sets to highlight what is sounding — rather than by
-   state. Six hundred verses on a page, and not one of them re-renders.
+   Which icon shows is decided by the verse's own `data-ayah-state` — which the
+   player sets to "playing" or "paused" on the verse it is working through —
+   rather than by state. Six hundred verses on a page, and not one of them
+   re-renders. It used to follow `data-reciting`, the highlight, which stays on
+   while paused: so pausing from the verse left it showing pause, and the
+   button looked as though it had done nothing.
 --------------------------------------------------------------------------- */
 
 .ahd-ayah-button .ahd-ayah-pause {
   display: none;
 }
 
-[data-reciting] .ahd-ayah-button .ahd-ayah-play {
+[data-ayah-state="playing"] .ahd-ayah-button .ahd-ayah-play {
   display: none;
 }
 
-[data-reciting] .ahd-ayah-button .ahd-ayah-pause {
+[data-ayah-state="playing"] .ahd-ayah-button .ahd-ayah-pause {
   display: block;
-}
-
-/* Sounding right now, so it reads as active rather than as one more control. */
-[data-reciting] .ahd-ayah-button {
-  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
-  color: var(--accent);
 }

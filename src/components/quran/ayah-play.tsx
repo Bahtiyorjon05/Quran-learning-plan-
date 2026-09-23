@@ -15,10 +15,11 @@ import { Pause, Play } from "lucide-react";
  * reason the reciting verse is marked with a DOM attribute instead of React
  * state — and threading a callback down to six hundred verses would undo it.
  *
- * The same button stops it. Both icons are rendered and CSS shows whichever
- * the verse's own `data-reciting` mark calls for: giving six hundred buttons a
- * piece of React state to watch would cost more than the feature is worth, and
- * the player already marks the verse it is sounding.
+ * The same button pauses it, and resumes it. Both icons are rendered and CSS
+ * shows whichever the verse's own `data-ayah-state` calls for — "playing" or
+ * "paused", written by the player, which also keeps this button's label in
+ * step: giving six hundred buttons a piece of React state to watch would cost
+ * more than the feature is worth.
  */
 export function AyahPlay({ ayahKey, label }: { ayahKey: string; label: string }) {
   return (
