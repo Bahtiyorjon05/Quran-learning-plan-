@@ -816,7 +816,17 @@
       "results": "{count, plural, one {# сура} few {# суры} many {# сур} other {# суры}}",
       "clear": "Сбросить",
       "juzHeld": "{held} из {total} страниц",
-      "juzWhole": "Выучен целиком"
+      "juzWhole": "Выучен целиком",
+      "statusLabel": "Прогресс",
+      "revelationLabel": "Ниспослана в",
+      "orderLabel": "Порядок",
+      "juzLabel": "Джуз",
+      "orderMushaf": "По порядку",
+      "orderShort": "Короткие",
+      "orderLong": "Длинные",
+      "filterToggle": "Фильтры",
+      "activeFilters": "активно: {count}",
+      "showResults": "{count, plural, one {Показать # суру} few {Показать # суры} many {Показать # сур} other {Показать # суры}}"
     },
     "reader": {
       "page": "Страница {page}",

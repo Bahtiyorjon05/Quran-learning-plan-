@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowDownUp, Layers, Search, X } from "lucide-react";
+import { ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import type { LocalisedSurah } from "@/data/quran/loader";
@@ -27,12 +27,6 @@ import { cn } from "@/lib/utils";
 
 type Status = "all" | "held" | "some" | "none";
 
-/* A row of controls: swipes on a phone, with a fade on the trailing edge to say
-   so; wraps from a tablet up, where there is room for all of it. */
-const ROW =
-  "-mx-1 flex items-center gap-2 overflow-x-auto px-1 py-0.5 [scrollbar-width:none] " +
-  "[mask-image:linear-gradient(to_right,#000_86%,transparent)] " +
-  "sm:flex-wrap sm:overflow-visible sm:[mask-image:none]";
 type Revelation = "all" | "makkah" | "madinah";
 type Order = "mushaf" | "short" | "long";
 
@@ -77,6 +71,10 @@ export function SurahIndex({
   const [revelation, setRevelation] = useState<Revelation>("all");
   const [juz, setJuz] = useState<number>(0);
   const [order, setOrder] = useState<Order>("mushaf");
+  /* Phones only: whether the filters are unfolded. From a laptop up they are
+     always on show, and this is ignored. */
+  const [open, setOpen] = useState(false);
+  const results = useRef<HTMLDivElement>(null);
 
   /* Where each surah stands, worked out once rather than per filter pass. */
   const standing = useMemo(() => {
@@ -127,6 +125,17 @@ export function SurahIndex({
   }, [surahs, query, status, revelation, juz, order, juzStartPages, standing]);
 
   const filtering = status !== "all" || revelation !== "all" || juz !== 0 || order !== "mushaf";
+  const active =
+    Number(status !== "all") + Number(revelation !== "all") + Number(juz !== 0) + Number(order !== "mushaf");
+
+  /* Fold the filters away and bring the list into view — the last step of
+     filtering on a phone, where the list is underneath the panel. */
+  function showResults() {
+    setOpen(false);
+    requestAnimationFrame(() =>
+      results.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  }
 
   function clear() {
     setStatus("all");
@@ -177,101 +186,162 @@ export function SurahIndex({
       {tab === "surahs" ? (
         <>
           {/* ── Filters ──
-              Two rows that swipe sideways on a phone and wrap from a tablet
-              up. Stacked, they were four rows of chips and most of a phone
-              screen before the first surah; the fade on the trailing edge is
-              what says there is more to the side. */}
+              Every option on screen at once, and every one of them a single
+              tap. The first version hid half the choices behind a sideways
+              swipe and put juz and order in dropdowns — two taps each, and a
+              system picker over the list you were trying to narrow. Here the
+              answer to each question is a button you can see; tapping the
+              chosen one again lets it go. */}
           <div
             role="group"
             aria-label={t("filters")}
-            className="panel mt-4 flex flex-col gap-2.5 rounded-2xl p-2.5 sm:gap-3 sm:p-4"
+            className="panel mt-4 rounded-2xl p-2 sm:p-3 lg:p-5"
           >
-            {/* Where you stand: only where there is something to stand on. */}
-            {progress && (
-              <div className={ROW}>
-                {(
-                  [
-                    ["all", t("all")],
-                    ["held", t("statusHeld")],
-                    ["some", t("statusSome")],
-                    ["none", t("statusNone")],
-                  ] as const
-                ).map(([key, label]) => (
-                  <Chip
-                    key={key}
-                    on={status === key}
-                    onClick={() => setStatus(key)}
-                    tone={key === "held" ? "accent" : key === "some" ? "gold" : "plain"}
-                  >
-                    {label}
-                    <span
-                      className={cn(
-                        "rounded-full px-1.5 text-[0.8125rem] tabular-nums",
-                        status === key ? "bg-black/15" : "bg-[var(--surface-inset)]",
-                      )}
+            {/* The fold. One tap opens every filter; what is already applied
+                is counted on the bar itself, so a folded panel never hides
+                the fact that the list is narrowed. */}
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              aria-expanded={open}
+              className="flex h-12 w-full items-center gap-3 rounded-xl px-3 text-start lg:hidden"
+            >
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] text-[var(--accent)]">
+                <SlidersHorizontal className="h-[1.125rem] w-[1.125rem]" />
+              </span>
+              <span className="flex-1 text-[1.0625rem] font-semibold text-[var(--text-strong)]">
+                {t("filterToggle")}
+              </span>
+              {active > 0 && (
+                <span className="rounded-full bg-[var(--accent-ground)] px-2.5 py-0.5 text-[0.8125rem] font-semibold text-[var(--on-accent)]">
+                  {t("activeFilters", { count: active })}
+                </span>
+              )}
+              <ChevronDown
+                className={cn(
+                  "h-5 w-5 shrink-0 text-[var(--text-muted)] transition-transform duration-300",
+                  open && "rotate-180",
+                )}
+              />
+            </button>
+
+            <div
+              className={cn(
+                "gap-4 px-1.5 pt-3 pb-1.5 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:p-0",
+                open ? "grid" : "hidden",
+              )}
+            >
+              {progress && (
+                <Group label={t("statusLabel")} className="lg:col-span-2">
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-3 pt-1.5 sm:grid-cols-4">
+                    {(
+                      [
+                        ["all", t("all"), "plain"],
+                        ["held", t("statusHeld"), "accent"],
+                        ["some", t("statusSome"), "gold"],
+                        ["none", t("statusNone"), "plain"],
+                      ] as const
+                    ).map(([key, label, tone]) => (
+                      <Option
+                        key={key}
+                        on={status === key}
+                        tone={tone}
+                        onClick={() => setStatus(key)}
+                      >
+                        <span className="truncate">{label}</span>
+                        {/* In the corner rather than beside the word: in
+                            Uzbek "Boshlanmagan" needs the whole cell. */}
+                        <span
+                          className={cn(
+                            "absolute -top-2 end-2 rounded-full border px-1.5 text-[0.75rem] leading-[1.15rem] font-semibold tabular-nums",
+                            status === key
+                              ? "border-transparent bg-[var(--text-strong)] text-[var(--surface-base)]"
+                              : "border-[var(--line-subtle)] bg-[var(--surface-raised)] text-[var(--text-muted)]",
+                          )}
+                        >
+                          {counts[key]}
+                        </span>
+                      </Option>
+                    ))}
+                  </div>
+                </Group>
+              )}
+
+              <Group label={t("revelationLabel")}>
+                <div className="grid grid-cols-2 gap-2">
+                  {(["makkah", "madinah"] as const).map((key) => (
+                    <Option
+                      key={key}
+                      on={revelation === key}
+                      onClick={() => setRevelation(revelation === key ? "all" : key)}
                     >
-                      {counts[key]}
-                    </span>
-                  </Chip>
-                ))}
-              </div>
-            )}
+                      {t(key)}
+                    </Option>
+                  ))}
+                </div>
+              </Group>
 
-            <div className={ROW}>
-              {/* One control with two answers, either of which can be taken
-                  back by tapping it again. A third "all" button read exactly
-                  like the "all" in the row above, and two identical words
-                  meaning different things is a puzzle, not a filter. */}
-              <div className="inline-flex h-10 shrink-0 rounded-full border border-[var(--line-strong)] bg-[var(--surface-raised)]/50 p-1">
-                {(
-                  [
-                    ["makkah", t("makkah")],
-                    ["madinah", t("madinah")],
-                  ] as const
-                ).map(([key, label]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setRevelation(revelation === key ? "all" : key)}
-                    aria-pressed={revelation === key}
-                    className={cn(
-                      "rounded-full px-3.5 text-[0.9375rem] font-medium whitespace-nowrap transition-colors duration-200",
-                      revelation === key
-                        ? "bg-[var(--accent-ground)] text-[var(--on-accent)]"
-                        : "text-[var(--text-muted)] hover:text-[var(--text-strong)]",
-                    )}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
+              <Group label={t("orderLabel")}>
+                <div className="grid grid-cols-3 gap-2">
+                  {(
+                    [
+                      ["mushaf", t("orderMushaf")],
+                      ["short", t("orderShort")],
+                      ["long", t("orderLong")],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <Option key={key} on={order === key} onClick={() => setOrder(key)}>
+                      <span className="truncate">{label}</span>
+                    </Option>
+                  ))}
+                </div>
+              </Group>
 
-              <Select
-                icon={<Layers className="h-4 w-4" />}
-                label={t("anyJuz")}
-                value={String(juz)}
-                onChange={(v) => setJuz(Number(v))}
-                options={[
-                  ["0", t("anyJuz")],
-                  ...juzStartPages.map((j) => [String(j.juz), t("inJuz", { number: j.juz })] as [string, string]),
-                ]}
-              />
+              {/* Thirty numbers in rows of ten — the juz as they are counted,
+                  one tap each. A juz already held whole is marked, so the grid
+                  doubles as a reminder of where you stand. */}
+              <Group label={t("juzLabel")} className="lg:col-span-2">
+                <div className="grid grid-cols-10 gap-1 sm:gap-1.5 lg:grid-cols-15">
+                  {juzStartPages.map((j) => {
+                    const p = juzProgress?.[j.juz];
+                    const whole = Boolean(p && p.total > 0 && p.held >= p.total);
+                    const on = juz === j.juz;
+                    return (
+                      <button
+                        key={j.juz}
+                        type="button"
+                        onClick={() => setJuz(on ? 0 : j.juz)}
+                        aria-pressed={on}
+                        aria-label={t("inJuz", { number: j.juz })}
+                        className={cn(
+                          "grid h-10 min-w-0 place-items-center rounded-lg border text-[0.9375rem] font-medium tabular-nums transition-[background-color,border-color,color] duration-150",
+                          on
+                            ? "border-transparent bg-[var(--accent-ground)] text-[var(--on-accent)]"
+                            : whole
+                              ? "border-[var(--accent)]/45 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
+                              : "border-[var(--line-subtle)] bg-[var(--surface-raised)]/40 text-[var(--text-default)] hover:border-[var(--accent)]/50",
+                        )}
+                      >
+                        {j.juz}
+                      </button>
+                    );
+                  })}
+                </div>
+              </Group>
 
-              <Select
-                icon={<ArrowDownUp className="h-4 w-4" />}
-                label={t("sortMushaf")}
-                value={order}
-                onChange={(v) => setOrder(v as Order)}
-                options={[
-                  ["mushaf", t("sortMushaf")],
-                  ["short", t("sortShort")],
-                  ["long", t("sortLong")],
-                ]}
-              />
+              {/* The way out of the fold: the count it will show, and a tap
+                  that closes the panel and goes to it. */}
+              <button
+                type="button"
+                onClick={showResults}
+                className="mt-1 flex h-12 items-center justify-center rounded-xl bg-[var(--accent-ground)] text-[1rem] font-semibold text-[var(--on-accent)] shadow-[0_12px_28px_-16px_color-mix(in_oklab,var(--accent)_80%,transparent)] lg:hidden"
+              >
+                {t("showResults", { count: filtered.length })}
+              </button>
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between gap-3 px-1">
+          <div ref={results} className="mt-4 flex scroll-mt-24 items-center justify-between gap-3 px-1">
             <p className="text-[0.9375rem] text-[var(--text-muted)]" aria-live="polite">
               {t("results", { count: filtered.length })}
             </p>
@@ -438,7 +508,28 @@ export function SurahIndex({
   );
 }
 
-function Chip({
+/** A labelled set of answers to one question. */
+function Group({
+  label,
+  className,
+  children,
+}: {
+  label: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={className}>
+      <p className="mb-2 px-0.5 text-[0.8125rem] font-semibold tracking-[0.08em] text-[var(--text-faint)] uppercase">
+        {label}
+      </p>
+      {children}
+    </div>
+  );
+}
+
+/** One answer: a button the width of its cell, pressed or not. */
+function Option({
   on,
   onClick,
   tone = "plain",
@@ -455,63 +546,15 @@ function Chip({
       onClick={onClick}
       aria-pressed={on}
       className={cn(
-        "inline-flex h-10 shrink-0 items-center gap-2 rounded-full border px-4 text-[0.9375rem] font-medium whitespace-nowrap transition-[background-color,border-color,color] duration-200",
+        "relative flex h-11 min-w-0 items-center justify-center gap-2 rounded-xl border px-2.5 text-[0.9375rem] font-medium transition-[background-color,border-color,color] duration-150",
         on
           ? tone === "gold"
             ? "border-transparent bg-[var(--gold)] text-[#1b1406]"
             : "border-transparent bg-[var(--accent-ground)] text-[var(--on-accent)]"
-          : "border-[var(--line-strong)] bg-[var(--surface-raised)]/50 text-[var(--text-default)] hover:border-[var(--accent)]/50 hover:text-[var(--text-strong)]",
+          : "border-[var(--line-subtle)] bg-[var(--surface-raised)]/40 text-[var(--text-default)] hover:border-[var(--accent)]/50 hover:text-[var(--text-strong)]",
       )}
     >
       {children}
     </button>
-  );
-}
-
-/**
- * A native select dressed as a chip.
- *
- * Native on purpose: on a phone it opens the system picker, which is the one
- * list of thirty options anybody can actually scroll with a thumb.
- */
-function Select({
-  icon,
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: [string, string][];
-}) {
-  const active = value !== options[0][0];
-  return (
-    <label
-      className={cn(
-        "relative inline-flex h-10 shrink-0 items-center gap-2 rounded-full border ps-3.5 pe-3 text-[0.9375rem] font-medium transition-[background-color,border-color,color] duration-200",
-        active
-          ? "border-[var(--accent)]/60 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
-          : "border-[var(--line-strong)] bg-[var(--surface-raised)]/50 text-[var(--text-default)] hover:border-[var(--accent)]/50",
-      )}
-    >
-      <span aria-hidden className="text-current opacity-80">
-        {icon}
-      </span>
-      <span className="sr-only">{label}</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="cursor-pointer appearance-none bg-transparent pe-1 font-medium text-current outline-none [&>option]:bg-[var(--surface-raised)] [&>option]:text-[var(--text-strong)]"
-      >
-        {options.map(([v, text]) => (
-          <option key={v} value={v}>
-            {text}
-          </option>
-        ))}
-      </select>
-    </label>
   );
 }

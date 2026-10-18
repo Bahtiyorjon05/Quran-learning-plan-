@@ -816,7 +816,17 @@
       "results": "{count, plural, one {# surah} other {# surahs}}",
       "clear": "Clear filters",
       "juzHeld": "{held} of {total} pages",
-      "juzWhole": "Held whole"
+      "juzWhole": "Held whole",
+      "statusLabel": "Progress",
+      "revelationLabel": "Revealed in",
+      "orderLabel": "Order",
+      "juzLabel": "Juz",
+      "orderMushaf": "In order",
+      "orderShort": "Shortest",
+      "orderLong": "Longest",
+      "filterToggle": "Filter & sort",
+      "activeFilters": "{count} on",
+      "showResults": "{count, plural, one {Show # surah} other {Show # surahs}}"
     },
     "reader": {
       "page": "Page {page}",

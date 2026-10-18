@@ -816,7 +816,17 @@
       "results": "{count} ta sura",
       "clear": "Tozalash",
       "juzHeld": "{total} sahifadan {held} tasi",
-      "juzWhole": "To‘liq yodlangan"
+      "juzWhole": "To‘liq yodlangan",
+      "statusLabel": "Holat",
+      "revelationLabel": "Nozil bo‘lgan joyi",
+      "orderLabel": "Tartib",
+      "juzLabel": "Juz",
+      "orderMushaf": "Tartibda",
+      "orderShort": "Qisqa",
+      "orderLong": "Uzun",
+      "filterToggle": "Saralash",
+      "activeFilters": "{count} ta faol",
+      "showResults": "{count} ta surani ko‘rsatish"
     },
     "reader": {
       "page": "{page}-sahifa",

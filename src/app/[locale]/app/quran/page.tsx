@@ -77,20 +77,16 @@ export default async function AppMushafPage({
       <Atmosphere />
       <AppHeader />
 
-      <Measure className="relative z-10 py-10 sm:py-14">
-        <div className="animate-rise">
-          <h1 className="font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
-            {t("title")}
-          </h1>
-          <p className="mt-3 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
-            {t("subtitle")}
-          </p>
-        </div>
+      <Measure className="relative z-10 py-7 sm:py-12">
+        {/* Title, then straight into the list. A second heading and a line
+            about tile colours used to sit between them — the colours belong
+            to the mosaic, which is further down now, and on a phone the two
+            pushed the filters off the first screen. */}
+        <h1 className="animate-rise font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
+          {t("title")}
+        </h1>
 
-        <div className="mt-8">
-          <h2 className="mb-5 font-[family-name:var(--font-display)] text-[1.75rem] font-light text-[var(--text-strong)]">
-            {t("browse")}
-          </h2>
+        <div className="mt-5">
           <SurahIndex
             progress={surahProgress(strengths, partial)}
             juzProgress={juzProgress}
@@ -104,6 +100,12 @@ export default async function AppMushafPage({
             it; here it is the second thing, because somebody opening the
             mushaf has come to open a surah, not to look at a picture. */}
         <div className="mt-16">
+          <h2 className="font-[family-name:var(--font-display)] text-[1.75rem] font-light text-[var(--text-strong)]">
+            {t("browse")}
+          </h2>
+          <p className="mt-2 mb-6 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
+            {t("subtitle")}
+          </p>
           <MushafMosaic
             strengths={strengths}
             pageNames={pageSurahNames(locale as QuranLocale)}
