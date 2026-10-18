@@ -68,7 +68,7 @@ export function VerifyForm({ showDevHint }: { showDevHint: boolean }) {
           onComplete={() => formRef.current?.requestSubmit()}
         />
 
-        <p className="text-center text-[0.8125rem] text-[var(--text-faint)]">
+        <p className="text-center text-[0.9375rem] text-[var(--text-faint)]">
           {t("expiresIn", { minutes: OTP_TTL_MINUTES })}
         </p>
 
@@ -76,7 +76,7 @@ export function VerifyForm({ showDevHint }: { showDevHint: boolean }) {
             reputation, so the first message this app ever writes to somebody is
             the one most likely to be filed as junk — and a code that appears not
             to arrive is where people give up. */}
-        <p className="flex items-start gap-2 rounded-xl border border-[var(--line-subtle)] bg-[var(--surface-raised)]/40 px-3.5 py-3 text-[0.75rem] leading-relaxed text-[var(--text-muted)]">
+        <p className="flex items-start gap-2 rounded-xl border border-[var(--line-subtle)] bg-[var(--surface-raised)]/40 px-3.5 py-3 text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
           <Inbox className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--text-faint)]" strokeWidth={1.7} />
           {t("checkSpam")}
         </p>
@@ -116,7 +116,7 @@ export function VerifyForm({ showDevHint }: { showDevHint: boolean }) {
       </div>
 
       {showDevHint && (
-        <p className="rounded-xl border border-gold-500/25 bg-gold-500/[0.06] px-4 py-3 text-center text-[0.8125rem] text-gold-ink-strong/90">
+        <p className="rounded-xl border border-gold-500/25 bg-gold-500/[0.06] px-4 py-3 text-center text-[0.9375rem] text-gold-ink-strong/90">
           {t("devHint")}
         </p>
       )}

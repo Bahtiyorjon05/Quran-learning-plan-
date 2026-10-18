@@ -32,7 +32,7 @@ function Ring({ value, done }: { value: number; done?: boolean }) {
         {done ? (
           <Check className="h-4 w-4 text-[var(--accent)]" />
         ) : (
-          <span className="text-[0.625rem] font-semibold text-gold-ink tabular-nums">
+          <span className="text-[0.75rem] font-semibold text-gold-ink tabular-nums">
             {value}
           </span>
         )}
@@ -109,7 +109,7 @@ export function TodayPreview() {
                 اليوم
               </span>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-1 text-[0.6875rem] font-medium text-gold-ink">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-1 text-[0.8125rem] font-medium text-gold-ink">
               <Flame className="h-3 w-3" />
               {tp("streak", { count: 41 })}
             </span>
@@ -130,13 +130,13 @@ export function TodayPreview() {
                 <Ring value={track.value} done={track.done} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-2">
-                    <span className="font-arabic text-[0.9375rem] leading-none text-gold-ink/90" aria-hidden>
+                    <span className="font-arabic text-[1.0625rem] leading-none text-gold-ink/90" aria-hidden>
                       {track.ar}
                     </span>
                     <span className="text-sm font-medium text-[var(--text-strong)]">
                       {track.name}
                     </span>
-                    <span className="ms-auto shrink-0 text-[0.625rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+                    <span className="ms-auto shrink-0 text-[0.75rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
                       {track.role}
                     </span>
                   </div>
@@ -157,7 +157,7 @@ export function TodayPreview() {
             <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-strong)_8%,transparent)]">
               <div className="h-full w-[38%] rounded-full bg-[linear-gradient(90deg,var(--color-emerald-500),var(--color-emerald-300))]" />
             </div>
-            <p className="mt-2 text-[0.6875rem] text-[var(--text-faint)]">
+            <p className="mt-2 text-[0.8125rem] text-[var(--text-faint)]">
               {tp("aheadBy")}
             </p>
           </div>
@@ -172,7 +172,7 @@ export function TodayPreview() {
                 />
               ))}
             </div>
-            <p className="mt-3 text-[0.6875rem] text-[var(--text-faint)]">
+            <p className="mt-3 text-[0.8125rem] text-[var(--text-faint)]">
               {tp("mosaicCaption")}
             </p>
           </div>

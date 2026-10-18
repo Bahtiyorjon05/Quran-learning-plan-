@@ -47,7 +47,7 @@ export function DailyBars({
 
   if (total === 0) {
     return (
-      <p className="py-10 text-center text-[0.8125rem] text-[var(--text-faint)]">{emptyLabel}</p>
+      <p className="py-10 text-center text-[0.9375rem] text-[var(--text-faint)]">{emptyLabel}</p>
     );
   }
 
@@ -79,7 +79,7 @@ export function DailyBars({
         ))}
       </div>
 
-      <div className="mt-3 flex items-baseline justify-between gap-3 text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+      <div className="mt-3 flex items-baseline justify-between gap-3 text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
         <span>{data[0]?.date}</span>
         <span
           className={cn(
@@ -120,13 +120,13 @@ export function Funnel({
 
         return (
           <li key={stage.id}>
-            <div className="flex items-baseline justify-between gap-3 text-[0.8125rem]">
+            <div className="flex items-baseline justify-between gap-3 text-[0.9375rem]">
               <span className="text-[var(--text-default)]">{labels[stage.id] ?? stage.id}</span>
               <span className="flex shrink-0 items-baseline gap-2 tabular-nums">
                 {stage.conversion !== null && (
                   <span
                     className={cn(
-                      "text-[0.6875rem]",
+                      "text-[0.8125rem]",
                       dropped ? "text-[var(--status-warning-ink)]" : "text-[var(--text-faint)]",
                     )}
                   >
@@ -171,7 +171,7 @@ export function RankedBars({
 }) {
   if (rows.length === 0) {
     return (
-      <p className="py-8 text-center text-[0.8125rem] text-[var(--text-faint)]">{emptyLabel}</p>
+      <p className="py-8 text-center text-[0.9375rem] text-[var(--text-faint)]">{emptyLabel}</p>
     );
   }
 
@@ -181,11 +181,11 @@ export function RankedBars({
     <ul className="space-y-2.5">
       {rows.map((row) => (
         <li key={row.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3">
-          <span className="truncate text-[0.8125rem] text-[var(--text-default)]">{row.label}</span>
-          <span className="shrink-0 text-[0.8125rem] font-medium text-[var(--text-strong)] tabular-nums">
+          <span className="truncate text-[0.9375rem] text-[var(--text-default)]">{row.label}</span>
+          <span className="shrink-0 text-[0.9375rem] font-medium text-[var(--text-strong)] tabular-nums">
             {row.value}
             {row.note && (
-              <span className="ms-2 text-[0.6875rem] font-normal text-[var(--text-faint)]">
+              <span className="ms-2 text-[0.8125rem] font-normal text-[var(--text-faint)]">
                 {row.note}
               </span>
             )}
@@ -251,7 +251,7 @@ export function PaceBands({
 
   if (total === 0) {
     return (
-      <p className="py-8 text-center text-[0.8125rem] text-[var(--text-faint)]">{emptyLabel}</p>
+      <p className="py-8 text-center text-[0.9375rem] text-[var(--text-faint)]">{emptyLabel}</p>
     );
   }
 
@@ -275,7 +275,7 @@ export function PaceBands({
         {bands.map((b) => {
           const { icon: Icon, ink } = BAND_STYLE[b.band];
           return (
-            <li key={b.band} className="flex items-center gap-2.5 text-[0.8125rem]">
+            <li key={b.band} className="flex items-center gap-2.5 text-[0.9375rem]">
               <Icon className={cn("h-3.5 w-3.5 shrink-0", ink)} strokeWidth={1.8} />
               <span className="flex-1 text-[var(--text-default)]">{labels[b.band] ?? b.band}</span>
               <span
@@ -312,7 +312,7 @@ export function Cohorts({
 }) {
   if (cohorts.length === 0) {
     return (
-      <p className="py-8 text-center text-[0.8125rem] text-[var(--text-faint)]">{emptyLabel}</p>
+      <p className="py-8 text-center text-[0.9375rem] text-[var(--text-faint)]">{emptyLabel}</p>
     );
   }
 
@@ -324,7 +324,7 @@ export function Cohorts({
         const rate = cohort.joined === 0 ? 0 : cohort.retained / cohort.joined;
         return (
           <li key={cohort.week}>
-            <div className="flex items-baseline justify-between gap-3 text-[0.75rem]">
+            <div className="flex items-baseline justify-between gap-3 text-[0.875rem]">
               <span className="text-[var(--text-muted)] tabular-nums">
                 week of {cohort.week}
               </span>
@@ -357,7 +357,7 @@ export function Cohorts({
           </li>
         );
       })}
-      <li className="flex items-center gap-4 pt-1 text-[0.6875rem] text-[var(--text-faint)]">
+      <li className="flex items-center gap-4 pt-1 text-[0.8125rem] text-[var(--text-faint)]">
         <span className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-[var(--viz-1)]/45" /> joined
         </span>
@@ -391,7 +391,7 @@ export function Split({
 
   if (total === 0) {
     return (
-      <p className="py-8 text-center text-[0.8125rem] text-[var(--text-faint)]">{emptyLabel}</p>
+      <p className="py-8 text-center text-[0.9375rem] text-[var(--text-faint)]">{emptyLabel}</p>
     );
   }
 
@@ -414,7 +414,7 @@ export function Split({
 
       <ul className="mt-4 space-y-2">
         {slices.map((slice, i) => (
-          <li key={slice.key} className="flex items-center gap-2.5 text-[0.8125rem]">
+          <li key={slice.key} className="flex items-center gap-2.5 text-[0.9375rem]">
             <span
               className="h-2 w-2 shrink-0 rounded-full"
               style={{ backgroundColor: step[Math.min(i, step.length - 1)] }}
@@ -456,7 +456,7 @@ export function HourHistogram({
 
   if (total === 0) {
     return (
-      <p className="py-8 text-center text-[0.8125rem] text-[var(--text-faint)]">{emptyLabel}</p>
+      <p className="py-8 text-center text-[0.9375rem] text-[var(--text-faint)]">{emptyLabel}</p>
     );
   }
 
@@ -480,7 +480,7 @@ export function HourHistogram({
           );
         })}
       </div>
-      <div className="mt-2 flex justify-between text-[0.625rem] text-[var(--text-faint)] tabular-nums">
+      <div className="mt-2 flex justify-between text-[0.75rem] text-[var(--text-faint)] tabular-nums">
         {["00", "06", "12", "18", "23"].map((h) => (
           <span key={h}>{h}</span>
         ))}

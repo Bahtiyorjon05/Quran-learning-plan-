@@ -47,7 +47,7 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        "mb-5 flex items-center gap-3 text-[0.6875rem] font-semibold tracking-[0.22em] text-[var(--accent)] uppercase",
+        "mb-5 flex items-center gap-3 text-[0.8125rem] font-semibold tracking-[0.22em] text-[var(--accent)] uppercase",
         className,
       )}
     >
@@ -91,7 +91,7 @@ export function Lead({
   return (
     <p
       className={cn(
-        "mt-6 max-w-2xl text-[1.0625rem] leading-[1.7] text-[var(--text-muted)] sm:text-lg",
+        "mt-6 max-w-2xl text-[1.125rem] leading-[1.7] text-[var(--text-muted)] sm:text-lg",
         className,
       )}
     >

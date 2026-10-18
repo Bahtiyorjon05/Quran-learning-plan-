@@ -94,7 +94,7 @@ export function AuthShell({
                         strokeWidth={2.5}
                       />
                     </span>
-                    <span className="text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+                    <span className="text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
                       {point}
                     </span>
                   </li>
@@ -132,7 +132,7 @@ export function AuthShell({
               {title}
             </h1>
             {subtitle && (
-              <p className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-3 text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
                 {subtitle}
               </p>
             )}

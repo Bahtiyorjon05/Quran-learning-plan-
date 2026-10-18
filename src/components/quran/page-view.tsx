@@ -66,7 +66,7 @@ async function SurahHeading({ number, locale }: { number: number; locale: QuranL
             </>
           )}
         </p>
-        <p className="relative mt-1 text-[0.6875rem] tracking-[0.14em] text-[var(--text-faint)] uppercase">
+        <p className="relative mt-1 text-[0.8125rem] tracking-[0.14em] text-[var(--text-faint)] uppercase">
           {info.revelation === "makkah" ? t("makkah") : t("madinah")} ·{" "}
           {t("ayahs", { count: info.ayahs })}
         </p>
@@ -135,7 +135,7 @@ export async function PageView({
               </p>
 
               {ayah.sajda && (
-                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-0.5 text-[0.6875rem] text-gold-ink">
+                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-0.5 text-[0.8125rem] text-gold-ink">
                   ۩ {t("sajda")}
                 </p>
               )}
@@ -156,7 +156,7 @@ export async function PageView({
                     the Arabic. */}
                 <p
                   data-translation
-                  className="min-w-0 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]"
+                  className="min-w-0 text-[1.0625rem] leading-relaxed text-[var(--text-muted)]"
                 >
                   {translation}
                 </p>

@@ -50,7 +50,7 @@ export function Footer() {
 
           {COLUMNS.map((col) => (
             <div key={col.heading}>
-              <h3 className="text-[0.6875rem] font-semibold tracking-[0.18em] text-[var(--text-faint)] uppercase">
+              <h3 className="text-[0.8125rem] font-semibold tracking-[0.18em] text-[var(--text-faint)] uppercase">
                 {t(col.heading)}
               </h3>
               <ul className="mt-4 space-y-2.5">

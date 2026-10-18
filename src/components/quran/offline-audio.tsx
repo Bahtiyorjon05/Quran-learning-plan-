@@ -85,7 +85,7 @@ export function OfflineAudio({ scopes }: { scopes: OfflineScope[] }) {
   useEffect(() => () => abort.current?.abort(), []);
 
   if (!canStore) {
-    return <p className="text-[0.75rem] text-[var(--text-faint)]">{t("unsupported")}</p>;
+    return <p className="text-[0.875rem] text-[var(--text-faint)]">{t("unsupported")}</p>;
   }
   if (!scope) return null;
 
@@ -159,14 +159,14 @@ export function OfflineAudio({ scopes }: { scopes: OfflineScope[] }) {
   return (
     <div className="rounded-2xl border border-[var(--line-subtle)] p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="flex items-center gap-2.5 text-[0.875rem] font-medium text-[var(--text-strong)]">
+        <span className="flex items-center gap-2.5 text-[1rem] font-medium text-[var(--text-strong)]">
           <WifiOff className="h-4 w-4 shrink-0 text-[var(--text-faint)]" strokeWidth={1.7} />
           {t("title")}
         </span>
 
         {info ? (
           <span className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 text-[0.8125rem] text-[var(--accent-strong)]">
+            <span className="inline-flex items-center gap-1.5 text-[0.9375rem] text-[var(--accent-strong)]">
               <Check className="h-3.5 w-3.5" strokeWidth={2.2} />
               {t("saved", { count: info.count })}
             </span>
@@ -185,7 +185,7 @@ export function OfflineAudio({ scopes }: { scopes: OfflineScope[] }) {
             type="button"
             onClick={download}
             disabled={busy || urls.length === 0}
-            className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-4 text-[0.8125rem] font-medium text-[var(--accent-strong)] transition-colors duration-300 hover:bg-[color-mix(in_oklab,var(--accent)_18%,transparent)] disabled:opacity-60"
+            className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-4 text-[0.9375rem] font-medium text-[var(--accent-strong)] transition-colors duration-300 hover:bg-[color-mix(in_oklab,var(--accent)_18%,transparent)] disabled:opacity-60"
           >
             {busy ? (
               <>
@@ -213,7 +213,7 @@ export function OfflineAudio({ scopes }: { scopes: OfflineScope[] }) {
               onClick={() => setPick(i)}
               aria-pressed={i === pick}
               className={cn(
-                "rounded-full border px-3 py-1.5 text-[0.75rem] transition-colors duration-300",
+                "rounded-full border px-3 py-1.5 text-[0.875rem] transition-colors duration-300",
                 i === pick
                   ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] font-medium text-[var(--accent-strong)]"
                   : "border-[var(--line-strong)] text-[var(--text-muted)] hover:text-[var(--text-strong)]",
@@ -248,7 +248,7 @@ export function OfflineAudio({ scopes }: { scopes: OfflineScope[] }) {
 
       <p
         className={cn(
-          "mt-2.5 text-[0.75rem] leading-relaxed",
+          "mt-2.5 text-[0.875rem] leading-relaxed",
           failed ? "text-danger" : "text-[var(--text-faint)]",
         )}
       >

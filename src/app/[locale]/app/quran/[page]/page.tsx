@@ -23,6 +23,7 @@ import { KeepAwake } from "@/components/quran/keep-awake";
 import { OfflineAudio } from "@/components/quran/offline-audio";
 import { offlineScopesForPage } from "@/data/quran/loader";
 import { AutoReadMark } from "@/components/quran/auto-read-mark";
+import { RememberPage } from "@/components/quran/remember-page";
 import { Measure } from "@/components/ui/section";
 import { buttonStyles } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -104,7 +105,7 @@ export default async function AppQuranPage({ params }: Params) {
               <p className="truncate text-sm font-medium text-[var(--text-strong)]">
                 {names.map((s) => s.title).join(" · ")}
               </p>
-              <p className="text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+              <p className="text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
                 {t("page", { page })} · {t("juz", { juz: meta.juz })}
               </p>
             </div>
@@ -182,12 +183,13 @@ export default async function AppQuranPage({ params }: Params) {
         <PageView ayahs={ayahs} locale={locale as Locale} />
 
         <AutoReadMark page={page} />
+        <RememberPage page={page} />
 
-        <div className="mx-auto mt-10 flex max-w-2xl items-center justify-between gap-3 border-t border-[var(--line-subtle)] pt-8">
+        <div className="mx-auto mt-10 grid max-w-2xl grid-cols-2 gap-3 border-t border-[var(--line-subtle)] pt-8">
           {page > 1 ? (
             <Link
               href={`/app/quran/${page - 1}`}
-              className={buttonStyles({ variant: "outline" })}
+              className={buttonStyles({ variant: "outline", className: "w-full min-w-0 justify-center" })}
             >
               <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
               {t("prev")}
@@ -196,7 +198,7 @@ export default async function AppQuranPage({ params }: Params) {
             <span />
           )}
           {page < TOTAL_PAGES && (
-            <Link href={`/app/quran/${page + 1}`} className={buttonStyles()}>
+            <Link href={`/app/quran/${page + 1}`} className={buttonStyles({ className: "col-start-2 w-full min-w-0 justify-center" })}>
               {t("next")}
               <ChevronRight className="h-4 w-4 rtl:rotate-180" />
             </Link>

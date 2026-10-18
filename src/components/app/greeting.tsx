@@ -63,7 +63,7 @@ export function Greeting({ name }: { name: string }) {
 
   return (
     <div className="min-w-0">
-      <p className="flex items-center gap-3 text-[0.8125rem] tracking-[0.14em] text-gold-ink/80 uppercase">
+      <p className="flex items-center gap-3 text-[0.9375rem] tracking-[0.14em] text-gold-ink/80 uppercase">
         <Icon className="h-4 w-4 shrink-0" strokeWidth={1.6} />
         {t(daypart)}
         <span

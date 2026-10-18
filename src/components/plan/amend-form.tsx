@@ -58,7 +58,7 @@ export function AmendForm({
         <span className="mx-auto grid h-12 w-12 place-items-center rounded-full border border-[var(--accent)]/40 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
           <Check className="h-5 w-5 text-[var(--accent-strong)]" strokeWidth={2.2} />
         </span>
-        <p className="mt-4 text-[1.0625rem] text-[var(--text-strong)]">{t("done")}</p>
+        <p className="mt-4 text-[1.125rem] text-[var(--text-strong)]">{t("done")}</p>
         <Link href="/app" className={buttonStyles({ className: "mt-6" })}>
           {t("back")}
         </Link>
@@ -71,11 +71,11 @@ export function AmendForm({
       <div className="panel rounded-3xl p-5 sm:p-6">
         <label
           htmlFor="newEndDate"
-          className="block text-[0.9375rem] font-medium text-[var(--text-strong)]"
+          className="block text-[1.0625rem] font-medium text-[var(--text-strong)]"
         >
           {t("newDate")}
         </label>
-        <p className="mt-1 text-[0.8125rem] text-[var(--text-muted)]">{t("newDateHint")}</p>
+        <p className="mt-1 text-[0.9375rem] text-[var(--text-muted)]">{t("newDateHint")}</p>
 
         <div className="mt-4 flex items-center gap-3">
           <CalendarDays className="h-4.5 w-4.5 shrink-0 text-[var(--text-faint)]" strokeWidth={1.7} />
@@ -92,19 +92,19 @@ export function AmendForm({
               .slice(0, 10)}
             value={chosen}
             onChange={(event) => setChosen(event.target.value)}
-            className="h-11 flex-1 rounded-xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/60 px-4 text-[0.9375rem] text-[var(--text-strong)] tabular-nums transition-colors duration-300 focus:border-[var(--accent)] focus:outline-none"
+            className="h-11 flex-1 rounded-xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/60 px-4 text-[1.0625rem] text-[var(--text-strong)] tabular-nums transition-colors duration-300 focus:border-[var(--accent)] focus:outline-none"
           />
         </div>
 
         {preview && (
           <div className="mt-5 border-t border-[var(--line-subtle)] pt-4">
-            <p className="text-[0.6875rem] font-semibold tracking-[0.12em] text-[var(--text-faint)] uppercase">
+            <p className="text-[0.8125rem] font-semibold tracking-[0.12em] text-[var(--text-faint)] uppercase">
               {t("costTitle")}
             </p>
             <p className="mt-2 font-[family-name:var(--font-display)] text-[1.5rem] leading-tight font-light text-[var(--text-strong)]">
               {t("costLines", { lines: preview.lines, current: currentDailyLines })}
             </p>
-            <p className="mt-1 text-[0.8125rem] text-[var(--text-muted)] tabular-nums">
+            <p className="mt-1 text-[0.9375rem] text-[var(--text-muted)] tabular-nums">
               {t("costDays", { days: preview.days })}
             </p>
           </div>
@@ -117,13 +117,13 @@ export function AmendForm({
           <TriangleAlert className="h-4 w-4 shrink-0" />
           {t("onceTitle")}
         </p>
-        <p className="mt-2 text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+        <p className="mt-2 text-[1rem] leading-relaxed text-[var(--text-muted)]">
           {t("onceBody")}
         </p>
       </div>
 
       {state.status === "error" && (
-        <p role="alert" className="text-[0.875rem] text-danger">
+        <p role="alert" className="text-[1rem] text-danger">
           {state.reason === "later"
             ? t("errorLater")
             : state.reason === "past"

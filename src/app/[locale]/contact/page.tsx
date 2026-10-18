@@ -48,7 +48,7 @@ export default async function ContactPage({
               <span className="block text-[1rem] font-medium text-[var(--text-strong)]">
                 {option.title}
               </span>
-              <span className="mt-1 block text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+              <span className="mt-1 block text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
                 {option.body}
               </span>
             </span>
@@ -56,7 +56,7 @@ export default async function ContactPage({
         ))}
       </div>
 
-      <p className="mt-10 text-center text-[0.9375rem] text-[var(--text-muted)]">
+      <p className="mt-10 text-center text-[1.0625rem] text-[var(--text-muted)]">
         {t("writeTo")}{" "}
         <a
           href={`mailto:${email}`}
@@ -69,10 +69,10 @@ export default async function ContactPage({
       {/* Reaching a person directly, for anyone who would rather not write an
           email — which, for most people here, is most of the time. */}
       <div className="mt-12 border-t border-[var(--line-subtle)] pt-8">
-        <h2 className="text-center text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+        <h2 className="text-center text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
           {t("directly")}
         </h2>
-        <p className="mx-auto mt-3 max-w-md text-center text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+        <p className="mx-auto mt-3 max-w-md text-center text-[1rem] leading-relaxed text-[var(--text-muted)]">
           {t("directlyBody")}
         </p>
 
@@ -120,10 +120,10 @@ function Direct({
         {icon}
       </span>
       <span className="min-w-0">
-        <span className="block text-[0.6875rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
+        <span className="block text-[0.8125rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
           {label}
         </span>
-        <span className="mt-0.5 block truncate text-[0.9375rem] font-medium text-[var(--text-strong)]">
+        <span className="mt-0.5 block truncate text-[1.0625rem] font-medium text-[var(--text-strong)]">
           {value}
         </span>
       </span>

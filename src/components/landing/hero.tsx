@@ -40,7 +40,7 @@ export function Hero() {
             <span className="text-gradient-gold mt-1 block">{t("titleLine2")}</span>
           </h1>
 
-          <p className="mt-7 max-w-xl text-[1.0625rem] leading-[1.75] text-[var(--text-muted)] sm:text-lg">
+          <p className="mt-7 max-w-xl text-[1.125rem] leading-[1.75] text-[var(--text-muted)] sm:text-lg">
             {t("lead")}
           </p>
 

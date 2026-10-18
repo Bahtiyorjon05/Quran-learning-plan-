@@ -131,10 +131,10 @@ export function NotificationBell() {
             "sm:absolute sm:end-0 sm:top-11 sm:w-72",
           )}
         >
-          <p className="text-[0.875rem] font-medium text-[var(--text-strong)]">
+          <p className="text-[1rem] font-medium text-[var(--text-strong)]">
             {on ? t("pushOn") : t("pushOff")}
           </p>
-          <p className="mt-1.5 text-[0.75rem] leading-relaxed text-[var(--text-muted)]">
+          <p className="mt-1.5 text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
             {permission === "denied"
               ? t("pushBlocked")
               : on
@@ -147,7 +147,7 @@ export function NotificationBell() {
               type="button"
               onClick={enable}
               disabled={busy}
-              className="mt-3.5 inline-flex h-9 w-full items-center justify-center gap-2 rounded-full bg-[var(--accent-ground)] text-[0.8125rem] font-medium text-[var(--on-accent)] transition-[background-color] duration-300 hover:bg-[var(--accent-strong)] disabled:opacity-60"
+              className="mt-3.5 inline-flex h-9 w-full items-center justify-center gap-2 rounded-full bg-[var(--accent-ground)] text-[0.9375rem] font-medium text-[var(--on-accent)] transition-[background-color] duration-300 hover:bg-[var(--accent-strong)] disabled:opacity-60"
             >
               {busy && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               {t("pushEnable")}
@@ -155,7 +155,7 @@ export function NotificationBell() {
           )}
 
           {done && (
-            <p className="mt-3 flex items-center gap-1.5 text-[0.75rem] text-[var(--accent-strong)]">
+            <p className="mt-3 flex items-center gap-1.5 text-[0.875rem] text-[var(--accent-strong)]">
               <Check className="h-3.5 w-3.5" />
               {t("pushReady")}
             </p>
@@ -164,7 +164,7 @@ export function NotificationBell() {
           <Link
             href="/app/settings"
             onClick={() => setOpen(false)}
-            className="mt-3 block text-[0.75rem] text-[var(--text-faint)] transition-colors hover:text-[var(--text-strong)]"
+            className="mt-3 block text-[0.875rem] text-[var(--text-faint)] transition-colors hover:text-[var(--text-strong)]"
           >
             {t("title")}
           </Link>

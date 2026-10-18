@@ -51,7 +51,7 @@ export function Tracks() {
                     strokeWidth={1.6}
                   />
                 </span>
-                <span className="text-[0.625rem] font-semibold tracking-[0.18em] text-[var(--text-faint)] uppercase">
+                <span className="text-[0.75rem] font-semibold tracking-[0.18em] text-[var(--text-faint)] uppercase">
                   {String(i + 1).padStart(2, "0")} · {t(role)}
                 </span>
               </div>
@@ -65,7 +65,7 @@ export function Tracks() {
                 </span>
               </h3>
 
-              <p className="relative mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+              <p className="relative mt-3 text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
                 {t(`${key}.body`)}
               </p>
             </li>

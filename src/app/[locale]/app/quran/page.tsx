@@ -60,6 +60,18 @@ export default async function AppMushafPage({
     return { juz: i + 1, from, to };
   });
 
+  /* Whole pages held in each juz — the same rule the milestones and the
+     covenant use, so the juz tab and the seals on the dashboard can never
+     disagree about how far through a juz somebody is. */
+  const juzProgress: Record<number, { held: number; total: number }> = {};
+  for (const { juz: number, from, to } of juz) {
+    let whole = 0;
+    for (let page = from; page <= to; page++) {
+      if (strengths[page - 1] > 0 && !partial.has(page)) whole++;
+    }
+    juzProgress[number] = { held: whole, total: to - from + 1 };
+  }
+
   return (
     <div className="relative min-h-dvh">
       <Atmosphere />
@@ -70,27 +82,33 @@ export default async function AppMushafPage({
           <h1 className="font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
             {t("title")}
           </h1>
-          <p className="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+          <p className="mt-3 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
             {t("subtitle")}
           </p>
         </div>
 
-        <MushafMosaic
-          strengths={strengths}
-          pageNames={pageSurahNames(locale as QuranLocale)}
-          held={held}
-          averageStrength={averageStrength}
-          basePath="/app/quran"
-        />
-
-        <div className="mt-14">
-          <h2 className="mb-5 text-sm font-semibold text-[var(--text-strong)]">
+        <div className="mt-8">
+          <h2 className="mb-5 font-[family-name:var(--font-display)] text-[1.75rem] font-light text-[var(--text-strong)]">
             {t("browse")}
           </h2>
           <SurahIndex
             progress={surahProgress(strengths, partial)}
+            juzProgress={juzProgress}
             surahs={localisedSurahs(locale as QuranLocale)}
             juzStartPages={juz}
+            basePath="/app/quran"
+          />
+        </div>
+
+        {/* The shape of the work, after the way in. The dashboard leads with
+            it; here it is the second thing, because somebody opening the
+            mushaf has come to open a surah, not to look at a picture. */}
+        <div className="mt-16">
+          <MushafMosaic
+            strengths={strengths}
+            pageNames={pageSurahNames(locale as QuranLocale)}
+            held={held}
+            averageStrength={averageStrength}
             basePath="/app/quran"
           />
         </div>

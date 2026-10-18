@@ -145,7 +145,7 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
               />
               <span
                 className={cn(
-                  "hidden text-[0.6875rem] tracking-wide sm:block",
+                  "hidden text-[0.8125rem] tracking-wide sm:block",
                   i === index
                     ? "text-[var(--text-strong)]"
                     : "text-[var(--text-faint)]",
@@ -164,7 +164,7 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
           <h1 className="font-[family-name:var(--font-display)] text-[1.875rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.25rem]">
             {t(`${step}.title`)}
           </h1>
-          <p className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+          <p className="mt-3 text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
             {t(`${step}.subtitle`)}
           </p>
 
@@ -174,7 +174,7 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
               <div>
                 <label
                   htmlFor="niyyah"
-                  className="text-[0.8125rem] font-medium text-[var(--text-default)]"
+                  className="text-[0.9375rem] font-medium text-[var(--text-default)]"
                 >
                   {t("niyyah.label")}
                 </label>
@@ -185,9 +185,9 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
                   rows={5}
                   maxLength={2000}
                   placeholder={t("niyyah.placeholder")}
-                  className="mt-2 w-full resize-none rounded-xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/60 px-4 py-3 text-[0.9375rem] leading-relaxed text-[var(--text-strong)] placeholder:text-[var(--text-faint)] transition-[border-color,box-shadow] duration-300 focus:border-[var(--accent)] focus:ring-4 focus:ring-[color-mix(in_oklab,var(--accent)_18%,transparent)] focus:outline-none"
+                  className="mt-2 w-full resize-none rounded-xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/60 px-4 py-3 text-[1.0625rem] leading-relaxed text-[var(--text-strong)] placeholder:text-[var(--text-faint)] transition-[border-color,box-shadow] duration-300 focus:border-[var(--accent)] focus:ring-4 focus:ring-[color-mix(in_oklab,var(--accent)_18%,transparent)] focus:outline-none"
                 />
-                <p className="mt-2 text-[0.8125rem] text-[var(--text-faint)]">
+                <p className="mt-2 text-[0.9375rem] text-[var(--text-faint)]">
                   {t("niyyah.hint")}
                 </p>
               </div>
@@ -275,7 +275,7 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
               <div className="space-y-7">
                 <div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-[0.8125rem] font-medium text-[var(--text-default)]">
+                    <span className="text-[0.9375rem] font-medium text-[var(--text-default)]">
                       {t("pace.duration")}
                     </span>
                     <span className="text-sm text-[var(--text-strong)] tabular-nums">
@@ -344,7 +344,7 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
                         · {t("pace.studyDays", { count: shape.studyDays })}
                       </p>
                     </div>
-                    <span className="shrink-0 rounded-full border border-[var(--line-strong)] px-2.5 py-1 text-[0.6875rem] text-[var(--text-muted)]">
+                    <span className="shrink-0 rounded-full border border-[var(--line-strong)] px-2.5 py-1 text-[0.8125rem] text-[var(--text-muted)]">
                       {t(`pace.${intensity}`)}
                     </span>
                   </div>
@@ -353,7 +353,7 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
                 <div>
                   <label
                     htmlFor="dailyLines"
-                    className="text-[0.8125rem] font-medium text-[var(--text-default)]"
+                    className="text-[0.9375rem] font-medium text-[var(--text-default)]"
                   >
                     {t("pace.byDose")}
                   </label>
@@ -379,7 +379,7 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
             {step === "rhythm" && (
               <div className="space-y-8">
                 <div>
-                  <p className="text-[0.8125rem] font-medium text-[var(--text-default)]">
+                  <p className="text-[0.9375rem] font-medium text-[var(--text-default)]">
                     {t("rhythm.studyDays")}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -406,13 +406,13 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
                   {studyDaysPerWeek(mask) === 0 ? (
                     <p
                       role="alert"
-                      className="mt-2 text-[0.8125rem] text-danger"
+                      className="mt-2 text-[0.9375rem] text-danger"
                     >
                       {t("rhythm.noDays")}
                     </p>
                   ) : (
                     shape && (
-                      <p className="mt-3 text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
+                      <p className="mt-3 text-[0.9375rem] text-[var(--text-faint)] tabular-nums">
                         {t("pace.perDay", { lines: shape.dailyLines })} ·{" "}
                         {t("pace.studyDays", { count: shape.studyDays })}
                       </p>
@@ -422,7 +422,7 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
 
                 <div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-[0.8125rem] font-medium text-[var(--text-default)]">
+                    <span className="text-[0.9375rem] font-medium text-[var(--text-default)]">
                       {t("rhythm.rukhsah")}
                     </span>
                     <span className="text-sm text-[var(--text-strong)] tabular-nums">
@@ -441,10 +441,10 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
                     aria-label={t("rhythm.rukhsah")}
                     className="mt-3 w-full accent-[var(--accent-ground)]"
                   />
-                  <p className="mt-3 text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
+                  <p className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
                     {t("rhythm.rukhsahHint")}
                   </p>
-                  <p className="mt-2 flex items-start gap-2 text-[0.8125rem] text-gold-ink">
+                  <p className="mt-2 flex items-start gap-2 text-[0.9375rem] text-gold-ink">
                     <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     {t("rhythm.rukhsahFixed")}
                   </p>
@@ -531,7 +531,7 @@ export function CovenantWizard({ today }: { today: CivilDate }) {
                     <ScrollText className="h-4 w-4 shrink-0" />
                     {t("sign.warningTitle")}
                   </p>
-                  <p className="mt-2 text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+                  <p className="mt-2 text-[1rem] leading-relaxed text-[var(--text-muted)]">
                     {t("sign.warningBody")}
                   </p>
                 </div>
@@ -626,10 +626,10 @@ function ScopeCard({
           )}
         </span>
         <span className="min-w-0">
-          <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
+          <span className="block text-[1.0625rem] font-medium text-[var(--text-strong)]">
             {title}
           </span>
-          <span className="mt-0.5 block text-[0.8125rem] text-[var(--text-muted)]">
+          <span className="mt-0.5 block text-[0.9375rem] text-[var(--text-muted)]">
             {description}
           </span>
         </span>
@@ -739,12 +739,12 @@ function Row({
 }) {
   return (
     <div className="flex items-start justify-between gap-6 border-b border-[var(--line-subtle)] px-5 py-3.5 last:border-b-0">
-      <dt className="shrink-0 text-[0.8125rem] text-[var(--text-muted)]">
+      <dt className="shrink-0 text-[0.9375rem] text-[var(--text-muted)]">
         {label}
       </dt>
       <dd
         className={cn(
-          "text-end text-[0.9375rem]",
+          "text-end text-[1.0625rem]",
           emphasis
             ? "font-[family-name:var(--font-display)] text-lg text-[var(--accent-strong)]"
             : muted

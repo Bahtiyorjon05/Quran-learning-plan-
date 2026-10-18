@@ -34,7 +34,7 @@ export default async function OfflinePage({
           <AhdMark size={64} />
         </div>
 
-        <p className="mt-8 inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] px-3.5 py-1.5 text-[0.75rem] text-[var(--text-muted)]">
+        <p className="mt-8 inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] px-3.5 py-1.5 text-[0.875rem] text-[var(--text-muted)]">
           <WifiOff className="h-3.5 w-3.5" />
           {t("badge")}
         </p>
@@ -42,7 +42,7 @@ export default async function OfflinePage({
         <h1 className="mt-5 font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)]">
           {t("title")}
         </h1>
-        <p className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+        <p className="mt-3 text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
           {t("body")}
         </p>
 

@@ -61,7 +61,7 @@ export function PasswordStrength({
         </div>
         <span
           className={cn(
-            "w-20 shrink-0 text-end text-[0.75rem] font-medium tabular-nums",
+            "w-20 shrink-0 text-end text-[0.875rem] font-medium tabular-nums",
             shown ? TEXT[score] : "text-transparent",
           )}
         >

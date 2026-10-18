@@ -121,7 +121,7 @@ export default async function AdminOverviewPage() {
           <h1 className="font-[family-name:var(--font-display)] text-[1.875rem] leading-tight font-light text-[var(--text-strong)]">
             Overview
           </h1>
-          <p className="mt-2 text-[0.875rem] text-[var(--text-muted)]">
+          <p className="mt-2 text-[1rem] text-[var(--text-muted)]">
             {admins.length === 1
               ? "You are the only admin."
               : `${admins.length} accounts can see this page.`}
@@ -162,7 +162,7 @@ export default async function AdminOverviewPage() {
         </div>
 
         {/* ── The two that matter most ── */}
-        <h2 className="mt-12 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+        <h2 className="mt-12 text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
           Where they go
         </h2>
 
@@ -172,7 +172,7 @@ export default async function AdminOverviewPage() {
             note="all accounts, ever"
           >
             <Funnel stages={funnel} labels={FUNNEL_LABELS} />
-            <p className="mt-5 border-t border-[var(--line-subtle)] pt-4 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+            <p className="mt-5 border-t border-[var(--line-subtle)] pt-4 text-[0.875rem] leading-relaxed text-[var(--text-faint)]">
               Each percentage is of the step above it, not of the total. A stage
               under 60% is marked — that is where the product is losing people.
             </p>
@@ -212,7 +212,7 @@ export default async function AdminOverviewPage() {
         {/* ── Is it working ──
             Everything above counts people. These say whether they come back,
             which is the only question that decides anything. */}
-        <h2 className="mt-12 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+        <h2 className="mt-12 text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
           Whether it is working
         </h2>
 
@@ -256,7 +256,7 @@ export default async function AdminOverviewPage() {
         </div>
 
         {/* ── Who they are ── */}
-        <h2 className="mt-12 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+        <h2 className="mt-12 text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
           Who they are
         </h2>
 
@@ -292,7 +292,7 @@ export default async function AdminOverviewPage() {
               hours={depth.studyHours}
               emptyLabel="Nobody has chosen a study time yet."
             />
-            <p className="mt-5 border-t border-[var(--line-subtle)] pt-4 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+            <p className="mt-5 border-t border-[var(--line-subtle)] pt-4 text-[0.875rem] leading-relaxed text-[var(--text-faint)]">
               A real decision rests on this: whether the daily reminder should go
               out before Fajr or after Isha. Every hour is drawn, because the
               empty ones are as much of an answer as the full ones.
@@ -301,7 +301,7 @@ export default async function AdminOverviewPage() {
         </div>
 
         {/* ── The report that is about the Qur'an rather than the software ── */}
-        <h2 className="mt-12 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+        <h2 className="mt-12 text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
           The Qur&rsquo;an, and the last twelve things that happened
         </h2>
 
@@ -315,7 +315,7 @@ export default async function AdminOverviewPage() {
               }))}
               emptyLabel="No mistakes recorded yet."
             />
-            <p className="mt-5 border-t border-[var(--line-subtle)] pt-4 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+            <p className="mt-5 border-t border-[var(--line-subtle)] pt-4 text-[0.875rem] leading-relaxed text-[var(--text-faint)]">
               Counted from drill mistakes across every account. Nothing else in
               Ahd can answer this, and it says something about the Qur&rsquo;an
               rather than about the software.
@@ -324,7 +324,7 @@ export default async function AdminOverviewPage() {
 
           <Panel title="Recent activity" note="last 12 events">
             {events.length === 0 ? (
-              <p className="py-8 text-center text-[0.8125rem] text-[var(--text-faint)]">
+              <p className="py-8 text-center text-[0.9375rem] text-[var(--text-faint)]">
                 Nothing yet.
               </p>
             ) : (
@@ -332,7 +332,7 @@ export default async function AdminOverviewPage() {
                 {events.map((event, i) => (
                   <li
                     key={`${event.createdAt.toISOString()}-${i}`}
-                    className="flex items-baseline gap-3 text-[0.8125rem]"
+                    className="flex items-baseline gap-3 text-[0.9375rem]"
                   >
                     <span
                       className={`h-1.5 w-1.5 shrink-0 rounded-full ${
@@ -347,7 +347,7 @@ export default async function AdminOverviewPage() {
                       </span>{" "}
                       {EVENT_LABELS[event.kind] ?? event.kind}
                     </span>
-                    <span className="shrink-0 text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+                    <span className="shrink-0 text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
                       {WHEN.format(event.createdAt)}
                     </span>
                   </li>

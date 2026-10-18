@@ -173,13 +173,16 @@ export default async function LocaleLayout({
          * Svelte/vite chain that has nothing to do with this app. The script
          * is the same one the package loads.
          *
-         * Production only. In development the path does not exist, and a 404
-         * in the console on every page load teaches you to ignore the console.
+         * Only where Vercel is serving it. The path exists on a Vercel
+         * deployment and nowhere else — a local production build answered it
+         * with a 404 page, which the browser then refused to run as a script,
+         * on every page load. That noise failed the practice observer, and a
+         * console that always has errors in it teaches you to ignore it.
          *
          * It sets no cookies and follows nobody between sites — but it is
          * still a third party seeing which pages are opened, so the privacy
          * page says so in as many words. */}
-        {process.env.NODE_ENV === "production" && (
+        {process.env.VERCEL === "1" && (
           <script defer src="/_vercel/insights/script.js" />
         )}
       </body>

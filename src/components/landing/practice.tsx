@@ -51,7 +51,7 @@ export function Practice() {
               <h3 className="mt-5 text-base font-semibold text-[var(--text-strong)]">
                 {t(`modes.${key}.title`)}
               </h3>
-              <p className="mt-2 text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-2 text-[1rem] leading-relaxed text-[var(--text-muted)]">
                 {t(`modes.${key}.body`)}
               </p>
             </li>

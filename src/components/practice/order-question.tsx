@@ -59,7 +59,7 @@ export function OrderQuestion({
             <li key={position} className="flex items-start gap-3">
               <span
                 className={cn(
-                  "mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-full border text-[0.75rem] font-medium tabular-nums",
+                  "mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-full border text-[0.875rem] font-medium tabular-nums",
                   choice
                     ? "border-[var(--accent)]/40 text-[var(--accent-strong)]"
                     : "border-dashed border-[var(--line-strong)] text-[var(--text-faint)]",
@@ -85,7 +85,7 @@ export function OrderQuestion({
                     {review && (
                       <div className="flex items-center gap-2">
                         <Verdict correct={!wrong} />
-                        <span className="text-[0.8125rem] text-[var(--text-muted)]">
+                        <span className="text-[0.9375rem] text-[var(--text-muted)]">
                           {choice.ref ? refLabel(choice.ref, names) : ""}
                         </span>
                       </div>
@@ -98,7 +98,7 @@ export function OrderQuestion({
                       {choice.text}
                     </p>
                     {review && wrong && correctId && (
-                      <p className="mt-2 border-t border-danger/20 pt-2 text-[0.75rem] text-[var(--text-muted)]">
+                      <p className="mt-2 border-t border-danger/20 pt-2 text-[0.875rem] text-[var(--text-muted)]">
                         {t("modes.shuffle.shouldBe", {
                           ref: refLabel(byId.get(correctId)?.ref ?? { s: 0, a: 0 }, names),
                         })}
@@ -106,7 +106,7 @@ export function OrderQuestion({
                     )}
                   </>
                 ) : (
-                  <p className="text-[0.8125rem] text-[var(--text-faint)]">{t("modes.shuffle.empty")}</p>
+                  <p className="text-[0.9375rem] text-[var(--text-faint)]">{t("modes.shuffle.empty")}</p>
                 )}
               </div>
             </li>
@@ -117,14 +117,14 @@ export function OrderQuestion({
       {!review && (
         <>
           <div className="mt-7 flex items-center justify-between gap-3">
-            <p className="text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+            <p className="text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
               {t("modes.shuffle.pool")}
             </p>
             {placed.length > 0 && (
               <button
                 type="button"
                 onClick={undo}
-                className="inline-flex items-center gap-1.5 text-[0.75rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
+                className="inline-flex items-center gap-1.5 text-[0.875rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
               >
                 <Undo2 className="h-3.5 w-3.5" />
                 {t("modes.shuffle.undo")}
@@ -152,7 +152,7 @@ export function OrderQuestion({
               </li>
             ))}
             {remaining.length === 0 && (
-              <li className="rounded-2xl border border-dashed border-[var(--line-strong)] px-4 py-5 text-center text-[0.8125rem] text-[var(--text-faint)]">
+              <li className="rounded-2xl border border-dashed border-[var(--line-strong)] px-4 py-5 text-center text-[0.9375rem] text-[var(--text-faint)]">
                 {t("modes.shuffle.allPlaced")}
               </li>
             )}

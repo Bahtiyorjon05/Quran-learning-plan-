@@ -34,7 +34,7 @@ export function Problem() {
               <h3 className="mt-5 font-[family-name:var(--font-display)] text-2xl font-normal">
                 {t(`items.${key}.title`)}
               </h3>
-              <p className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-3 text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
                 {t(`items.${key}.body`)}
               </p>
             </li>

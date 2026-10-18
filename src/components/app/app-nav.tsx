@@ -119,7 +119,7 @@ export function AppTabBar() {
               />
               <span
                 className={cn(
-                  "max-w-full truncate text-[0.6875rem] leading-none transition-colors duration-300",
+                  "max-w-full truncate text-[0.8125rem] leading-none transition-colors duration-300",
                   current
                     ? "font-medium text-[var(--accent-strong)]"
                     : "text-[var(--text-faint)]",

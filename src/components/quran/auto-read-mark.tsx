@@ -137,7 +137,7 @@ export function AutoReadMark({ page }: { page: number }) {
           className={cn(
             "animate-rise mx-auto mt-6 flex w-fit items-center gap-2 rounded-full",
             "border border-[var(--accent)]/35 bg-[color-mix(in_oklab,var(--accent)_10%,transparent)]",
-            "px-4 py-2 text-[0.8125rem] text-[var(--accent-strong)]",
+            "px-4 py-2 text-[0.9375rem] text-[var(--accent-strong)]",
           )}
         >
           <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />

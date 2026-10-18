@@ -793,13 +793,13 @@ export function Recitation({
         </button>
 
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-2 text-[0.8125rem] font-medium text-[var(--text-strong)]">
+          <p className="flex items-center gap-2 text-[0.9375rem] font-medium text-[var(--text-strong)]">
             <Volume2 className="h-3.5 w-3.5 shrink-0 text-[var(--text-faint)]" />
             <span className="truncate">{reciter.name[locale]}</span>
           </p>
           <p
             aria-live="polite"
-            className="mt-0.5 truncate text-[0.75rem] text-[var(--text-muted)]"
+            className="mt-0.5 truncate text-[0.875rem] text-[var(--text-muted)]"
           >
             {!started
               ? t("idle")
@@ -892,7 +892,7 @@ export function Recitation({
             >
               <Repeat className="h-4 w-4" />
               {repeatTimes > 1 && (
-                <span className="absolute -end-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--accent-ground)] px-1 text-[0.5625rem] leading-none font-semibold text-[var(--on-accent)] tabular-nums">
+                <span className="absolute -end-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--accent-ground)] px-1 text-[0.6875rem] leading-none font-semibold text-[var(--on-accent)] tabular-nums">
                   {repeatTimes === Infinity ? "∞" : repeatTimes}
                 </span>
               )}
@@ -906,7 +906,7 @@ export function Recitation({
               title={t("follow")}
               className={cn(
                 toggleButton(follow),
-                "text-[0.6875rem] font-semibold",
+                "text-[0.8125rem] font-semibold",
               )}
             >
               ↧
@@ -920,7 +920,7 @@ export function Recitation({
           player that has never been started is furniture. */}
       {started && duration > 0 && (
         <div className="mt-4 flex items-center gap-3">
-          <span className="w-9 shrink-0 text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+          <span className="w-9 shrink-0 text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
             {clock(position)}
           </span>
 
@@ -944,7 +944,7 @@ export function Recitation({
             }}
           />
 
-          <span className="w-9 shrink-0 text-end text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+          <span className="w-9 shrink-0 text-end text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
             {clock(duration)}
           </span>
         </div>
@@ -1012,7 +1012,7 @@ export function Recitation({
                 aria-pressed={option.id === reciter.id}
                 title={option.note[locale]}
                 className={cn(
-                  "rounded-full border px-3 py-1.5 text-[0.75rem] transition-[border-color,background-color,color] duration-300",
+                  "rounded-full border px-3 py-1.5 text-[0.875rem] transition-[border-color,background-color,color] duration-300",
                   option.id === reciter.id
                     ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
                     : "border-[var(--line-strong)] text-[var(--text-muted)] hover:border-[var(--text-faint)] hover:text-[var(--text-strong)]",
@@ -1020,7 +1020,7 @@ export function Recitation({
               >
                 {option.name[locale]}
                 {option.kind === "surah" && (
-                  <span className="ms-1.5 text-[0.625rem] text-[var(--text-faint)]">
+                  <span className="ms-1.5 text-[0.75rem] text-[var(--text-faint)]">
                     {t("wholeSurah")}
                   </span>
                 )}
@@ -1029,7 +1029,7 @@ export function Recitation({
           </div>
 
           {!perAyah && (
-            <p className="mt-3 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+            <p className="mt-3 text-[0.875rem] leading-relaxed text-[var(--text-faint)]">
               {t("wholeSurahNote")}
             </p>
           )}
@@ -1039,7 +1039,7 @@ export function Recitation({
       )}
 
       {failed && (
-        <p role="alert" className="mt-3 text-[0.75rem] text-danger">
+        <p role="alert" className="mt-3 text-[0.875rem] text-danger">
           {t("failedHelp")}
         </p>
       )}
@@ -1061,7 +1061,7 @@ function toggleButton(on: boolean): string {
 
 function chip(on: boolean, extra?: string): string {
   return cn(
-    "rounded-full border px-2.5 py-1 text-[0.6875rem]",
+    "rounded-full border px-2.5 py-1 text-[0.8125rem]",
     "transition-[border-color,background-color,color] duration-300",
     on
       ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
@@ -1080,7 +1080,7 @@ function OptionRow({
 }) {
   return (
     <div className="mt-4 flex flex-wrap items-center gap-1.5">
-      <span className="me-1 text-[0.6875rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
+      <span className="me-1 text-[0.8125rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
         {label}
       </span>
       {children}

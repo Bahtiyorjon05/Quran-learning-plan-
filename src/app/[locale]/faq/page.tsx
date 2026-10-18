@@ -34,7 +34,7 @@ export default async function FaqPage({
       <div className="divide-y divide-[var(--line-subtle)] border-y border-[var(--line-subtle)]">
         {items.map((item, i) => (
           <details key={item.q} name="faq" open={i === 0} className="group py-5">
-            <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-[1.0625rem] font-medium text-[var(--text-strong)] [&::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-[1.125rem] font-medium text-[var(--text-strong)] [&::-webkit-details-marker]:hidden">
               {item.q}
               <span
                 aria-hidden

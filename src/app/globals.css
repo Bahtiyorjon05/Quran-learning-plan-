@@ -7,6 +7,15 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @theme {
+  /* ── Type: the two smallest named sizes, raised ──
+     `text-xs` and `text-sm` are used for real reading text all over the app —
+     hints, descriptions, list rows — not only for fine print, so they take the
+     same raised floor as the arbitrary sizes did. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.45;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.55;
+
   /* ── Brand: emerald (growth, the primary act) ── */
   --color-emerald-50: #eafaf3;
   --color-emerald-100: #cbf1e1;
@@ -254,11 +263,31 @@
     border-color: var(--line-subtle);
   }
 
+  /* The whole scale, from one place.
+
+     Every size in this app is written in rem — text, spacing, widths — so the
+     root is the one lever that makes everything larger in proportion, rather
+     than fattening the type and leaving it crammed into the same boxes. It was
+     the browser's 16px; the body text built on it came out at thirteen, and
+     the labels at eleven, which is unreadable on a phone held at arm's length
+     at five in the morning. Seventeen on a phone, eighteen from a tablet up.
+
+     A percentage rather than pixels, so anybody who has raised the default
+     size in their browser still gets theirs, scaled the same way. */
   html {
+    font-size: 106.25%;
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
     overflow-x: hidden;
     overflow-x: clip;
+  }
+
+  /* After the rule above, not before it: same selector, so source order
+     decides, and the wider screen has to be the one that wins. */
+  @media (min-width: 768px) {
+    html {
+      font-size: 112.5%;
+    }
   }
 
   body {

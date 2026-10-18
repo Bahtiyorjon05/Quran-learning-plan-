@@ -36,7 +36,7 @@ export async function AdminShell({
       {/* The band. Small, permanent, and the only thing on the site with this
           colour, so it never reads as decoration. */}
       <div className="bg-[var(--status-warning)]/12 border-b border-[var(--status-warning)]/25">
-        <Measure className="flex h-8 items-center gap-2 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--status-warning-ink)] uppercase">
+        <Measure className="flex h-8 items-center gap-2 text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--status-warning-ink)] uppercase">
           <ShieldCheck className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
           {/* The full sentence does not fit on a phone and truncating it to
               "Admin — you are seeing everyone…" is worse than saying less. */}
@@ -131,7 +131,7 @@ export async function AdminShell({
               />
               <span
                 className={cn(
-                  "text-[0.6875rem] leading-none",
+                  "text-[0.8125rem] leading-none",
                   tab.id === current
                     ? "font-medium text-[var(--accent-strong)]"
                     : "text-[var(--text-faint)]",
@@ -147,7 +147,7 @@ export async function AdminShell({
             className="relative flex flex-1 flex-col items-center gap-1 px-2 pt-3 pb-2.5"
           >
             <ArrowLeft className="h-5 w-5 text-[var(--text-faint)]" strokeWidth={1.6} />
-            <span className="text-[0.6875rem] leading-none text-[var(--text-faint)]">
+            <span className="text-[0.8125rem] leading-none text-[var(--text-faint)]">
               The app
             </span>
           </Link>
@@ -193,9 +193,9 @@ export function Panel({
       )}
     >
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-[0.9375rem] font-medium text-[var(--text-strong)]">{title}</h2>
+        <h2 className="text-[1.0625rem] font-medium text-[var(--text-strong)]">{title}</h2>
         {note && (
-          <span className="shrink-0 text-[0.6875rem] text-[var(--text-faint)]">{note}</span>
+          <span className="shrink-0 text-[0.8125rem] text-[var(--text-faint)]">{note}</span>
         )}
       </div>
       <div className="mt-5 flex flex-1 flex-col justify-center">{children}</div>
@@ -233,8 +233,8 @@ export function Metric({
       >
         {value}
       </p>
-      <p className="mt-2 text-[0.75rem] leading-tight text-[var(--text-muted)]">{label}</p>
-      {hint && <p className="mt-1 text-[0.6875rem] text-[var(--text-faint)]">{hint}</p>}
+      <p className="mt-2 text-[0.875rem] leading-tight text-[var(--text-muted)]">{label}</p>
+      {hint && <p className="mt-1 text-[0.8125rem] text-[var(--text-faint)]">{hint}</p>}
     </div>
   );
 }

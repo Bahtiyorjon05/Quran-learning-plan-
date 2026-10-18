@@ -200,7 +200,7 @@ export function SettingsForm({
             type="time"
             defaultValue={studyTime}
             onChange={saveNow}
-            className="h-11 w-full rounded-xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/60 px-4 text-[0.9375rem] text-[var(--text-strong)] tabular-nums transition-colors duration-300 focus:border-[var(--accent)] focus:outline-none"
+            className="h-11 w-full rounded-xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/60 px-4 text-[1.0625rem] text-[var(--text-strong)] tabular-nums transition-colors duration-300 focus:border-[var(--accent)] focus:outline-none"
           />
         </Field>
 
@@ -264,7 +264,7 @@ export function SettingsForm({
         {(saving || status !== "idle") && (
           <span
             className={cn(
-              "animate-rise inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[0.8125rem] shadow-[0_12px_30px_-12px_rgba(0,0,0,0.5)] backdrop-blur",
+              "animate-rise inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[0.9375rem] shadow-[0_12px_30px_-12px_rgba(0,0,0,0.5)] backdrop-blur",
               status === "error"
                 ? "border-danger/40 bg-[var(--surface-raised)] text-danger"
                 : "border-[var(--accent)]/35 bg-[var(--surface-raised)] text-[var(--accent-strong)]",
@@ -296,7 +296,7 @@ export function SettingsForm({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="panel rounded-3xl p-5 sm:p-6">
-      <h2 className="text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+      <h2 className="text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
         {title}
       </h2>
       <div className="mt-5 space-y-5">{children}</div>
@@ -313,7 +313,7 @@ function Select({
     <select
       {...props}
       className={cn(
-        "h-11 w-full rounded-xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/60 px-3.5 text-[0.9375rem] text-[var(--text-strong)]",
+        "h-11 w-full rounded-xl border border-[var(--line-strong)] bg-[var(--surface-inset)]/60 px-3.5 text-[1.0625rem] text-[var(--text-strong)]",
         "transition-colors duration-300 focus:border-[var(--accent)] focus:outline-none",
         className,
       )}
@@ -366,10 +366,10 @@ function Switch({
       </span>
 
       <span className="min-w-0">
-        <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
+        <span className="block text-[1.0625rem] font-medium text-[var(--text-strong)]">
           {label}
         </span>
-        <span className="mt-0.5 block text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
+        <span className="mt-0.5 block text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
           {hint}
         </span>
       </span>

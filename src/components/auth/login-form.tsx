@@ -47,7 +47,7 @@ export function LoginForm() {
         trailing={
           <Link
             href="/forgot-password"
-            className="text-[0.8125rem] text-[var(--text-muted)] transition-colors hover:text-[var(--accent-strong)]"
+            className="text-[0.9375rem] text-[var(--text-muted)] transition-colors hover:text-[var(--accent-strong)]"
           >
             {t("forgot")}
           </Link>

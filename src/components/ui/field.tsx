@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 export const inputStyles = (invalid?: boolean) =>
   cn(
-    "peer w-full rounded-xl border bg-[var(--surface-inset)]/60 px-4 py-3 text-[0.9375rem]",
+    "peer w-full rounded-xl border bg-[var(--surface-inset)]/60 px-4 py-3 text-[1.0625rem]",
     "text-[var(--text-strong)] placeholder:text-[var(--text-faint)]",
     "transition-[border-color,box-shadow,background-color] duration-300 ease-[var(--ease-calm)]",
     "focus:outline-none focus:ring-4",
@@ -44,7 +44,7 @@ export function Field({
       <div className="flex items-baseline justify-between gap-3">
         <label
           htmlFor={htmlFor}
-          className="text-[0.8125rem] font-medium text-[var(--text-default)]"
+          className="text-[0.9375rem] font-medium text-[var(--text-default)]"
         >
           {label}
         </label>
@@ -57,13 +57,13 @@ export function Field({
         <p
           id={`${htmlFor}-error`}
           role="alert"
-          className="flex items-start gap-1.5 text-[0.8125rem] text-danger"
+          className="flex items-start gap-1.5 text-[0.9375rem] text-danger"
         >
           <AlertCircle className="mt-px h-3.5 w-3.5 shrink-0" />
           {error}
         </p>
       ) : hint ? (
-        <p id={`${htmlFor}-hint`} className="text-[0.8125rem] text-[var(--text-faint)]">
+        <p id={`${htmlFor}-hint`} className="text-[0.9375rem] text-[var(--text-faint)]">
           {hint}
         </p>
       ) : null}
@@ -137,7 +137,7 @@ export function FormError({ children }: { children: React.ReactNode }) {
   return (
     <div
       role="alert"
-      className="animate-rise flex items-start gap-2.5 rounded-xl border border-clay-500/35 bg-clay-500/[0.08] px-4 py-3 text-[0.875rem] leading-relaxed text-danger"
+      className="animate-rise flex items-start gap-2.5 rounded-xl border border-clay-500/35 bg-clay-500/[0.08] px-4 py-3 text-[1rem] leading-relaxed text-danger"
     >
       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
       <span>{children}</span>
@@ -150,7 +150,7 @@ export function FormNotice({ children }: { children: React.ReactNode }) {
   return (
     <div
       role="status"
-      className="animate-rise rounded-xl border border-emerald-500/30 bg-emerald-500/[0.07] px-4 py-3 text-[0.875rem] leading-relaxed text-[var(--accent-strong)]"
+      className="animate-rise rounded-xl border border-emerald-500/30 bg-emerald-500/[0.07] px-4 py-3 text-[1rem] leading-relaxed text-[var(--accent-strong)]"
     >
       {children}
     </div>

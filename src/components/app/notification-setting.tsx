@@ -90,10 +90,10 @@ export function NotificationSetting() {
       </span>
 
       <span className="min-w-0 flex-1">
-        <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
+        <span className="block text-[1.0625rem] font-medium text-[var(--text-strong)]">
           {tone === "on" ? t("pushOn") : t("pushOff")}
         </span>
-        <span className="mt-0.5 block text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
+        <span className="mt-0.5 block text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
           {permission === "unsupported"
             ? t("pushUnsupported")
             : permission === "denied"
@@ -110,7 +110,7 @@ export function NotificationSetting() {
           type="button"
           onClick={sendOne}
           disabled={busy}
-          className="shrink-0 rounded-full border border-[var(--line-strong)] px-3.5 py-1.5 text-[0.8125rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)] disabled:opacity-60"
+          className="shrink-0 rounded-full border border-[var(--line-strong)] px-3.5 py-1.5 text-[0.9375rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)] disabled:opacity-60"
         >
           {busy ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -132,7 +132,7 @@ export function NotificationSetting() {
         <button
           type="button"
           onClick={ask}
-          className="shrink-0 rounded-full border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-3.5 py-1.5 text-[0.8125rem] font-medium text-[var(--accent-strong)] transition-colors duration-300 hover:bg-[color-mix(in_oklab,var(--accent)_18%,transparent)]"
+          className="shrink-0 rounded-full border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-3.5 py-1.5 text-[0.9375rem] font-medium text-[var(--accent-strong)] transition-colors duration-300 hover:bg-[color-mix(in_oklab,var(--accent)_18%,transparent)]"
         >
           {t("pushEnable")}
         </button>

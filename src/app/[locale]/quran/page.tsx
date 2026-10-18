@@ -43,7 +43,7 @@ export default async function QuranIndexPage({
             <h1 className="font-[family-name:var(--font-display)] text-[2.25rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.75rem]">
               {t("title")}
             </h1>
-            <p className="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+            <p className="mt-3 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
               {t("subtitle")}
             </p>
             <div className="mt-3">

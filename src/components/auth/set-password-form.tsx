@@ -42,7 +42,7 @@ export function SetPasswordForm({ email }: { email: string }) {
 
       {/* The address they just proved, shown back to them so the step feels
           like a continuation rather than a fresh form out of nowhere. */}
-      <p className="flex items-center gap-2 rounded-xl border border-[var(--accent)]/25 bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] px-4 py-3 text-[0.875rem]">
+      <p className="flex items-center gap-2 rounded-xl border border-[var(--accent)]/25 bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] px-4 py-3 text-[1rem]">
         <BadgeCheck className="h-4 w-4 shrink-0 text-[var(--accent)]" />
         <span className="min-w-0 truncate text-[var(--text-default)]">{email}</span>
       </p>

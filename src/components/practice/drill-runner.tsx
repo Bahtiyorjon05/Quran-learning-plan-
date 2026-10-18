@@ -221,7 +221,7 @@ function Progress({
           />
         ))}
       </div>
-      <span className="shrink-0 text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+      <span className="shrink-0 text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
         {label}
       </span>
     </div>
@@ -299,15 +299,15 @@ export function QuestionHeading({
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="min-w-0">
-        <h2 className="text-[0.9375rem] font-medium text-[var(--text-strong)]">{title}</h2>
-        {hint && <p className="mt-1 text-[0.8125rem] text-[var(--text-muted)]">{hint}</p>}
+        <h2 className="text-[1.0625rem] font-medium text-[var(--text-strong)]">{title}</h2>
+        {hint && <p className="mt-1 text-[0.9375rem] text-[var(--text-muted)]">{hint}</p>}
       </div>
 
       {onHint && (
         <button
           type="button"
           onClick={onHint}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--line-strong)] px-3 py-1.5 text-[0.6875rem] font-medium text-[var(--text-muted)] transition-colors duration-300 hover:border-gold-500/50 hover:text-gold-ink"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--line-strong)] px-3 py-1.5 text-[0.8125rem] font-medium text-[var(--text-muted)] transition-colors duration-300 hover:border-gold-500/50 hover:text-gold-ink"
         >
           <Lightbulb className="h-3.5 w-3.5" />
           {hintLabel}
@@ -340,7 +340,7 @@ export function OpenInMushaf({ page, label }: { page: number; label: string }) {
   return (
     <Link
       href={`/app/quran/${page}`}
-      className="inline-flex items-center gap-1.5 text-[0.75rem] text-[var(--text-muted)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline"
+      className="inline-flex items-center gap-1.5 text-[0.875rem] text-[var(--text-muted)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline"
     >
       <Eye className="h-3.5 w-3.5" />
       {label}

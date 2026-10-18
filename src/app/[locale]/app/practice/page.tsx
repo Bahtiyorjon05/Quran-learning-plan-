@@ -88,7 +88,7 @@ export default async function PracticeIndexPage({
             <h1 className="font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
               {t("title")}
             </h1>
-            <p className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+            <p className="mt-3 text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
               {t("subtitle")}
             </p>
           </header>
@@ -96,8 +96,8 @@ export default async function PracticeIndexPage({
           {held === 0 ? (
             <div className="mt-10 rounded-3xl border border-dashed border-[var(--line-strong)] px-6 py-12 text-center">
               <BookOpen className="mx-auto h-6 w-6 text-[var(--text-faint)]" strokeWidth={1.5} />
-              <p className="mt-4 text-[0.9375rem] text-[var(--text-strong)]">{t("empty.title")}</p>
-              <p className="mx-auto mt-2 max-w-sm text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-4 text-[1.0625rem] text-[var(--text-strong)]">{t("empty.title")}</p>
+              <p className="mx-auto mt-2 max-w-sm text-[1rem] leading-relaxed text-[var(--text-muted)]">
                 {t("empty.body")}
               </p>
               <Link
@@ -140,7 +140,7 @@ export default async function PracticeIndexPage({
                         <span className="block truncate font-[family-name:var(--font-display)] text-[1.5rem] leading-tight font-normal text-[var(--text-strong)] sm:text-[1.75rem]">
                           {featured.surahNames.join(" · ")}
                         </span>
-                        <span className="mt-1.5 block text-[0.875rem] text-[var(--text-muted)]">
+                        <span className="mt-1.5 block text-[1rem] text-[var(--text-muted)]">
                           {t("juzNumber", { number: featured.juz })}
                           {featured.daysSinceReview > 0 && (
                             <> · {t("daysAgo", { count: featured.daysSinceReview })}</>
@@ -160,7 +160,7 @@ export default async function PracticeIndexPage({
                               style={{ width: `${Math.max(3, featured.strength)}%` }}
                             />
                           </span>
-                          <span className="shrink-0 text-[0.75rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
+                          <span className="shrink-0 text-[0.875rem] tracking-[0.1em] text-[var(--text-faint)] uppercase">
                             {t("strength")} {featured.strength}
                           </span>
                         </span>
@@ -199,10 +199,10 @@ export default async function PracticeIndexPage({
                           <Icon className="h-4 w-4" strokeWidth={1.7} />
                         </span>
                         <span className="min-w-0">
-                          <span className="block text-[0.875rem] font-medium text-[var(--text-strong)]">
+                          <span className="block text-[1rem] font-medium text-[var(--text-strong)]">
                             {t(`modes.${mode}.name`)}
                           </span>
-                          <span className="mt-0.5 block text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+                          <span className="mt-0.5 block text-[0.875rem] leading-relaxed text-[var(--text-faint)]">
                             {t(`modes.${mode}.title`)}
                           </span>
                         </span>
@@ -215,7 +215,7 @@ export default async function PracticeIndexPage({
               {rest.length > 0 && (
                 <section className="mt-10">
                   <SectionLabel>{t("othersTitle")}</SectionLabel>
-                  <p className="mt-1 text-[0.8125rem] text-[var(--text-faint)]">
+                  <p className="mt-1 text-[0.9375rem] text-[var(--text-faint)]">
                     {t("weakestFirst", { count: held })}
                   </p>
 
@@ -242,21 +242,21 @@ export default async function PracticeIndexPage({
                             </span>
                             <span
                               className={cn(
-                                "text-[0.8125rem] font-medium tabular-nums",
+                                "text-[0.9375rem] font-medium tabular-nums",
                                 item.fragile ? "text-gold-ink" : "text-[var(--text-muted)]",
                               )}
                             >
                               {item.strength}
-                              <span className="ms-1 text-[0.6875rem] text-[var(--text-faint)]">
+                              <span className="ms-1 text-[0.8125rem] text-[var(--text-faint)]">
                                 {t("strengthLabel")}
                               </span>
                             </span>
                           </span>
 
-                          <span className="mt-2.5 block truncate text-[0.9375rem] font-medium text-[var(--text-strong)]">
+                          <span className="mt-2.5 block truncate text-[1.0625rem] font-medium text-[var(--text-strong)]">
                             {item.surahNames.join(" · ")}
                           </span>
-                          <span className="mt-0.5 block text-[0.75rem] text-[var(--text-muted)]">
+                          <span className="mt-0.5 block text-[0.875rem] text-[var(--text-muted)]">
                             {t("juzNumber", { number: item.juz })}
                             {item.daysSinceReview > 0 && (
                               <> · {t("daysAgo", { count: item.daysSinceReview })}</>
@@ -283,7 +283,7 @@ export default async function PracticeIndexPage({
                   </ul>
 
                   {pages.length > shortlist.length && (
-                    <p className="mt-5 text-center text-[0.8125rem] text-[var(--text-faint)]">
+                    <p className="mt-5 text-center text-[0.9375rem] text-[var(--text-faint)]">
                       {t("andMore", { count: pages.length - shortlist.length })}
                     </p>
                   )}
@@ -306,7 +306,7 @@ function SectionLabel({
   children: React.ReactNode;
 }) {
   return (
-    <h2 className="flex items-center gap-2 text-[0.75rem] font-semibold tracking-[0.16em] text-[var(--text-faint)] uppercase">
+    <h2 className="flex items-center gap-2 text-[0.875rem] font-semibold tracking-[0.16em] text-[var(--text-faint)] uppercase">
       {Icon && <Icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />}
       {children}
     </h2>

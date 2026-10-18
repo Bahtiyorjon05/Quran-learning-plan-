@@ -216,7 +216,7 @@ export function AssembleQuestion({
 
       {review ? (
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-[0.8125rem] text-[var(--text-muted)]">
+          <p className="text-[0.9375rem] text-[var(--text-muted)]">
             {review.wrongAt.length === 0
               ? t("allRight")
               : t("missedCount", { count: review.wrongAt.length })}
@@ -226,7 +226,7 @@ export function AssembleQuestion({
       ) : (
         <>
           <div className="mt-7 flex items-center justify-between gap-3">
-            <p className="flex items-center gap-2 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+            <p className="flex items-center gap-2 text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
               {t("bank")}
               <span className="rounded-full bg-[var(--surface-overlay)] px-2 py-0.5 tracking-normal normal-case tabular-nums">
                 {placed.filter(Boolean).length}/{question.blanks.length}
@@ -236,7 +236,7 @@ export function AssembleQuestion({
               <button
                 type="button"
                 onClick={undo}
-                className="inline-flex items-center gap-1.5 text-[0.75rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
+                className="inline-flex items-center gap-1.5 text-[0.875rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
               >
                 <Undo2 className="h-3.5 w-3.5" />
                 {t("modes.shuffle.undo")}
@@ -271,7 +271,7 @@ export function AssembleQuestion({
                     <span
                       aria-hidden
                       dir="ltr"
-                      className="absolute -top-1.5 -start-1.5 hidden h-4 w-4 place-items-center rounded-full border border-[var(--line-strong)] bg-[var(--surface-base)] text-[0.5625rem] text-[var(--text-faint)] tabular-nums lg:grid"
+                      className="absolute -top-1.5 -start-1.5 hidden h-4 w-4 place-items-center rounded-full border border-[var(--line-strong)] bg-[var(--surface-base)] text-[0.6875rem] text-[var(--text-faint)] tabular-nums lg:grid"
                     >
                       {i + 1}
                     </span>
@@ -281,7 +281,7 @@ export function AssembleQuestion({
             })}
           </div>
 
-          <p className="mt-4 flex items-center gap-2 text-[0.75rem] text-[var(--text-faint)]">
+          <p className="mt-4 flex items-center gap-2 text-[0.875rem] text-[var(--text-faint)]">
             <ArrowRight className="h-3.5 w-3.5 shrink-0 rtl:rotate-180" />
             {done ? t("bankDone") : t("bankHelp")}
           </p>

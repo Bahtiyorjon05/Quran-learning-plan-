@@ -55,7 +55,7 @@ export function Everything() {
               <h3 className="mt-5 text-base font-semibold text-[var(--text-strong)]">
                 {t(`items.${key}.title`)}
               </h3>
-              <p className="mt-2 text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-2 text-[1rem] leading-relaxed text-[var(--text-muted)]">
                 {t(`items.${key}.body`)}
               </p>
               {key === "audio" && (
@@ -81,7 +81,7 @@ export function Everything() {
               <Icon className="h-3.5 w-3.5" strokeWidth={1.6} />
               {label}
               {soon && (
-                <span className="rounded-full bg-gold-500/15 px-2 py-0.5 text-[0.625rem] font-medium tracking-wide text-gold-ink">
+                <span className="rounded-full bg-gold-500/15 px-2 py-0.5 text-[0.75rem] font-medium tracking-wide text-gold-ink">
                   {tp("soon")}
                 </span>
               )}

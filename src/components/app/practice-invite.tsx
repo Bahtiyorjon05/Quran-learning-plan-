@@ -49,10 +49,10 @@ export async function PracticeInvite({
       </span>
 
       <span className="min-w-0 flex-1">
-        <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
+        <span className="block text-[1.0625rem] font-medium text-[var(--text-strong)]">
           {urgent ? t("fragile", { count: fragileCount }) : t("title")}
         </span>
-        <span className="mt-1 block text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
+        <span className="mt-1 block text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
           {weakest
             ? t("weakest", {
                 name: weakest.surahNames[0] ?? "",

@@ -69,7 +69,7 @@ export function ReadingShell({
                 <p className="truncate text-sm font-medium text-[var(--text-strong)]">
                   {title}
                 </p>
-                <p className="truncate text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+                <p className="truncate text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
                   {subtitle}
                 </p>
               </div>
@@ -111,8 +111,8 @@ export function ReadingShell({
                     aria-current={option.current ? "page" : undefined}
                     className={
                       option.current
-                        ? "rounded-full bg-[var(--accent-ground)] px-3 py-1.5 text-[0.75rem] font-medium text-[var(--on-accent)]"
-                        : "rounded-full px-3 py-1.5 text-[0.75rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
+                        ? "rounded-full bg-[var(--accent-ground)] px-3 py-1.5 text-[0.875rem] font-medium text-[var(--on-accent)]"
+                        : "rounded-full px-3 py-1.5 text-[0.875rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
                     }
                   >
                     {option.label}

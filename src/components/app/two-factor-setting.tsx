@@ -89,10 +89,10 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
         </span>
 
         <div className="min-w-0 flex-1">
-          <p className="text-[0.9375rem] font-medium text-[var(--text-strong)]">
+          <p className="text-[1.0625rem] font-medium text-[var(--text-strong)]">
             {on ? t("on") : t("off")}
           </p>
-          <p className="mt-1 text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
+          <p className="mt-1 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
             {on ? t("onBody") : t("offBody")}
           </p>
         </div>
@@ -133,10 +133,10 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
           <input type="hidden" name="purpose" value="enable" />
 
           <div className="space-y-2">
-            <p className="flex items-center justify-between gap-3 text-[0.8125rem] font-medium text-[var(--text-default)]">
+            <p className="flex items-center justify-between gap-3 text-[0.9375rem] font-medium text-[var(--text-default)]">
               {t("code")}
               {codeAccepted && (
-                <span className="inline-flex items-center gap-1.5 text-[0.75rem] font-normal text-[var(--accent-strong)]">
+                <span className="inline-flex items-center gap-1.5 text-[0.875rem] font-normal text-[var(--accent-strong)]">
                   <CircleCheck className="h-3.5 w-3.5" />
                   {t("codeAccepted")}
                 </span>
@@ -194,7 +194,7 @@ export function TwoFactorSetting({ enabled }: { enabled: boolean }) {
             />
           </Field>
 
-          <p className="text-[0.75rem] leading-relaxed text-[var(--text-faint)]">{t("differentNote")}</p>
+          <p className="text-[0.875rem] leading-relaxed text-[var(--text-faint)]">{t("differentNote")}</p>
             </>
           )}
 

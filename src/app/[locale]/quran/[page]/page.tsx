@@ -78,7 +78,7 @@ export default async function QuranPage({ params }: Params) {
                 <p className="truncate text-sm font-medium text-[var(--text-strong)]">
                   {names.map((s) => s.title).join(" · ")}
                 </p>
-                <p className="text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+                <p className="text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
                   {t("page", { page })} · {t("juz", { juz: meta.juz })}
                 </p>
               </div>
@@ -127,7 +127,7 @@ export default async function QuranPage({ params }: Params) {
 
           <AutoReadMark page={page} />
 
-          <div className="mx-auto mt-10 flex max-w-2xl items-center justify-between gap-3 border-t border-[var(--line-subtle)] pt-8">
+          <div className="mx-auto mt-10 grid max-w-2xl grid-cols-2 gap-3 border-t border-[var(--line-subtle)] pt-8">
             {page > 1 ? (
               <Link
                 href={`/quran/${page - 1}`}
@@ -140,7 +140,7 @@ export default async function QuranPage({ params }: Params) {
               <span />
             )}
             {page < TOTAL_PAGES && (
-              <Link href={`/quran/${page + 1}`} className={buttonStyles()}>
+              <Link href={`/quran/${page + 1}`} className={buttonStyles({ className: "col-start-2 w-full min-w-0 justify-center" })}>
                 {t("next")}
                 <ChevronRight className="h-4 w-4 rtl:rotate-180" />
               </Link>

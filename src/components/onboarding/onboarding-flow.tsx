@@ -75,7 +75,7 @@ export function OnboardingFlow() {
             )}
           />
         ))}
-        <span className="shrink-0 text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+        <span className="shrink-0 text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
           {t("step", { current: step + 1, total: 2 })}
         </span>
       </div>
@@ -86,7 +86,7 @@ export function OnboardingFlow() {
             <h2 className="font-[family-name:var(--font-display)] text-[1.75rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.125rem]">
               {t("when.title")}
             </h2>
-            <p className="mt-3 max-w-lg text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+            <p className="mt-3 max-w-lg text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
               {t("when.subtitle")}
             </p>
 
@@ -121,7 +121,7 @@ export function OnboardingFlow() {
               </MomentCard>
             </div>
 
-            <p className="mt-5 flex items-center gap-2 text-[0.8125rem] text-[var(--text-faint)]">
+            <p className="mt-5 flex items-center gap-2 text-[0.9375rem] text-[var(--text-faint)]">
               <Clock className="h-3.5 w-3.5 shrink-0" />
               {t("when.approximate")}
             </p>
@@ -131,7 +131,7 @@ export function OnboardingFlow() {
             <h2 className="font-[family-name:var(--font-display)] text-[1.75rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.125rem]">
               {t("reciter.title")}
             </h2>
-            <p className="mt-3 max-w-lg text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+            <p className="mt-3 max-w-lg text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
               {t("reciter.subtitle")}
             </p>
 
@@ -153,7 +153,7 @@ export function OnboardingFlow() {
                     )}
                   >
                     <span className="min-w-0">
-                      <span className="block truncate text-[0.9375rem] font-medium text-[var(--text-strong)]">
+                      <span className="block truncate text-[1.0625rem] font-medium text-[var(--text-strong)]">
                         {option.name[locale]}
                       </span>
                       <span
@@ -261,15 +261,15 @@ function MomentCard({
             strokeWidth={1.6}
           />
           {time && (
-            <span className="shrink-0 text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+            <span className="shrink-0 text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
               {time}
             </span>
           )}
         </span>
-        <span className="mt-3 block text-[0.9375rem] font-medium text-[var(--text-strong)]">
+        <span className="mt-3 block text-[1.0625rem] font-medium text-[var(--text-strong)]">
           {title}
         </span>
-        <span className="mt-1 block text-[0.75rem] leading-relaxed text-[var(--text-muted)]">
+        <span className="mt-1 block text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
           {why}
         </span>
       </button>

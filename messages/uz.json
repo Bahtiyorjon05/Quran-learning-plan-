@@ -578,6 +578,24 @@
       "hafizContinue": "Alhamdulilloh",
       "pagesLearnt": "{count} sahifa yodlandi",
       "sabaqLearnt": "Bugungi sabaq yodlandi"
+    },
+    "quick": {
+      "title": "Tezkor amallar",
+      "continue": "Davom ettirish",
+      "onPage": "{page}-sahifa",
+      "sabaq": "Bugungi sabaq",
+      "sabaqDone": "Bugun bajarildi",
+      "sabaqNone": "Bugun yangi yo‘q",
+      "practice": "Mashq",
+      "weakestPage": "Eng zaifi: {page}-sahifa",
+      "practiceNone": "Avval sahifa belgilang",
+      "weak": "Zaif joylar",
+      "weakCount": "{count} ta oyat",
+      "weakNone": "Ochiq joy yo‘q",
+      "mushaf": "Mus’haf",
+      "heldCount": "{count} sahifa yodlangan",
+      "covenant": "Ahdim",
+      "covenantDetail": "Va’dangizni o‘qing"
     }
   },
   "onboarding": {
@@ -783,7 +801,22 @@
       "juzNumber": "{number}-juz",
       "pages": "{from}–{to}-sahifalar",
       "continue": "Oʻqishni davom ettirish",
-      "readCount": "604 sahifadan {count} tasi belgilangan"
+      "readCount": "604 sahifadan {count} tasi belgilangan",
+      "filters": "Saralash",
+      "all": "Hammasi",
+      "statusHeld": "Yodlangan",
+      "statusSome": "Jarayonda",
+      "statusNone": "Boshlanmagan",
+      "bothRevelations": "Makka va Madina",
+      "anyJuz": "Har qanday juz",
+      "inJuz": "{number}-juz",
+      "sortMushaf": "Mus’haf tartibida",
+      "sortShort": "Avval qisqalari",
+      "sortLong": "Avval uzunlari",
+      "results": "{count} ta sura",
+      "clear": "Tozalash",
+      "juzHeld": "{total} sahifadan {held} tasi",
+      "juzWhole": "To‘liq yodlangan"
     },
     "reader": {
       "page": "{page}-sahifa",

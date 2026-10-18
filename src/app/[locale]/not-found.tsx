@@ -20,7 +20,7 @@ export default async function LocaleNotFound() {
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)]">
           {t("title")}
         </h1>
-        <p className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+        <p className="mt-3 text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
           {t("body")}
         </p>
 

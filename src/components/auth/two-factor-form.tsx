@@ -69,10 +69,10 @@ export function TwoFactorForm() {
         <input type="hidden" name="purpose" value="reset" />
 
         <div className="space-y-2">
-          <p className="flex items-center justify-between gap-3 text-[0.8125rem] font-medium text-[var(--text-default)]">
+          <p className="flex items-center justify-between gap-3 text-[0.9375rem] font-medium text-[var(--text-default)]">
             {t("code")}
             {codeAccepted && (
-              <span className="inline-flex items-center gap-1.5 text-[0.75rem] font-normal text-[var(--accent-strong)]">
+              <span className="inline-flex items-center gap-1.5 text-[0.875rem] font-normal text-[var(--accent-strong)]">
                 <CircleCheck className="h-3.5 w-3.5" />
                 {t("codeAccepted")}
               </span>
@@ -131,7 +131,7 @@ export function TwoFactorForm() {
         <button
           type="button"
           onClick={() => setForgot(false)}
-          className="w-full text-center text-[0.8125rem] text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]"
+          className="w-full text-center text-[0.9375rem] text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]"
         >
           {t("backToChallenge")}
         </button>

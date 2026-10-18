@@ -64,7 +64,7 @@ export function DailySheet({
           {t("heading")}
         </h2>
         {streak > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-1 text-[0.6875rem] font-medium text-gold-ink">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/30 bg-gold-500/10 px-2.5 py-1 text-[0.8125rem] font-medium text-gold-ink">
             <Flame className="h-3 w-3" />
             {t("streak", { count: streak })}
           </span>
@@ -72,7 +72,7 @@ export function DailySheet({
       </div>
 
       {complete && (
-        <p className="mt-4 rounded-xl border border-[var(--accent)]/30 bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] px-4 py-3 text-[0.9375rem] text-[var(--accent-strong)]">
+        <p className="mt-4 rounded-xl border border-[var(--accent)]/30 bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] px-4 py-3 text-[1.0625rem] text-[var(--accent-strong)]">
           <strong className="font-medium">{t("allDone")}</strong>{" "}
           <span className="text-[var(--text-muted)]">{t("allDoneBody")}</span>
         </p>
@@ -148,11 +148,11 @@ function TrackRow({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline gap-2">
-            <span className="font-arabic text-[0.9375rem] leading-none text-gold-ink/90" aria-hidden dir="rtl">
+            <span className="font-arabic text-[1.0625rem] leading-none text-gold-ink/90" aria-hidden dir="rtl">
               {track.arabic}
             </span>
-            <span className="text-[0.9375rem] font-medium text-[var(--text-strong)]">{name}</span>
-            <span className="ms-auto shrink-0 text-[0.625rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+            <span className="text-[1.0625rem] font-medium text-[var(--text-strong)]">{name}</span>
+            <span className="ms-auto shrink-0 text-[0.75rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
               {role}
             </span>
           </div>

@@ -24,7 +24,7 @@ export function FinalCta() {
             {t("title")}
           </h2>
 
-          <p className="mt-6 text-[1.0625rem] leading-[1.75] text-[var(--text-muted)]">
+          <p className="mt-6 text-[1.125rem] leading-[1.75] text-[var(--text-muted)]">
             {t("body")}
           </p>
 

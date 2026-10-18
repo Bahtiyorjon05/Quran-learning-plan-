@@ -191,7 +191,7 @@ export function CovenantArc({
             label
           )}
         </p>
-        <p className="mt-1.5 text-[0.6875rem] tracking-[0.12em] text-[var(--text-faint)] uppercase">
+        <p className="mt-1.5 text-[0.8125rem] tracking-[0.12em] text-[var(--text-faint)] uppercase">
           {caption}
         </p>
       </div>
@@ -241,7 +241,7 @@ export function Stat({
           value
         )}
       </p>
-      <p className="mt-1.5 text-[0.6875rem] leading-tight tracking-[0.1em] text-[var(--text-faint)] uppercase">
+      <p className="mt-1.5 text-[0.8125rem] leading-tight tracking-[0.1em] text-[var(--text-faint)] uppercase">
         {label}
       </p>
     </div>

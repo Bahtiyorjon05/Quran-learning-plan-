@@ -49,7 +49,7 @@ export function DrillResult({
   return (
     <div className="animate-rise">
       <div className="rounded-3xl border border-[var(--line-strong)] bg-[var(--surface-overlay)] p-6 text-center sm:p-8">
-        <p className="text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+        <p className="text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
           {t(`modes.${drill.mode}.name`)}
         </p>
 
@@ -61,7 +61,7 @@ export function DrillResult({
           <span className="text-[1.5rem] text-[var(--text-faint)]">%</span>
         </p>
 
-        <p className="mt-2 text-[0.9375rem] text-[var(--text-muted)]">
+        <p className="mt-2 text-[1.0625rem] text-[var(--text-muted)]">
           {t("scoreLine", { correct: state.correct, total: state.total })}
           {state.hints > 0 && <> · {t("hintsUsed", { count: state.hints })}</>}
         </p>
@@ -71,7 +71,7 @@ export function DrillResult({
         </div>
 
         {state.lapsed && (
-          <p className="mt-5 inline-flex items-start gap-2 rounded-xl border border-gold-500/30 bg-gold-500/10 px-4 py-3 text-start text-[0.8125rem] text-gold-ink">
+          <p className="mt-5 inline-flex items-start gap-2 rounded-xl border border-gold-500/30 bg-gold-500/10 px-4 py-3 text-start text-[0.9375rem] text-gold-ink">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             <span>
               {state.needsRelearning ? t("relearning") : t("lapsed")}
@@ -80,7 +80,7 @@ export function DrillResult({
         )}
       </div>
 
-      <h3 className="mt-9 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+      <h3 className="mt-9 text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
         {t("review")}
       </h3>
 
@@ -110,7 +110,7 @@ export function DrillResult({
                     clean ? "bg-[var(--accent)]" : "bg-danger",
                   )}
                 />
-                <span className="min-w-0 flex-1 text-[0.875rem] text-[var(--text-strong)]">
+                <span className="min-w-0 flex-1 text-[1rem] text-[var(--text-strong)]">
                   {t("questionNumber", { number: i + 1 })}
                   <span className="ms-2 text-[var(--text-muted)]">
                     {clean ? t("allRight") : t("missedCount", { count: wrongAt.length })}
@@ -190,7 +190,7 @@ function StrengthPill({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[0.8125rem] font-medium",
+        "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[0.9375rem] font-medium",
         flat
           ? "border-[var(--line-strong)] text-[var(--text-muted)]"
           : up

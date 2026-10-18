@@ -41,6 +41,7 @@ import { PracticeInvite } from "@/components/app/practice-invite";
 import { MushafMosaic } from "@/components/app/mushaf-mosaic";
 import { TOTAL_PAGES } from "@/core/quran/mushaf";
 import { DailySheet, type TrackView } from "@/components/app/daily-sheet";
+import { QuickActions } from "@/components/app/quick-actions";
 import { describeLineRange, LINES_PER_PAGE } from "@/core/quran/mushaf";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -295,12 +296,29 @@ export default async function AppHomePage({
             <Greeting name={user.displayName || ta("welcome")} />
 
             {sheet && sheet.streak > 0 && (
-              <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-gold-500/30 bg-gold-500/10 px-3.5 py-1.5 text-[0.8125rem] font-medium text-gold-ink">
+              <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-gold-500/30 bg-gold-500/10 px-3.5 py-1.5 text-[0.9375rem] font-medium text-gold-ink">
                 <Flame className="h-4 w-4" />
                 {ta("today.streak", { count: sheet.streak })}
               </span>
             )}
           </div>
+
+          {/* Where most visits are going — one tap each, before anything has
+              to be read. */}
+          <QuickActions
+            sabaq={
+              sheet?.sheet.sabaq
+                ? {
+                    page: describeLineRange(sheet.sheet.sabaq.fromLine, sheet.sheet.sabaq.toLine)
+                      .fromPage,
+                    done: sheet.done.sabaq,
+                  }
+                : null
+            }
+            weakest={pages[0]?.page ?? null}
+            weakAyahs={weakSpots.ayahs}
+            held={held}
+          />
 
           {/* The covenant, given the whole width. It is the promise everything
               else exists to keep, and it was sharing a row with a list of
@@ -327,7 +345,7 @@ export default async function AppHomePage({
                 <h2 className="font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--text-strong)]">
                   {ta("covenant.title")}
                 </h2>
-                <p className="mx-auto mt-3 max-w-md text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+                <p className="mx-auto mt-3 max-w-md text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
                   {ta("covenant.soon")}
                 </p>
                 <Link
@@ -371,7 +389,7 @@ export default async function AppHomePage({
                       </Link>
                       <span
                         className={cn(
-                          "shrink-0 rounded-full border px-2.5 py-1 text-[0.625rem] font-semibold tracking-[0.12em] uppercase",
+                          "shrink-0 rounded-full border px-2.5 py-1 text-[0.75rem] font-semibold tracking-[0.12em] uppercase",
                           pace.band === "ahead" || pace.band === "done"
                             ? "border-[var(--accent)]/35 bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] text-[var(--accent-strong)]"
                             : pace.band === "onTrack"
@@ -385,7 +403,7 @@ export default async function AppHomePage({
                       </span>
                     </div>
 
-                    <p className="mt-2 text-[0.9375rem] text-[var(--text-muted)]">
+                    <p className="mt-2 text-[1.0625rem] text-[var(--text-muted)]">
                       {tp("finishBy")}{" "}
                       <span className="font-medium text-[var(--text-strong)]">
                         {dateFormat.format(
@@ -430,7 +448,7 @@ export default async function AppHomePage({
                 </div>
 
                 {covenant.niyyah && (
-                  <p className="mt-6 border-t border-[var(--line-subtle)] pt-5 text-center text-[0.875rem] leading-relaxed text-[var(--text-muted)] italic">
+                  <p className="mt-6 border-t border-[var(--line-subtle)] pt-5 text-center text-[1rem] leading-relaxed text-[var(--text-muted)] italic">
                     &ldquo;{covenant.niyyah}&rdquo;
                   </p>
                 )}
@@ -481,10 +499,10 @@ export default async function AppHomePage({
                       />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
+                      <span className="block text-[1.0625rem] font-medium text-[var(--text-strong)]">
                         {tw("title")}
                       </span>
-                      <span className="mt-1 block text-[0.8125rem] text-[var(--text-muted)]">
+                      <span className="mt-1 block text-[0.9375rem] text-[var(--text-muted)]">
                         {tw("openCount", {
                           ayahs: weakSpots.ayahs,
                           times: weakSpots.open,
@@ -509,10 +527,10 @@ export default async function AppHomePage({
                       />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
+                      <span className="block text-[1.0625rem] font-medium text-[var(--text-strong)]">
                         {ta("mushaf.title")}
                       </span>
-                      <span className="mt-1 block text-[0.8125rem] text-[var(--text-muted)]">
+                      <span className="mt-1 block text-[0.9375rem] text-[var(--text-muted)]">
                         {ta("mushaf.heldSummary", {
                           held,
                           average: averageStrength,
@@ -529,7 +547,7 @@ export default async function AppHomePage({
                   <summary className="flex cursor-pointer items-center gap-3 px-5 py-4 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]">
                     <Monitor className="h-4 w-4 shrink-0" strokeWidth={1.6} />
                     <span className="flex-1">{ta("sessions.title")}</span>
-                    <span className="text-[0.75rem] text-[var(--text-faint)] tabular-nums">
+                    <span className="text-[0.875rem] text-[var(--text-faint)] tabular-nums">
                       {active.length}
                     </span>
                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-300 group-open:rotate-180" />
@@ -568,12 +586,12 @@ export default async function AppHomePage({
                                 )}
                               </span>
                               {current && (
-                                <span className="text-[0.6875rem] text-[var(--accent)]">
+                                <span className="text-[0.8125rem] text-[var(--accent)]">
                                   {ta("sessions.thisDevice")}
                                 </span>
                               )}
                             </span>
-                            <span className="shrink-0 font-mono text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+                            <span className="shrink-0 font-mono text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
                               {session.ip ?? "\u2014"}
                             </span>
                           </li>
@@ -614,7 +632,7 @@ export default async function AppHomePage({
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-normal text-[var(--text-strong)]">
                   {ta("milestone.sealsTitle")}
                 </h2>
-                <p className="text-[0.8125rem] text-[var(--text-muted)]">
+                <p className="text-[0.9375rem] text-[var(--text-muted)]">
                   {ta("milestone.sealsBody", { held: juz.held.length })}
                 </p>
               </div>

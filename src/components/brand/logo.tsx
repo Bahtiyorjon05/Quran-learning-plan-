@@ -76,7 +76,7 @@ export function Wordmark({
         {showArabic && (
           <span
             aria-hidden
-            className="font-arabic text-[0.9375rem] leading-none text-[var(--text-faint)]"
+            className="font-arabic text-[1.0625rem] leading-none text-[var(--text-faint)]"
           >
             عهد
           </span>

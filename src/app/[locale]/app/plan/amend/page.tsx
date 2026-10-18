@@ -71,7 +71,7 @@ export default async function AmendPage({
             <header className="animate-rise">
               <Link
                 href="/app"
-                className="inline-flex items-center gap-2 text-[0.8125rem] text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]"
+                className="inline-flex items-center gap-2 text-[0.9375rem] text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]"
               >
                 <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
                 {t("back")}
@@ -80,20 +80,20 @@ export default async function AmendPage({
               <h1 className="mt-4 font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
                 {t("title")}
               </h1>
-              <p className="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-3 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
                 {t("subtitle")}
               </p>
             </header>
 
             <div className="animate-rise mt-8 space-y-5 [animation-delay:80ms]">
               {!plan ? (
-                <p className="panel rounded-3xl p-8 text-center text-[0.9375rem] text-[var(--text-muted)]">
+                <p className="panel rounded-3xl p-8 text-center text-[1.0625rem] text-[var(--text-muted)]">
                   {t("noPlan")}
                 </p>
               ) : (
                 <>
                   <div className="panel rounded-3xl p-5 sm:p-6">
-                    <p className="text-[0.6875rem] font-semibold tracking-[0.12em] text-[var(--text-faint)] uppercase">
+                    <p className="text-[0.8125rem] font-semibold tracking-[0.12em] text-[var(--text-faint)] uppercase">
                       {t("current")}
                     </p>
                     <p className="mt-2 font-[family-name:var(--font-display)] text-[1.75rem] leading-tight font-light text-[var(--text-strong)]">
@@ -101,7 +101,7 @@ export default async function AmendPage({
                         new Date(`${plan.currentEndDate}T00:00:00Z`),
                       )}
                     </p>
-                    <p className="mt-1 text-[0.8125rem] text-[var(--text-muted)]">
+                    <p className="mt-1 text-[0.9375rem] text-[var(--text-muted)]">
                       {t("startedOn")}{" "}
                       {dateFormat.format(
                         new Date(`${plan.startDate}T00:00:00Z`),
@@ -119,10 +119,10 @@ export default async function AmendPage({
                           strokeWidth={1.8}
                         />
                       </span>
-                      <p className="mt-4 text-[1.0625rem] font-medium text-[var(--text-strong)]">
+                      <p className="mt-4 text-[1.125rem] font-medium text-[var(--text-strong)]">
                         {t("spentTitle")}
                       </p>
-                      <p className="mx-auto mt-2 max-w-sm text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+                      <p className="mx-auto mt-2 max-w-sm text-[1rem] leading-relaxed text-[var(--text-muted)]">
                         {t("spentBody")}
                       </p>
                       <Link

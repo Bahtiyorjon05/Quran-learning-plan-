@@ -86,13 +86,13 @@ export function ResetForm({ email }: { email: string | null }) {
     return (
       <div className="space-y-5">
         <FormError>{te("codeAttemptsExceeded")}</FormError>
-        <p className="flex items-start gap-2.5 text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+        <p className="flex items-start gap-2.5 text-[1rem] leading-relaxed text-[var(--text-muted)]">
           <LifeBuoy className="mt-0.5 h-4 w-4 shrink-0 text-[var(--text-faint)]" />
           {t("spentHelp")}
         </p>
         <Link
           href="/forgot-password"
-          className="inline-flex h-11 w-full items-center justify-center rounded-full bg-[var(--accent-ground)] text-[0.9375rem] font-medium text-[var(--on-accent)] transition-[background-color] duration-300 hover:bg-[var(--accent-strong)]"
+          className="inline-flex h-11 w-full items-center justify-center rounded-full bg-[var(--accent-ground)] text-[1.0625rem] font-medium text-[var(--on-accent)] transition-[background-color] duration-300 hover:bg-[var(--accent-strong)]"
         >
           {t("newCode")}
         </Link>
@@ -107,10 +107,10 @@ export function ResetForm({ email }: { email: string | null }) {
       {address}
 
       <div className="space-y-2">
-        <p className="flex items-center justify-between gap-3 text-[0.8125rem] font-medium text-[var(--text-default)]">
+        <p className="flex items-center justify-between gap-3 text-[0.9375rem] font-medium text-[var(--text-default)]">
           {t("code")}
           {verified && (
-            <span className="inline-flex items-center gap-1.5 text-[0.75rem] font-normal text-[var(--accent-strong)]">
+            <span className="inline-flex items-center gap-1.5 text-[0.875rem] font-normal text-[var(--accent-strong)]">
               <CircleCheck className="h-3.5 w-3.5" />
               {t("codeAccepted")}
             </span>
@@ -125,7 +125,7 @@ export function ResetForm({ email }: { email: string | null }) {
           readOnly={verified}
         />
         {fieldError("code") && (
-          <p role="alert" className="text-[0.8125rem] text-danger">
+          <p role="alert" className="text-[0.9375rem] text-danger">
             {fieldError("code")}
           </p>
         )}
@@ -161,7 +161,7 @@ export function ResetForm({ email }: { email: string | null }) {
             />
           </Field>
 
-          <p className="flex items-start gap-2 text-[0.8125rem] leading-relaxed text-[var(--text-faint)]">
+          <p className="flex items-start gap-2 text-[0.9375rem] leading-relaxed text-[var(--text-faint)]">
             <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             {t("note")}
           </p>

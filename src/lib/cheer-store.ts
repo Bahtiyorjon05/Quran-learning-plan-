@@ -87,7 +87,7 @@ export function pageLearnt(words: { mashaallah: string; line: string }) {
   shout.textContent = words.mashaallah;
 
   const line = document.createElement("span");
-  line.className = "mt-0.5 block text-[0.8125rem] text-[var(--text-muted)]";
+  line.className = "mt-0.5 block text-[0.9375rem] text-[var(--text-muted)]";
   line.dataset.cheerLine = "";
   line.textContent = words.line;
 

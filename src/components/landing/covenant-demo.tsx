@@ -74,7 +74,7 @@ export function CovenantDemo() {
 
             <div className="relative flex items-start justify-between gap-4">
               <div>
-                <p className="text-[0.6875rem] font-semibold tracking-[0.18em] text-[var(--text-faint)] uppercase">
+                <p className="text-[0.8125rem] font-semibold tracking-[0.18em] text-[var(--text-faint)] uppercase">
                   {t("planLabel")}
                 </p>
                 <p className="mt-2 font-[family-name:var(--font-display)] text-2xl font-normal text-[var(--text-strong)]">
@@ -160,7 +160,7 @@ export function CovenantDemo() {
                     >
                       {refused ? t("refusedTitle") : t("acceptedTitle")}
                     </p>
-                    <p className="mt-1 text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
+                    <p className="mt-1 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
                       {refused ? t("refusedBody") : t("acceptedBody")}
                     </p>
                   </div>
@@ -171,11 +171,11 @@ export function CovenantDemo() {
             {/* ── The amendment log writes itself ── */}
             {log.length > 0 && (
               <div className="relative mt-5 border-t border-[var(--line-subtle)] pt-4">
-                <p className="flex items-center gap-2 text-[0.6875rem] font-semibold tracking-[0.16em] text-[var(--text-faint)] uppercase">
+                <p className="flex items-center gap-2 text-[0.8125rem] font-semibold tracking-[0.16em] text-[var(--text-faint)] uppercase">
                   <ScrollText className="h-3.5 w-3.5" />
                   plan_amendments
                 </p>
-                <ul className="mt-3 space-y-1.5 font-mono text-[0.6875rem] text-[var(--text-muted)]">
+                <ul className="mt-3 space-y-1.5 font-mono text-[0.8125rem] text-[var(--text-muted)]">
                   {log.map((entry, i) => (
                     <li key={i} className="animate-rise flex items-center gap-2 tabular-nums">
                       <span className="text-[var(--accent)]">+</span>
@@ -201,10 +201,10 @@ export function CovenantDemo() {
                       <Icon className="h-4 w-4 text-[var(--accent)]" strokeWidth={1.6} />
                     </span>
                     <div>
-                      <h3 className="text-[0.9375rem] font-semibold text-[var(--text-strong)]">
+                      <h3 className="text-[1.0625rem] font-semibold text-[var(--text-strong)]">
                         {t(`rules.${key}.title`)}
                       </h3>
-                      <p className="mt-1.5 text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+                      <p className="mt-1.5 text-[1rem] leading-relaxed text-[var(--text-muted)]">
                         {t(`rules.${key}.body`)}
                       </p>
                     </div>

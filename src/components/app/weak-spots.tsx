@@ -69,18 +69,18 @@ function SpotRow({
       )}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <span className="text-[0.875rem] font-medium text-[var(--text-strong)]">
+        <span className="text-[1rem] font-medium text-[var(--text-strong)]">
           {spot.surahName} {spot.surah}:{spot.ayah}
         </span>
 
         <span className="flex items-center gap-2.5">
           {spot.confusable && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/35 bg-gold-500/10 px-2.5 py-0.5 text-[0.6875rem] text-gold-ink">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-500/35 bg-gold-500/10 px-2.5 py-0.5 text-[0.8125rem] text-gold-ink">
               <Shuffle className="h-3 w-3" />
               {t("confused")}
             </span>
           )}
-          <span className="text-[0.75rem] text-[var(--text-muted)] tabular-nums">
+          <span className="text-[0.875rem] text-[var(--text-muted)] tabular-nums">
             {t("timesMissed", { count: spot.count })}
           </span>
         </span>
@@ -115,7 +115,7 @@ function SpotRow({
               ? `/app/practice/${spot.page}?mode=mutashabihat`
               : `/app/practice/${spot.page}?mode=gap`
           }
-          className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-3.5 text-[0.75rem] font-medium text-[var(--accent-strong)] transition-colors duration-300 hover:bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]"
+          className="inline-flex h-9 items-center gap-2 rounded-full border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] px-3.5 text-[0.875rem] font-medium text-[var(--accent-strong)] transition-colors duration-300 hover:bg-[color-mix(in_oklab,var(--accent)_16%,transparent)]"
         >
           <Sparkles className="h-3.5 w-3.5" />
           {spot.confusable ? t("drillConfusion") : t("drillWord")}
@@ -123,7 +123,7 @@ function SpotRow({
 
         <Link
           href={`/app/quran/${spot.page}#ayah-${spot.key}`}
-          className="inline-flex h-9 items-center rounded-full border border-[var(--line-strong)] px-3.5 text-[0.75rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
+          className="inline-flex h-9 items-center rounded-full border border-[var(--line-strong)] px-3.5 text-[0.875rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
         >
           {t("open")}
         </Link>
@@ -136,7 +136,7 @@ function SpotRow({
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex h-9 items-center gap-2 rounded-full px-3 text-[0.75rem] text-[var(--text-faint)] transition-colors duration-300 hover:text-[var(--accent-strong)] disabled:opacity-60"
+            className="inline-flex h-9 items-center gap-2 rounded-full px-3 text-[0.875rem] text-[var(--text-faint)] transition-colors duration-300 hover:text-[var(--accent-strong)] disabled:opacity-60"
           >
             {pending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />

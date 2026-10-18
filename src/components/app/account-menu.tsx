@@ -85,7 +85,7 @@ export function AccountMenu({
       >
         <span
           aria-hidden
-          className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--accent-ground)] text-[0.8125rem] font-semibold text-[var(--on-accent)]"
+          className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--accent-ground)] text-[0.9375rem] font-semibold text-[var(--on-accent)]"
         >
           {initial}
         </span>
@@ -119,10 +119,10 @@ export function AccountMenu({
           )}
         >
           <div className="border-b border-[var(--line-subtle)] px-4 py-3">
-            <p className="truncate text-[0.875rem] font-medium text-[var(--text-strong)]">
+            <p className="truncate text-[1rem] font-medium text-[var(--text-strong)]">
               {name || t("account")}
             </p>
-            <p className="truncate text-[0.75rem] text-[var(--text-faint)]">{email}</p>
+            <p className="truncate text-[0.875rem] text-[var(--text-faint)]">{email}</p>
           </div>
 
           <div className="p-1.5">
@@ -164,7 +164,7 @@ export function AccountMenu({
 }
 
 const itemStyles = cn(
-  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-start text-[0.875rem]",
+  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-start text-[1rem]",
   "text-[var(--text-muted)] transition-colors duration-200",
   "hover:bg-[var(--surface-overlay)] hover:text-[var(--text-strong)]",
 );

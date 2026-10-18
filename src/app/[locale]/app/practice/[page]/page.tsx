@@ -80,13 +80,13 @@ export default async function PracticeSessionPage({ params, searchParams }: Para
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Link
               href="/app/practice"
-              className="inline-flex items-center gap-1.5 text-[0.8125rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
+              className="inline-flex items-center gap-1.5 text-[0.9375rem] text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-strong)]"
             >
               <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
               {t("allPages")}
             </Link>
 
-            <p className="text-[0.8125rem] text-[var(--text-faint)]">
+            <p className="text-[0.9375rem] text-[var(--text-faint)]">
               {names.join(" · ")} · {t("pageNumber", { page })} ·{" "}
               {t("juzNumber", { number: juzOfPage(page) })}
             </p>
@@ -105,7 +105,7 @@ export default async function PracticeSessionPage({ params, searchParams }: Para
                     : `/app/practice/${page}?mode=${option}`
                 }
                 className={cn(
-                  "shrink-0 rounded-full border px-3.5 py-2 text-[0.8125rem] font-medium whitespace-nowrap",
+                  "shrink-0 rounded-full border px-3.5 py-2 text-[0.9375rem] font-medium whitespace-nowrap",
                   "transition-[border-color,background-color,color] duration-300 ease-[var(--ease-calm)]",
                   option === session.drill.mode
                     ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_10%,transparent)] text-[var(--accent-strong)]"
@@ -117,7 +117,7 @@ export default async function PracticeSessionPage({ params, searchParams }: Para
             ))}
           </nav>
 
-          <p className="mt-4 text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
+          <p className="mt-4 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
             {t(`modes.${session.drill.mode}.about`)}
           </p>
 
@@ -125,7 +125,7 @@ export default async function PracticeSessionPage({ params, searchParams }: Para
               held page can be scored, and finding that out at the end of ten
               questions is how a tool loses someone's trust. */}
           {!held && (
-            <p className="mt-5 flex items-start gap-2 rounded-xl border border-gold-500/30 bg-gold-500/10 px-4 py-3 text-[0.8125rem] text-gold-ink">
+            <p className="mt-5 flex items-start gap-2 rounded-xl border border-gold-500/30 bg-gold-500/10 px-4 py-3 text-[0.9375rem] text-gold-ink">
               <Info className="mt-0.5 h-4 w-4 shrink-0" />
               {t("notHeldYet")}
             </p>

@@ -58,7 +58,7 @@ export default async function SettingsPage() {
               <h1 className="font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
                 {t("title")}
               </h1>
-              <p className="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-3 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
                 {t("subtitle")}
               </p>
             </header>
@@ -84,7 +84,7 @@ export default async function SettingsPage() {
             {/* The second password, in with the rest of the account. Reached
                 from the same menu as everything else about who you are. */}
             <section className="panel mt-5 rounded-2xl p-5 sm:p-6">
-              <h2 className="text-[0.6875rem] font-semibold tracking-[0.16em] text-[var(--text-faint)] uppercase">
+              <h2 className="text-[0.8125rem] font-semibold tracking-[0.16em] text-[var(--text-faint)] uppercase">
                 {t("twoFactor.title")}
               </h2>
               <div className="mt-5">
@@ -106,10 +106,10 @@ export default async function SettingsPage() {
                     />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[0.9375rem] font-medium text-[var(--text-strong)]">
+                    <span className="block text-[1.0625rem] font-medium text-[var(--text-strong)]">
                       {t("covenant")}
                     </span>
-                    <span className="mt-1 block text-[0.8125rem] text-[var(--text-muted)]">
+                    <span className="mt-1 block text-[0.9375rem] text-[var(--text-muted)]">
                       {t("covenantOpen")}
                     </span>
                   </span>

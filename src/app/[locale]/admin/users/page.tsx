@@ -122,7 +122,7 @@ export default async function AdminUsersPage({
             <h1 className="font-[family-name:var(--font-display)] text-[1.875rem] leading-tight font-light text-[var(--text-strong)]">
               People
             </h1>
-            <p className="mt-2 text-[0.875rem] text-[var(--text-muted)]">
+            <p className="mt-2 text-[1rem] text-[var(--text-muted)]">
               {total === 0
                 ? search
                   ? `Nobody matches “${search}”`
@@ -149,7 +149,7 @@ export default async function AdminUsersPage({
         <div className="mt-7">
           {people.length === 0 ? (
             <Panel title="Accounts">
-              <p className="py-10 text-center text-[0.8125rem] text-[var(--text-faint)]">
+              <p className="py-10 text-center text-[0.9375rem] text-[var(--text-faint)]">
                 Nobody matches that.
               </p>
             </Panel>
@@ -165,7 +165,7 @@ export default async function AdminUsersPage({
 
           <Pagination current={current} pageCount={pageCount} search={search} />
 
-          <p className="mt-6 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+          <p className="mt-6 text-[0.875rem] leading-relaxed text-[var(--text-faint)]">
             These are real people&rsquo;s addresses and real progress. The list
             exists to answer support questions and to see whether the product is
             working — not to be browsed. Nothing here can be edited from this
@@ -207,7 +207,7 @@ function PersonPanel({ person, timeZone }: { person: AdminUser; timeZone: string
           and stopped, and a grid of dashes for each of them buries the ones
           who are actually working — which is the only thing this page is for. */}
       {untouched ? (
-        <p className="mt-3 text-[0.8125rem] text-[var(--text-faint)]">
+        <p className="mt-3 text-[0.9375rem] text-[var(--text-faint)]">
           Nothing yet · last seen {ago(person.lastSeenAt)}
         </p>
       ) : (
@@ -236,7 +236,7 @@ function PersonPanel({ person, timeZone }: { person: AdminUser; timeZone: string
       </div>
       )}
 
-      <p className="mt-3.5 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-[var(--line-subtle)] pt-2.5 text-[0.6875rem] text-[var(--text-faint)]">
+      <p className="mt-3.5 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-[var(--line-subtle)] pt-2.5 text-[0.8125rem] text-[var(--text-faint)]">
         <span>Joined {whenIn(timeZone).format(person.createdAt)}</span>
         {person.locale && <span>· {person.locale.toUpperCase()}</span>}
         {person.reciter && <span>· {person.reciter}</span>}
@@ -268,7 +268,7 @@ function Identity({ person }: { person: AdminUser }) {
           />
         )}
       </span>
-      <span className="mt-0.5 truncate text-[0.75rem] text-[var(--text-muted)]">
+      <span className="mt-0.5 truncate text-[0.875rem] text-[var(--text-muted)]">
         {person.email}
       </span>
     </span>
@@ -307,7 +307,7 @@ function BandChip({ band }: { band: PaceBand }) {
   return (
     <span
       className={cn(
-        "shrink-0 rounded-full border px-2.5 py-1 text-[0.625rem] font-semibold tracking-[0.1em] uppercase",
+        "shrink-0 rounded-full border px-2.5 py-1 text-[0.75rem] font-semibold tracking-[0.1em] uppercase",
         BAND_CHIP[band],
       )}
     >
@@ -333,7 +333,7 @@ function CovenantTrack({
 }) {
   if (!state || !person.covenant) {
     return (
-      <p className="text-[0.8125rem] text-[var(--text-faint)]">
+      <p className="text-[0.9375rem] text-[var(--text-faint)]">
         {person.onboarded ? "No covenant made yet." : "Never finished onboarding."}
       </p>
     );
@@ -346,13 +346,13 @@ function CovenantTrack({
   return (
     <div>
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <span className="text-[0.75rem] text-[var(--text-muted)]">
+        <span className="text-[0.875rem] text-[var(--text-muted)]">
           Finish by{" "}
           <span className="text-[var(--text-default)]">
             {DEADLINE.format(new Date(`${person.covenant.endDate}T00:00:00Z`))}
           </span>
         </span>
-        <span className="text-[0.75rem] tabular-nums text-[var(--text-muted)]">
+        <span className="text-[0.875rem] tabular-nums text-[var(--text-muted)]">
           <span className="font-medium text-[var(--text-strong)]">
             {Math.round(progress * 100)}%
           </span>{" "}
@@ -374,7 +374,7 @@ function CovenantTrack({
         />
       </div>
 
-      <p className="mt-2 text-[0.75rem] text-[var(--text-muted)]">
+      <p className="mt-2 text-[0.875rem] text-[var(--text-muted)]">
         {pace.complete
           ? "The whole promise is kept."
           : behind > 0.02
@@ -408,10 +408,10 @@ function ActivityStrip({ counts, timeZone }: { counts: number[]; timeZone: strin
   return (
     <div className="min-w-0">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-[0.625rem] font-semibold tracking-[0.1em] text-[var(--text-faint)] uppercase">
+        <span className="text-[0.75rem] font-semibold tracking-[0.1em] text-[var(--text-faint)] uppercase">
           Drills, last {ACTIVITY_DAYS} days
         </span>
-        <span className="text-[0.75rem] tabular-nums text-[var(--text-muted)]">
+        <span className="text-[0.875rem] tabular-nums text-[var(--text-muted)]">
           {done === 0 ? (
             <span className="text-[var(--text-faint)]">nothing</span>
           ) : (
@@ -440,7 +440,7 @@ function ActivityStrip({ counts, timeZone }: { counts: number[]; timeZone: strin
         ))}
       </div>
 
-      <div className="mt-1.5 flex justify-between text-[0.625rem] text-[var(--text-faint)] tabular-nums">
+      <div className="mt-1.5 flex justify-between text-[0.75rem] text-[var(--text-faint)] tabular-nums">
         <span>{dayIn(timeZone).format(first)}</span>
         <span>today</span>
       </div>
@@ -460,12 +460,12 @@ function Figure({
 }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[0.625rem] tracking-[0.08em] text-[var(--text-faint)] uppercase">
+      <dt className="text-[0.75rem] tracking-[0.08em] text-[var(--text-faint)] uppercase">
         {label}
       </dt>
       <dd
         className={cn(
-          "mt-1 truncate text-[0.9375rem] font-medium tabular-nums",
+          "mt-1 truncate text-[1.0625rem] font-medium tabular-nums",
           tone === "warn"
             ? "text-[var(--status-warning-ink)]"
             : "text-[var(--text-strong)]",
@@ -502,7 +502,7 @@ function Pagination({
     })}`;
 
   const step =
-    "inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-[0.8125rem] transition-colors duration-300";
+    "inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-[0.9375rem] transition-colors duration-300";
 
   return (
     <nav
@@ -521,7 +521,7 @@ function Pagination({
         </span>
       )}
 
-      <span className="text-[0.75rem] text-[var(--text-muted)] tabular-nums">
+      <span className="text-[0.875rem] text-[var(--text-muted)] tabular-nums">
         Page {current} of {pageCount}
       </span>
 

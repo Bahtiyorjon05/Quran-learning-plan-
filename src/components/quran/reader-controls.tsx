@@ -70,7 +70,7 @@ export function ReaderControls() {
         >
           <Minus className="h-3.5 w-3.5" />
         </button>
-        <span className="w-11 text-center text-[0.6875rem] text-[var(--text-faint)] tabular-nums">
+        <span className="w-11 text-center text-[0.8125rem] text-[var(--text-faint)] tabular-nums">
           {size}%
         </span>
         <button

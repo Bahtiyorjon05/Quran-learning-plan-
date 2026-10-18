@@ -105,7 +105,7 @@ export function ChoiceQuestion({
                   {choice.ref && (duel || review) && (
                     <span
                       className={cn(
-                        "block text-[0.9375rem] font-medium",
+                        "block text-[1.0625rem] font-medium",
                         duel ? "text-[var(--text-strong)]" : "text-[var(--text-muted)]",
                       )}
                     >

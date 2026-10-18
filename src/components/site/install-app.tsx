@@ -260,8 +260,8 @@ export function InstallButton({ className }: { className?: string }) {
           aria-label={t("title")}
           className="animate-rise absolute end-0 top-11 z-50 w-64 rounded-2xl border border-[var(--line-strong)] bg-[var(--surface-raised)] p-4 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.55)]"
         >
-          <p className="text-[0.8125rem] font-medium text-[var(--text-strong)]">{t("title")}</p>
-          <p className="mt-1.5 text-[0.75rem] leading-relaxed text-[var(--text-muted)]">
+          <p className="text-[0.9375rem] font-medium text-[var(--text-strong)]">{t("title")}</p>
+          <p className="mt-1.5 text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
             {ios ? t("iosHow") : t("menuHow")}
           </p>
           {ios && <IosSteps t={t} />}
@@ -303,7 +303,7 @@ export function InstallMenuItem({ className }: { className?: string }) {
       </button>
 
       {explains && showing && (
-        <p className="px-3 pt-1 pb-2 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+        <p className="px-3 pt-1 pb-2 text-[0.875rem] leading-relaxed text-[var(--text-faint)]">
           {ios ? t("iosHow") : t("menuHow")}
           {ios && <IosSteps t={t} />}
         </p>
@@ -314,7 +314,7 @@ export function InstallMenuItem({ className }: { className?: string }) {
 
 function IosSteps({ t }: { t: (key: string) => string }) {
   return (
-    <p className="mt-3 flex flex-wrap items-center gap-2 text-[0.75rem] text-[var(--text-faint)]">
+    <p className="mt-3 flex flex-wrap items-center gap-2 text-[0.875rem] text-[var(--text-faint)]">
       <span className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--line-subtle)] px-2 py-1">
         <Share className="h-3.5 w-3.5" />
         {t("iosShare")}
@@ -350,10 +350,10 @@ export function InstallApp({ variant = "card" }: { variant?: "card" | "banner" }
       </span>
 
       <div className="min-w-0 flex-1">
-        <p className="pe-6 text-[0.9375rem] font-medium text-[var(--text-strong)]">
+        <p className="pe-6 text-[1.0625rem] font-medium text-[var(--text-strong)]">
           {t("title")}
         </p>
-        <p className="mt-1 text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
+        <p className="mt-1 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
           {ios ? t("iosHow") : t("body")}
         </p>
 
@@ -366,7 +366,7 @@ export function InstallApp({ variant = "card" }: { variant?: "card" | "banner" }
               const outcome = await install();
               if (outcome === "dismissed") writeLocal(DISMISSED_KEY, String(Date.now()));
             }}
-            className="mt-3 inline-flex h-9 items-center gap-2 rounded-full bg-[var(--accent-ground)] px-4 text-[0.8125rem] font-medium text-[var(--on-accent)] transition-[background-color] duration-300 hover:bg-[var(--accent-strong)]"
+            className="mt-3 inline-flex h-9 items-center gap-2 rounded-full bg-[var(--accent-ground)] px-4 text-[0.9375rem] font-medium text-[var(--on-accent)] transition-[background-color] duration-300 hover:bg-[var(--accent-strong)]"
           >
             <ArrowDownToLine className="h-3.5 w-3.5" />
             {t("action")}

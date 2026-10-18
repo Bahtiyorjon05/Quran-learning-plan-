@@ -55,7 +55,7 @@ export default async function MistakesPage({
               <h1 className="font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.5rem]">
                 {t("title")}
               </h1>
-              <p className="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-3 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
                 {t("subtitle")}
               </p>
             </header>
@@ -66,10 +66,10 @@ export default async function MistakesPage({
                   className="mx-auto h-6 w-6 text-[var(--accent)]"
                   strokeWidth={1.5}
                 />
-                <p className="mt-4 text-[0.9375rem] text-[var(--text-strong)]">
+                <p className="mt-4 text-[1.0625rem] text-[var(--text-strong)]">
                   {summary.resolved > 0 ? t("allClear") : t("nothingYet")}
                 </p>
-                <p className="mx-auto mt-2 max-w-sm text-[0.875rem] leading-relaxed text-[var(--text-muted)]">
+                <p className="mx-auto mt-2 max-w-sm text-[1rem] leading-relaxed text-[var(--text-muted)]">
                   {summary.resolved > 0
                     ? t("allClearBody", { count: summary.resolved })
                     : t("nothingYetBody")}
@@ -87,7 +87,7 @@ export default async function MistakesPage({
               </div>
             ) : (
               <>
-                <p className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8125rem] text-[var(--text-faint)]">
+                <p className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.9375rem] text-[var(--text-faint)]">
                   <span>
                     {t("openCount", {
                       ayahs: summary.ayahs,
@@ -105,7 +105,7 @@ export default async function MistakesPage({
                   <WeakSpots spots={spots} />
                 </div>
 
-                <p className="mt-8 text-[0.75rem] leading-relaxed text-[var(--text-faint)]">
+                <p className="mt-8 text-[0.875rem] leading-relaxed text-[var(--text-faint)]">
                   {t("footnote")}
                 </p>
               </>

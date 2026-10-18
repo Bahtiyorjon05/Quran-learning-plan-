@@ -63,7 +63,7 @@ export default async function OnboardingPage() {
           <h1 className="mt-0 font-[family-name:var(--font-display)] text-[1.875rem] leading-tight font-light text-[var(--text-strong)] lg:mt-8 lg:text-[2.5rem]">
             {t("welcome", { name: firstName })}
           </h1>
-          <p className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
+          <p className="mt-3 text-[1.0625rem] leading-relaxed text-[var(--text-muted)]">
             {t("intro")}
           </p>
 
@@ -73,19 +73,19 @@ export default async function OnboardingPage() {
           <ul className="mt-9 hidden space-y-5 lg:block">
             {(["sabaq", "sabqi", "manzil"] as const).map((track, i) => (
               <li key={track} className="flex gap-4">
-                <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-gold-500/30 bg-gold-500/[0.08] text-[0.6875rem] font-medium text-gold-ink tabular-nums">
+                <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-gold-500/30 bg-gold-500/[0.08] text-[0.8125rem] font-medium text-gold-ink tabular-nums">
                   {i + 1}
                 </span>
                 <span className="min-w-0">
                   <span className="flex items-baseline gap-2">
-                    <span className="text-[0.9375rem] font-medium text-[var(--text-strong)]">
+                    <span className="text-[1.0625rem] font-medium text-[var(--text-strong)]">
                       {t(`tracks.${track}.name`)}
                     </span>
-                    <span className="font-arabic text-[0.9375rem] text-gold-ink" dir="rtl" aria-hidden>
+                    <span className="font-arabic text-[1.0625rem] text-gold-ink" dir="rtl" aria-hidden>
                       {t(`tracks.${track}.arabic`)}
                     </span>
                   </span>
-                  <span className="mt-1 block text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
+                  <span className="mt-1 block text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
                     {t(`tracks.${track}.what`)}
                   </span>
                 </span>
@@ -93,7 +93,7 @@ export default async function OnboardingPage() {
             ))}
           </ul>
 
-          <p className="mt-9 hidden border-t border-[var(--line-subtle)] pt-6 text-[0.8125rem] leading-relaxed text-[var(--text-faint)] lg:block">
+          <p className="mt-9 hidden border-t border-[var(--line-subtle)] pt-6 text-[0.9375rem] leading-relaxed text-[var(--text-faint)] lg:block">
             {t("laterNote")}
           </p>
         </aside>

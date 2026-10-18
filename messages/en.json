@@ -578,6 +578,24 @@
       "hafizContinue": "Alhamdulillah",
       "pagesLearnt": "{count} pages committed to memory",
       "sabaqLearnt": "Today's portion committed to memory"
+    },
+    "quick": {
+      "title": "Quick actions",
+      "continue": "Continue reading",
+      "onPage": "Page {page}",
+      "sabaq": "Today's lesson",
+      "sabaqDone": "Done today",
+      "sabaqNone": "Nothing new today",
+      "practice": "Practice",
+      "weakestPage": "Weakest: page {page}",
+      "practiceNone": "Mark a page first",
+      "weak": "Weak spots",
+      "weakCount": "{count, plural, one {# ayah to fix} other {# ayahs to fix}}",
+      "weakNone": "None open",
+      "mushaf": "Mushaf",
+      "heldCount": "{count, plural, one {# page held} other {# pages held}}",
+      "covenant": "My covenant",
+      "covenantDetail": "Read what you promised"
     }
   },
   "onboarding": {
@@ -783,7 +801,22 @@
       "juzNumber": "Juz {number}",
       "pages": "Pages {from}–{to}",
       "continue": "Continue reading",
-      "readCount": "{count} of 604 pages marked"
+      "readCount": "{count} of 604 pages marked",
+      "filters": "Filters",
+      "all": "All",
+      "statusHeld": "Memorized",
+      "statusSome": "In progress",
+      "statusNone": "Not started",
+      "bothRevelations": "Makkah & Madinah",
+      "anyJuz": "Any juz",
+      "inJuz": "Juz {number}",
+      "sortMushaf": "Mushaf order",
+      "sortShort": "Shortest first",
+      "sortLong": "Longest first",
+      "results": "{count, plural, one {# surah} other {# surahs}}",
+      "clear": "Clear filters",
+      "juzHeld": "{held} of {total} pages",
+      "juzWhole": "Held whole"
     },
     "reader": {
       "page": "Page {page}",

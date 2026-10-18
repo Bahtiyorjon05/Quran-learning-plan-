@@ -46,7 +46,8 @@
     "observe:reset": "tsx scripts/observe-reset.ts",
     "observe:two-factor": "tsx --require ./scripts/allow-server-only.cjs scripts/observe-two-factor.ts",
     "observe:milestones": "tsx scripts/observe-milestones.ts",
-    "observe:covenant": "tsx scripts/observe-covenant.ts"
+    "observe:covenant": "tsx scripts/observe-covenant.ts",
+    "audit:layout": "tsx scripts/audit-layout.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",

@@ -216,7 +216,7 @@ export function JuzCelebration({
             </p>
           )}
 
-          <p className="ahd-celebrate-line mx-auto mt-5 max-w-md text-[0.9375rem] leading-relaxed text-[var(--text-muted)] [animation-delay:0.8s]">
+          <p className="ahd-celebrate-line mx-auto mt-5 max-w-md text-[1.0625rem] leading-relaxed text-[var(--text-muted)] [animation-delay:0.8s]">
             {whole ? t("hafizBody") : t(`tier.${tier}`, { total })}
           </p>
 
@@ -229,7 +229,7 @@ export function JuzCelebration({
                 <p className="font-[family-name:var(--font-display)] text-[1.25rem] leading-[1.7] text-[var(--text-strong)] italic sm:text-[1.5rem]">
                   &ldquo;{t("crown")}&rdquo;
                 </p>
-                <footer className="mt-4 text-[0.6875rem] tracking-[0.18em] text-[var(--text-faint)] uppercase">
+                <footer className="mt-4 text-[0.8125rem] tracking-[0.18em] text-[var(--text-faint)] uppercase">
                   {t("crownSource")}
                 </footer>
               </blockquote>

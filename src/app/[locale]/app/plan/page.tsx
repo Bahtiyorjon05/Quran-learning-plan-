@@ -78,7 +78,7 @@ export default async function CovenantPage() {
           <div className="mx-auto max-w-2xl">
             <Link
               href="/app"
-              className="inline-flex items-center gap-2 text-[0.8125rem] text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]"
+              className="inline-flex items-center gap-2 text-[0.9375rem] text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)]"
             >
               <ArrowRight className="h-4 w-4 rotate-180 rtl:rotate-0" />
               {t("back")}
@@ -92,7 +92,7 @@ export default async function CovenantPage() {
               <div className="relative">
                 <Khatim className="mx-auto h-9 w-9 text-[var(--gold)]" />
 
-                <p className="mt-5 text-[0.75rem] font-semibold tracking-[0.24em] text-[var(--text-faint)] uppercase">
+                <p className="mt-5 text-[0.875rem] font-semibold tracking-[0.24em] text-[var(--text-faint)] uppercase">
                   {t("eyebrow")}
                 </p>
                 <h1 className="mt-2 font-[family-name:var(--font-display)] text-[2rem] leading-tight font-light text-[var(--text-strong)] sm:text-[2.75rem]">
@@ -103,7 +103,7 @@ export default async function CovenantPage() {
 
                 {/* The promise, in one sentence, the way it would be said out
                     loud rather than as four figures in a row. */}
-                <p className="mx-auto mt-7 max-w-md text-[1.0625rem] leading-[1.8] text-[var(--text-default)]">
+                <p className="mx-auto mt-7 max-w-md text-[1.125rem] leading-[1.8] text-[var(--text-default)]">
                   {t.rich("sentence", {
                     scope: () => (
                       <strong className="font-medium text-[var(--text-strong)]">
@@ -127,7 +127,7 @@ export default async function CovenantPage() {
                 {covenant.niyyah && (
                   <>
                     <StarRule className="mx-auto mt-8 max-w-xs" />
-                    <p className="mt-7 text-[0.6875rem] font-semibold tracking-[0.2em] text-[var(--text-faint)] uppercase">
+                    <p className="mt-7 text-[0.8125rem] font-semibold tracking-[0.2em] text-[var(--text-faint)] uppercase">
                       {t("niyyah")}
                     </p>
                     <blockquote className="mx-auto mt-3 max-w-md font-[family-name:var(--font-display)] text-[1.25rem] leading-[1.7] text-[var(--text-strong)] italic sm:text-[1.5rem]">
@@ -155,7 +155,7 @@ export default async function CovenantPage() {
                   )}
                 </dl>
 
-                <p className="mx-auto mt-9 max-w-md border-t border-[var(--line-subtle)] pt-6 text-[0.8125rem] leading-relaxed text-[var(--text-faint)]">
+                <p className="mx-auto mt-9 max-w-md border-t border-[var(--line-subtle)] pt-6 text-[0.9375rem] leading-relaxed text-[var(--text-faint)]">
                   {t("rule")}
                 </p>
 
@@ -177,7 +177,7 @@ export default async function CovenantPage() {
               </div>
             </article>
 
-            <p className="mt-6 flex items-center justify-center gap-2 text-center text-[0.75rem] text-[var(--text-faint)]">
+            <p className="mt-6 flex items-center justify-center gap-2 text-center text-[0.875rem] text-[var(--text-faint)]">
               <Scroll className="h-3.5 w-3.5 shrink-0" />
               {t("keep")}
             </p>
@@ -201,19 +201,19 @@ function Term({
 }) {
   return (
     <div className="border-t border-[var(--line-subtle)] pt-3">
-      <dt className="text-[0.6875rem] tracking-[0.14em] text-[var(--text-faint)] uppercase">
+      <dt className="text-[0.8125rem] tracking-[0.14em] text-[var(--text-faint)] uppercase">
         {label}
       </dt>
       <dd
         className={
           tone === "gold"
-            ? "mt-1 text-[0.9375rem] font-medium text-[var(--gold-ink)]"
-            : "mt-1 text-[0.9375rem] text-[var(--text-strong)]"
+            ? "mt-1 text-[1.0625rem] font-medium text-[var(--gold-ink)]"
+            : "mt-1 text-[1.0625rem] text-[var(--text-strong)]"
         }
       >
         {value}
       </dd>
-      {hint && <p className="mt-1 text-[0.75rem] text-[var(--text-faint)]">{hint}</p>}
+      {hint && <p className="mt-1 text-[0.875rem] text-[var(--text-faint)]">{hint}</p>}
     </div>
   );
 }

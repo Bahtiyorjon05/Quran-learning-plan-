@@ -89,14 +89,14 @@ export function ProsePage({
                 {title}
               </h1>
               {lead && (
-                <p className="mt-5 text-[1.0625rem] leading-[1.7] text-[var(--text-muted)]">
+                <p className="mt-5 text-[1.125rem] leading-[1.7] text-[var(--text-muted)]">
                   {lead}
                 </p>
               )}
               <StarRule className="mx-auto mt-8 max-w-[14rem]" />
 
               {updated && (
-                <p className="mt-7 inline-flex items-center gap-2 rounded-full border border-[var(--line-subtle)] px-3.5 py-1.5 text-[0.6875rem] tracking-[0.14em] text-[var(--text-faint)] uppercase">
+                <p className="mt-7 inline-flex items-center gap-2 rounded-full border border-[var(--line-subtle)] px-3.5 py-1.5 text-[0.8125rem] tracking-[0.14em] text-[var(--text-faint)] uppercase">
                   {updated}
                 </p>
               )}
@@ -116,7 +116,7 @@ export function ProsePage({
                 aria-label={title}
                 className="hidden lg:sticky lg:top-28 lg:block lg:self-start"
               >
-                <p className="flex items-center gap-2 text-[0.6875rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
+                <p className="flex items-center gap-2 text-[0.8125rem] font-semibold tracking-[0.14em] text-[var(--text-faint)] uppercase">
                   <Khatim className="h-3.5 w-3.5 shrink-0 text-[var(--gold)]" />
                   {title}
                 </p>
@@ -125,7 +125,7 @@ export function ProsePage({
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
-                        className="block text-[0.8125rem] leading-snug text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--accent-strong)]"
+                        className="block text-[0.9375rem] leading-snug text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--accent-strong)]"
                       >
                         {item.label}
                       </a>

@@ -578,6 +578,24 @@
       "hafizContinue": "Альхамдулиллах",
       "pagesLearnt": "{count} страниц выучено",
       "sabaqLearnt": "Сегодняшний урок выучен"
+    },
+    "quick": {
+      "title": "Быстрые действия",
+      "continue": "Продолжить",
+      "onPage": "Страница {page}",
+      "sabaq": "Урок на сегодня",
+      "sabaqDone": "Сегодня сделано",
+      "sabaqNone": "Сегодня нового нет",
+      "practice": "Практика",
+      "weakestPage": "Слабее всего: стр. {page}",
+      "practiceNone": "Сначала отметьте страницу",
+      "weak": "Слабые места",
+      "weakCount": "{count, plural, one {# аят} few {# аята} many {# аятов} other {# аята}}",
+      "weakNone": "Открытых нет",
+      "mushaf": "Мусхаф",
+      "heldCount": "{count, plural, one {# страница} few {# страницы} many {# страниц} other {# страницы}}",
+      "covenant": "Мой завет",
+      "covenantDetail": "Перечитать обещание"
     }
   },
   "onboarding": {
@@ -783,7 +801,22 @@
       "juzNumber": "Джуз {number}",
       "pages": "Страницы {from}–{to}",
       "continue": "Продолжить чтение",
-      "readCount": "Отмечено {count} из 604 страниц"
+      "readCount": "Отмечено {count} из 604 страниц",
+      "filters": "Фильтры",
+      "all": "Все",
+      "statusHeld": "Выучено",
+      "statusSome": "В процессе",
+      "statusNone": "Не начато",
+      "bothRevelations": "Мекка и Медина",
+      "anyJuz": "Любой джуз",
+      "inJuz": "Джуз {number}",
+      "sortMushaf": "По порядку мусхафа",
+      "sortShort": "Сначала короткие",
+      "sortLong": "Сначала длинные",
+      "results": "{count, plural, one {# сура} few {# суры} many {# сур} other {# суры}}",
+      "clear": "Сбросить",
+      "juzHeld": "{held} из {total} страниц",
+      "juzWhole": "Выучен целиком"
     },
     "reader": {
       "page": "Страница {page}",
